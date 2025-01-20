@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+<link rel="shortcut icon" href="/img/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Fatals" />
+<link rel="manifest" href="img/site.webmanifest" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings | Fatals</title>
+  <link rel="stylesheet" href="/settingsstyles.css" />
+</head>
+<body>
+  <div class="navbar">
+    <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
+    <a href="dashboard.html" id="dashLink">Dashboard</a>
+    <a href="settings.html" id="settingsLink">Settings</a>
+    <div class="user-menu-container">
+      <div class="user-menu" id="userMenuContainer">
+        <!-- Will be dynamically populated -->
+      </div>
+      <div class="dropdown"></div>
+    </div>
+  </div>
+
+  <h1>Fantasy Baseball Settings</h1>
+
+  <div class="content-wrapper">
+    <div class="management-sections">
+      <div class="management-section">
+        <h2>League Management</h2>
+        <div id="loginNotice" class="notice hidden">Log in to manage your leagues.</div>
+        <div id="leaguesContainer"></div>
+        <button id="createLeagueBtn">Create New League</button>
+        <button id="exportLeagueBtn">Export League</button>
+        <button id="importLeagueBtn">Import League</button>
+        <input type="file" id="importInput" accept=".json">
+      </div>
+
+      <div class="management-section">
+        <h2>Team Management</h2>
+        <div id="leagueSelectionNotice" class="notice hidden">Select a league to manage teams.</div>
+        <div id="teamsManagementContainer"></div>
+        <!-- Removed standalone favorite team button -->
+      </div>
+    </div>
+
+    <div class="formula-container">
+      <div class="formula-toggle" id="formulaToggle">Show/Hide Formula Tweaks</div>
+      <div class="formula-content" id="formulaContent">
+        <h2>Update Settings</h2>
+        <div class="tabs">
+          <button class="tablink active" data-target="#hittersTab">Hitters</button>
+          <button class="tablink" data-target="#pitchersTab">Pitchers</button>
+        </div>
+
+        <form id="settingsForm">
+          <!-- Hitters tabcontent -->
+          <div class="tabcontent" id="hittersTab" style="display:block;">
+            <h3>Hitters Settings</h3>
+            <h4>Basic Stats Weights</h4>
+            <label for="RWeight">R Weight:</label>
+            <input type="number" step="0.01" name="RWeight"><br>
+            <label for="HRWeight">HR Weight:</label>
+            <input type="number" step="0.01" name="HRWeight"><br>
+            <label for="HWeight">H Weight:</label>
+            <input type="number" step="0.01" name="HWeight"><br>
+            <label for="SBWeight">SB Weight:</label>
+            <input type="number" step="0.01" name="SBWeight"><br>
+            <label for="BBWeight">BB Weight:</label>
+            <input type="number" step="0.01" name="BBWeight"><br>
+            <label for="RBIWeight">RBI Weight:</label>
+            <input type="number" step="0.01" name="RBIWeight"><br>
+            <label for="KWeight">K Weight:</label>
+            <input type="number" step="0.01" name="KWeight"><br>
+
+            <h4>FanGraphs Factors</h4>
+            <label for="HFGFactor">FG Factor:</label>
+            <input type="number" step="0.01" name="HFGFactor"><br>
+            <label for="HFGWeight">FG Weight:</label>
+            <input type="number" step="0.01" name="HFGWeight"><br>
+
+            <h4>Advanced Stats Factors</h4>
+            <label for="HBAFactor">BA Factor:</label>
+            <input type="number" step="0.01" name="HBAFactor"><br>
+            <label for="HEstBAFactor">Est BA Factor:</label>
+            <input type="number" step="0.01" name="HEstBAFactor"><br>
+            <label for="HSLGFactor">SLG Factor:</label>
+            <input type="number" step="0.01" name="HSLGFactor"><br>
+            <label for="HEstSLGFactor">Est SLG Factor:</label>
+            <input type="number" step="0.01" name="HEstSLGFactor"><br>
+            <label for="HEstWOBARactor">Est wOBA Factor:</label>
+            <input type="number" step="0.01" name="HEstWOBARactor"><br>
+
+            <h4>Performance Metrics</h4>
+            <label for="HPAFactor">PA Factor:</label>
+            <input type="number" step="0.01" name="HPAFactor"><br>
+            <label for="HKpctFactor">K% Factor:</label>
+            <input type="number" step="0.01" name="HKpctFactor"><br>
+            <label for="HBABIPFactor">BABIP Factor:</label>
+            <input type="number" step="0.01" name="HBABIPFactor"><br>
+            <label for="HwOBAFactor">wOBA Factor:</label>
+            <input type="number" step="0.01" name="HwOBAFactor"><br>
+            <label for="HOPSFactor">OPS Factor:</label>
+            <input type="number" step="0.01" name="HOPSFactor"><br>
+            <label for="HSpdFactor">Speed Factor:</label>
+            <input type="number" step="0.01" name="HSpdFactor"><br>
+            <label for="HSoftWeight">Soft Weight:</label>
+            <input type="number" step="0.01" name="HSoftWeight"><br>
+            <label for="HStatcastWeight">Statcast Weight:</label>
+            <input type="number" step="0.01" name="HStatcastWeight"><br>
+          </div>
+
+          <!-- Pitchers tabcontent -->
+          <div class="tabcontent" id="pitchersTab">
+            <h3>Pitchers Settings</h3>
+            <h4>Basic Stats Weights</h4>
+            <label for="PSVWeight">SV Weight:</label>
+            <input type="number" step="0.01" name="PSVWeight"><br>
+            <label for="PWWeight">W Weight:</label>
+            <input type="number" step="0.01" name="PWWeight"><br>
+            <label for="PSOWeight">SO Weight:</label>
+            <input type="number" step="0.01" name="PSOWeight"><br>
+            <label for="PIPWeight">IP Weight:</label>
+            <input type="number" step="0.01" name="PIPWeight"><br>
+            <label for="PHWeight">H Weight:</label>
+            <input type="number" step="0.01" name="PHWeight"><br>
+            <label for="PLWeight">L Weight:</label>
+            <input type="number" step="0.01" name="PLWeight"><br>
+            <label for="PERWeight">ER Weight:</label>
+            <input type="number" step="0.01" name="PERWeight"><br>
+            <label for="PBBWeight">BB Weight:</label>
+            <input type="number" step="0.01" name="PBBWeight"><br>
+            <label for="PHoldWeight">Hold Weight:</label>
+            <input type="number" step="0.01" name="PHoldWeight"><br>
+
+            <h4>Advanced Stats Factors</h4>
+            <label for="PFGFactor">FG Factor:</label>
+            <input type="number" step="0.01" name="PFGFactor"><br>
+            <label for="PERAFactor">ERA Factor:</label>
+            <input type="number" step="0.01" name="PERAFactor"><br>
+            <label for="PWHIPFactor">WHIP Factor:</label>
+            <input type="number" step="0.01" name="PWHIPFactor"><br>
+            <label for="PAVGFactor">AVG Factor:</label>
+            <input type="number" step="0.01" name="PAVGFactor"><br>
+            <label for="PTBFFactor">TBF Factor:</label>
+            <input type="number" step="0.01" name="PTBFFactor"><br>
+            <label for="PK9Factor">K/9 Factor:</label>
+            <input type="number" step="0.01" name="PK9Factor"><br>
+            <label for="PBB9Factor">BB/9 Factor:</label>
+            <input type="number" step="0.01" name="PBB9Factor"><br>
+            <label for="PHR9Factor">HR/9 Factor:</label>
+            <input type="number" step="0.01" name="PHR9Factor"><br>
+
+            <h4>Statcast & Projections</h4>
+            <label for="PEstBAFactor">Est BA Factor:</label>
+            <input type="number" step="0.01" name="PEstBAFactor"><br>
+            <label for="PSLGFactor">SLG Factor:</label>
+            <input type="number" step="0.01" name="PSLGFactor"><br>
+            <label for="PEstSLGFactor">Est SLG Factor:</label>
+            <input type="number" step="0.01" name="PEstSLGFactor"><br>
+            <label for="PWOBFactor">wOB Factor:</label>
+            <input type="number" step="0.01" name="PWOBFactor"><br>
+            <label for="PEstWOBAFactor">Est wOBA Factor:</label>
+            <input type="number" step="0.01" name="PEstWOBAFactor"><br>
+            <label for="PXERAFactor">xERA Factor:</label>
+            <input type="number" step="0.01" name="PXERAFactor"><br>
+            <label for="PStatcastWeight">Statcast Weight:</label>
+            <input type="number" step="0.01" name="PStatcastWeight"><br>
+            <label for="PFGWeight">FG Weight:</label>
+            <input type="number" step="0.01" name="PFGWeight"><br>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <button type="submit">Update Settings</button>
+          </div>
+        </form>
+
+        <div style="margin-top:20px;">
+          <h2>Data Loaders</h2>
+          <div style="margin-bottom:10px;">
+            <button id="loadHitterFG">Load Hitter Projections (Fangraphs)</button>
+            <button id="loadPitcherFG">Load Pitcher Projections (Fangraphs)</button>
+            <button id="loadHitterStatcast">Load Hitter Statcast</button>
+            <button id="loadPitcherStatcast">Load Pitcher Statcast</button>
+          </div>
+
+          <table id="hitterFGTable"></table>
+          <table id="pitcherFGTable"></table>
+          <table id="hitterStatcastTable"></table>
+          <table id="pitcherStatcastTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="links-section">
+      <a href="hfs.html">Go to HFS</a>
+      <a href="pfs.html">Go to PFS</a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Copyright 2024 - Fatals Fantasy Sports
+  </div>
+
+  <script>
+    let loggedInUser = null;
+    let leagues = [];
+    let currentLeagueId = null;
+    let teams = [];
+
+    const homeLogo = document.getElementById('homeLogo');
+    homeLogo.addEventListener('click', () => {
+      window.location.href = "index.html";
+    });
+
+    const userMenuContainer = document.getElementById('userMenuContainer');
+    const dropdown = document.querySelector('.dropdown');
+    const loginNotice = document.getElementById('loginNotice');
+    const leagueSelectionNotice = document.getElementById('leagueSelectionNotice');
+    const leaguesContainer = document.getElementById('leaguesContainer');
+    const createLeagueBtn = document.getElementById('createLeagueBtn');
+    const teamsManagementContainer = document.getElementById('teamsManagementContainer');
+    const formulaToggle = document.getElementById('formulaToggle');
+    const formulaContent = document.getElementById('formulaContent');
+    const exportLeagueBtn = document.getElementById('exportLeagueBtn');
+    const importLeagueBtn = document.getElementById('importLeagueBtn');
+    const importInput = document.getElementById('importInput');
+
+    formulaToggle.addEventListener('click', () => {
+      if(formulaContent.style.display === 'block') {
+        formulaContent.style.display = 'none';
+      } else {
+        formulaContent.style.display = 'block';
+      }
+    });
+
+    userMenuContainer.addEventListener('click', () => {
+      if(loggedInUser) {
+        toggleUserDropdown();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if(!userMenuContainer.contains(e.target) && !e.target.classList.contains('user-menu')) {
+        dropdown.classList.remove('active');
+      }
+    });
+
+    async function checkLoginStatus() {
+      try {
+        const res = await fetch('/api/check-login');
+        const data = await res.json();
+        if(data.loggedIn) {
+          loggedInUser = data.username;
+          currentLeagueId = data.currentLeagueId;
+        } else {
+          loggedInUser = null;
+          currentLeagueId = null;
+        }
+      } catch(e) {
+        loggedInUser = null;
+        currentLeagueId = null;
+      }
+    }
+
+    async function loadUserLeagues() {
+      if(!loggedInUser) {
+        leagues = [];
+        return;
+      }
+      const res = await fetch('/leagues');
+      if(!res.ok) {
+        leagues = [];
+        return;
+      }
+      leagues = await res.json();
+    }
+
+    function toggleUserDropdown() {
+      dropdown.innerHTML = '';
+      if(!loggedInUser) {
+        dropdown.innerHTML = '<div>Not logged in</div>';
+      } else {
+        if(leagues.length === 0) {
+          const noLeagues = document.createElement('div');
+          noLeagues.textContent = "No leagues yet";
+          dropdown.appendChild(noLeagues);
+        } else {
+          leagues.forEach(lg => {
+            const leagueBtn = document.createElement('button');
+            leagueBtn.textContent = lg.name;
+            leagueBtn.addEventListener('click', async () => {
+              await selectLeague(lg.id);
+              dropdown.classList.remove('active');
+            });
+            dropdown.appendChild(leagueBtn);
+          });
+        }
+
+        const createLBtn = document.createElement('button');
+        createLBtn.textContent = "Create New League";
+        createLBtn.addEventListener('click', async () => {
+          const leagueName = prompt("Enter new league name:");
+          if(leagueName && leagueName.trim() !== '') {
+            await createLeague(leagueName.trim());
+          }
+          dropdown.classList.remove('active');
+        });
+        dropdown.appendChild(createLBtn);
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = "Log Out";
+        logoutBtn.addEventListener('click', async () => {
+          await logout();
+          dropdown.classList.remove('active');
+        });
+        dropdown.appendChild(logoutBtn);
+      }
+
+      dropdown.classList.toggle('active');
+    }
+
+    async function selectLeague(leagueId) {
+      const res = await fetch('/select-league', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({leagueId})
+      });
+      const data = await res.json();
+      if(data.status === 'League selected') {
+        currentLeagueId = leagueId;
+        updateUIState();
+        loadLeaguesUI();
+        await loadTeamsManagementUI();
+      } else {
+        alert(data.error || 'Failed to select league');
+      }
+    }
+
+    async function createLeague(name) {
+      const res = await fetch('/create-league', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name})
+      });
+      const data = await res.json();
+      if(data.id) {
+        leagues.push(data);
+        currentLeagueId = data.id;
+        updateUIState();
+        loadLeaguesUI();
+        await loadTeamsManagementUI();
+      } else {
+        alert(data.error || 'Failed to create league.');
+      }
+    }
+
+    async function logout() {
+      const res = await fetch('/logout', {method:'POST'});
+      const data = await res.json();
+      if(data.status === 'Logged out') {
+        loggedInUser = null;
+        currentLeagueId = null;
+        leagues = [];
+        teams = [];
+        updateUIState();
+        loadLeaguesUI();
+        loadTeamsManagementUI();
+      } else {
+        alert('Failed to logout');
+      }
+    }
+
+    function updateUIState() {
+      if(!loggedInUser) {
+        userMenuContainer.innerHTML = `
+          <div class="user-menu">
+            <button onclick="showLoginOverlay()" class="nav-button">Log In</button>
+            <button onclick="showRegisterOverlay()" class="nav-button">Register</button>
+          </div>
+        `;
+        loginNotice.classList.remove('hidden');
+        leagueSelectionNotice.classList.add('hidden');
+      } else {
+        userMenuContainer.innerHTML = `<div class="user-menu logged-in">Welcome, ${loggedInUser}</div>`;
+        loginNotice.classList.add('hidden');
+        if(!currentLeagueId) {
+          leagueSelectionNotice.classList.remove('hidden');
+        } else {
+          leagueSelectionNotice.classList.add('hidden');
+        }
+      }
+    }
+
+    async function loadLeaguesUI() {
+      leaguesContainer.innerHTML = '';
+      if(!loggedInUser) {
+        leaguesContainer.innerHTML = ''; // Remove the redundant message
+        return;
+      }
+      if(leagues.length === 0) {
+        leaguesContainer.innerHTML = '<p>No leagues yet.</p>';
+        return;
+      }
+      
+      const table = document.createElement('table');
+      const headers = ['League Name', 'Actions', 'Favorite'];
+      const thead = document.createElement('thead');
+      const tr = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        tr.appendChild(th);
+      });
+      thead.appendChild(tr);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      const response = await fetch('/api/check-login');
+      const data = await response.json();
+      const favoriteLeagueId = data.favoriteLeagueId;
+
+      leagues.forEach(lg => {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td');
+        tdName.textContent = lg.name;
+        tr.appendChild(tdName);
+
+        const tdActions = document.createElement('td');
+
+        if (lg.id !== currentLeagueId) {
+          const selectBtn = document.createElement('button');
+          selectBtn.textContent = 'Select';
+          selectBtn.addEventListener('click', () => selectLeague(lg.id));
+          tdActions.appendChild(selectBtn);
+        } else {
+          const selectedSpan = document.createElement('span');
+          selectedSpan.textContent = '(Currently Selected)';
+          tdActions.appendChild(selectedSpan);
+        }
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.style.marginLeft = '5px';
+        deleteBtn.addEventListener('click', async ()=> {
+          if(confirm('Are you sure you want to delete this league?')) {
+            await deleteLeague(lg.id);
+          }
+        });
+        tdActions.appendChild(deleteBtn);
+
+        tr.appendChild(tdActions);
+
+        const tdFavorite = document.createElement('td');
+        const favoriteBtn = document.createElement('button');
+        favoriteBtn.textContent = lg.id === favoriteLeagueId ? '★ Favorite' : '☆ Set as Favorite';
+        favoriteBtn.addEventListener('click', async () => {
+          await setFavoriteLeague(lg.id);
+          await loadLeaguesUI();
+        });
+        tdFavorite.appendChild(favoriteBtn);
+        tr.appendChild(tdFavorite);
+
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      leaguesContainer.appendChild(table);
+    }
+
+    async function deleteLeague(id) {
+      const res = await fetch('/delete-league', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({leagueId:id})
+      });
+      const data = await res.json();
+      if(data.status === 'League deleted') {
+        leagues = leagues.filter(l=>l.id!==id);
+        if(currentLeagueId === id) {
+          currentLeagueId = null;
+        }
+        updateUIState();
+        loadLeaguesUI();
+        await loadTeamsManagementUI();
+      } else {
+        alert(data.error || 'Failed to delete league.');
+      }
+    }
+
+    async function loadTeamsManagementUI() {
+      teamsManagementContainer.innerHTML = '';
+      if(!loggedInUser || !currentLeagueId) {
+        teamsManagementContainer.innerHTML = ''; // Remove the redundant message
+        return;
+      }
+
+      try {
+        const res = await fetch('/teams');
+        if(!res.ok) {
+          teamsManagementContainer.innerHTML = '<p>Failed to load team data. Please try again later.</p>';
+          return;
+        }
+
+        const data = await res.json();
+        teams = data;
+
+        const loginResponse = await fetch('/api/check-login');
+        const loginData = await loginResponse.json();
+        const favoriteTeamId = loginData.favoriteTeamId; 
+
+        if(teams.length === 0) {
+          teamsManagementContainer.innerHTML = '<p>No teams created yet.</p>';
+          return;
+        }
+
+        const table = document.createElement('table');
+        const headers = ['Team Name', 'Actions', 'Favorite'];
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        headers.forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        teams.forEach(team => {
+          const tr = document.createElement('tr');
+          const tdName = document.createElement('td');
+          tdName.textContent = team.name;
+          tr.appendChild(tdName);
+
+          const tdActions = document.createElement('td');
+          const editBtn = document.createElement('button');
+          editBtn.textContent = 'Edit Name';
+          editBtn.addEventListener('click', async ()=> {
+            const newName = prompt('Enter new team name:', team.name);
+            if(newName && newName.trim()!=='') {
+              await renameTeam(team.id, newName.trim());
+            }
+          });
+          tdActions.appendChild(editBtn);
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete Team';
+          deleteBtn.style.marginLeft = '5px';
+          deleteBtn.addEventListener('click', async ()=> {
+            if(confirm('Deleting this team removes all players assigned to it. Proceed?')) {
+              await deleteTeam(team.id);
+            }
+          });
+          tdActions.appendChild(deleteBtn);
+          tr.appendChild(tdActions);
+
+          const tdFavorite = document.createElement('td');
+          const favoriteBtn = document.createElement('button');
+          favoriteBtn.textContent = team.id === favoriteTeamId ? '★ Favorite' : '☆ Set as Favorite';
+          favoriteBtn.addEventListener('click', async () => {
+            await setFavoriteTeam(team.id);
+            await loadTeamsManagementUI(); // Reload UI to reflect changes
+          });
+          tdFavorite.appendChild(favoriteBtn);
+          tr.appendChild(tdFavorite);
+
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        teamsManagementContainer.appendChild(table);
+      } catch (err) {
+        console.error('Error loading team data:', err);
+        teamsManagementContainer.innerHTML = '<p>Failed to load team data. Please try again later.</p>';
+      }
+    }
+
+    async function renameTeam(teamId, newName) {
+      const res = await fetch('/rename-team', {
+        method: 'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({teamId, newName, leagueId: currentLeagueId})
+      });
+      const data = await res.json();
+      if(data.status === 'Team renamed') {
+        await loadTeamsManagementUI();
+      } else {
+        alert(data.error || 'Failed to rename team.');
+      }
+    }
+
+    async function deleteTeam(teamId) {
+      const res = await fetch('/delete-team', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({teamId, leagueId: currentLeagueId})
+      });
+      const data = await res.json();
+      if(data.status === 'Team deleted') {
+        await loadTeamsManagementUI();
+      } else {
+        alert(data.error || 'Failed to delete team.');
+      }
+    }
+
+    async function exportLeague() {
+      if (!currentLeagueId) {
+        alert('Please select a league to export');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/export-league/${currentLeagueId}`);
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Export failed');
+        }
+        const data = await response.json();
+        
+        // Create download file
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `league_${currentLeagueId}_export.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Export failed:', error);
+        alert(error.message || 'Failed to export league');
+      }
+    }
+
+    async function importLeague(file) {
+      if (!loggedInUser) {
+        alert('Please log in first');
+        return;
+      }
+
+      try {
+        const content = await file.text();
+        const importData = JSON.parse(content);
+        
+        const response = await fetch('/api/import-league', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(importData)
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Import failed');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          alert('League imported successfully!');
+          await loadUserLeagues();
+          await selectLeague(result.leagueId);
+        }
+      } catch (error) {
+        console.error('Import failed:', error);
+        alert(error.message || 'Failed to import league');
+      }
+    }
+
+    async function setFavoriteLeague(leagueId) {
+      try {
+        const response = await fetch('/api/set-favorite-league', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leagueId })
+        });
+        if (!response.ok) throw new Error('Failed to set favorite league');
+      } catch (err) {
+        console.error('Error setting favorite league:', err);
+      }
+    }
+
+    async function setFavoriteTeam(teamId) {
+      try {
+        const response = await fetch('/api/set-favorite-team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamId })
+        });
+        if (!response.ok) throw new Error('Failed to set favorite team');
+      } catch (err) {
+        console.error('Error setting favorite team:', err);
+        alert('Failed to set favorite team');
+      }
+    }
+
+    exportLeagueBtn.addEventListener('click', exportLeague);
+    
+    importLeagueBtn.addEventListener('click', () => {
+      importInput.click();
+    });
+
+    importInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        importLeague(e.target.files[0]);
+      }
+    });
+
+    document.querySelectorAll('.tablink').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tablink').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-target');
+        document.querySelectorAll('.tabcontent').forEach(tc => {
+          tc.style.display = tc.id === target.substring(1) ? 'block' : 'none';
+        });
+      });
+    });
+
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const settingsObj = {};
+      for (const [key, value] of formData.entries()) {
+        settingsObj[key] = parseFloat(value);
+      }
+
+      const response = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settingsObj)
+      });
+
+      await response.json();
+      alert('Settings updated successfully.');
+    });
+
+    function buildTable(tableElement, data) {
+      tableElement.innerHTML = '';
+      if (!data || data.length === 0) {
+        tableElement.innerHTML = '<tr><td>No data found</td></tr>';
+        return;
+      }
+
+      const headers = Object.keys(data[0]);
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      tableElement.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        headers.forEach(h => {
+          const td = document.createElement('td');
+          td.textContent = row[h];
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      tableElement.appendChild(tbody);
+    }
+
+    document.getElementById('loadHitterFG').addEventListener('click', async () => {
+      const response = await fetch('/api/hitter-projections-fg');
+      const data = await response.json();
+      const table = document.getElementById('hitterFGTable');
+      buildTable(table, data);
+    });
+
+    document.getElementById('loadPitcherFG').addEventListener('click', async () => {
+      const response = await fetch('/api/pitcher-projections-fg');
+      const data = await response.json();
+      const table = document.getElementById('pitcherFGTable');
+      buildTable(table, data);
+    });
+
+    document.getElementById('loadHitterStatcast').addEventListener('click', async () => {
+      const response = await fetch('/api/hitter-statcast');
+      const data = await response.json();
+      const table = document.getElementById('hitterStatcastTable');
+      buildTable(table, data);
+    });
+
+    document.getElementById('loadPitcherStatcast').addEventListener('click', async () => {
+      const response = await fetch('/api/pitcher-statcast');
+      const data = await response.json();
+      const table = document.getElementById('pitcherStatcastTable');
+      buildTable(table, data);
+    });
+
+    createLeagueBtn.addEventListener('click', async () => {
+      if(!loggedInUser) {
+        alert('Please log in first.');
+        return;
+      }
+      const name = prompt('Enter league name:');
+      if(name && name.trim() !== '') {
+        await createLeague(name.trim());
+      }
+    });
+
+    async function populateSettingsForm() {
+      try {
+        const response = await fetch('/api/settings');
+        const settings = await response.json();
+        
+        const form = document.getElementById('settingsForm');
+        for (const [key, value] of Object.entries(settings)) {
+          const input = form.querySelector(`input[name="${key}"]`);
+          if (input) {
+            input.value = value;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    }
+
+    (async function initialLoad() {
+      await checkLoginStatus();
+      await loadUserLeagues();
+      await populateSettingsForm();
+      updateUIState();
+      loadLeaguesUI();
+      await loadTeamsManagementUI();
+    })();
+
+    function showLoginOverlay() {
+      document.getElementById('overlayLogin').classList.add('active');
+      document.querySelector('.content-wrapper').classList.add('blurred');
+    }
+
+    function showRegisterOverlay() {
+      document.getElementById('overlayRegister').classList.add('active');
+      document.querySelector('.content-wrapper').classList.add('blurred');
+    }
+
+    function closeOverlay() {
+      document.getElementById('overlayLogin').classList.remove('active');
+      document.getElementById('overlayRegister').classList.remove('active');
+      document.querySelector('.content-wrapper').classList.remove('blurred');
+    }
+
+    async function performLogin() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if(!username || !password) {
+        alert('Please enter username and password.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({username, password})
+        });
+        const data = await res.json();
+        if(data.status === 'Logged in') {
+          location.reload();
+        } else {
+          alert(data.error || 'Login failed.');
+        }
+      } catch(e) {
+        console.error('Error logging in:', e);
+        alert('Login error.');
+      }
+    }
+
+    async function performRegister() {
+      const username = document.getElementById('registerUsername').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+
+      if(!username || !password) {
+        alert('Please enter username and password.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({username, password})
+        });
+        const data = await res.json();
+        if(data.status === 'Registered') {
+          alert('Registration successful!');
+          location.reload();
+        } else {
+          alert(data.error || 'Registration failed.');
+        }
+      } catch(e) {
+        console.error('Error registering:', e);
+        alert('Registration error.');
+      }
+    }
+  </script>
+
+  <div class="overlay" id="overlayLogin">
+    <div class="login-box">
+      <h3>Log In</h3>
+      <form id="loginForm" onsubmit="performLogin(); return false;">
+        <input type="text" placeholder="Username" id="loginUsername"/>
+        <input type="password" placeholder="Password" id="loginPassword"/>
+        <button type="submit">Submit</button>
+        <button type="button" onclick="closeOverlay()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlayRegister">
+    <div class="register-box">
+      <h3>Register</h3>
+      <form id="registerForm" onsubmit="performRegister(); return false;">
+        <input type="text" placeholder="Username" id="registerUsername"/>
+        <input type="password" placeholder="Password" id="registerPassword"/>
+        <button type="submit">Submit</button>
+        <button type="button" onclick="closeOverlay()">Cancel</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

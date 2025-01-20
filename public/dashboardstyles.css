@@ -1,0 +1,1068 @@
+/* Ensure full-height flex behavior */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Basic resets and body styling */
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #0000FF;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Navbar Styles */
+.navbar {
+  /* Let the navbar take its natural (auto) height */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  background-color: #000000;
+  padding: 10px 20px;
+  border-bottom: 2px solid #FFFF00;
+  position: relative;
+  z-index: 1001;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+.navbar img {
+  height: 40px;
+  margin-right: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.navbar a {
+  color: #00FF00;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 18px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.navbar a::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #FFFF00;
+  transition: width .3s;
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+}
+.navbar a:hover::after {
+  width: 100%;
+}
+
+.nav-button {
+  background-color: #000000;
+  color: #00FF00;
+  border: 2px solid #FFFF00;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: 'Courier New', Courier, monospace;
+}
+.nav-button:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+.login-register-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.blurred {
+  filter: blur(5px);
+}
+
+.user-menu-container {
+  margin-left: auto;
+  position: relative;
+}
+
+.user-menu {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #00FF00;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+/* Remove the border and background styling from .user-menu when showing login buttons */
+.user-menu:not(.logged-in) {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.user-menu.logged-in {
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+  text-shadow: 0 0 5px #00FF00;
+  background-color: #000000;
+}
+.user-menu.logged-in:hover {
+  background-color: #003300;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  background-color: #000000;
+  border: 2px solid #FFFF00;
+  min-width: 200px;
+  z-index: 2000;
+  top: 110%;
+  right: 0;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.dropdown.active {
+  display: block;
+}
+.dropdown button,
+.dropdown div {
+  background-color: #000000;
+  color: #00FF00;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+}
+.dropdown button:hover,
+.dropdown div:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  color: #00FF00;
+  text-shadow: 0 0 5px #00FF00;
+  margin: 10px;
+  font-weight: normal;
+}
+h1 {
+  text-align: center;
+}
+
+/* Main Content Wrapper: flex: 1 fills leftover space, min-height: 0 allows scrolling children */
+.content-wrapper {
+  flex: 1;            /* so it grows to fill remaining space between navbar & footer */
+  display: flex;
+  min-height: 0;      /* crucial so children can scroll */
+  box-sizing: border-box;
+  padding: 20px;
+  gap: 20px;
+  flex-direction: row;
+}
+
+.left-column, .right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  min-width: 0; /* Allow columns to shrink below content size */
+}
+
+.content-wrapper.logged-out {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Login notice, etc. */
+.login-notice {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #000000;
+  border: 2px solid #FFFF00;
+  padding: 20px;
+  text-align: center;
+  z-index: 999;
+  color: #FFFF00;
+  font-size: 18px;
+  border-radius: 4px;
+}
+.login-notice.visible {
+  display: block;
+}
+
+/* Left Column (fixed width or 600px) */
+.left-column {
+  flex: 0 0 600px; /* or width: 600px */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  border: 2px solid #FFFF00; 
+  background-color: #000000;
+  min-height: 0; /* so it can scroll instead of stretching parent */
+}
+
+/* Right Column (fills the rest) */
+.right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0; /* CRUCIAL so child flex items can shrink & scroll */
+  background-color: #000000;
+}
+
+/* Best Available Section on the Right */
+.best-available-section {
+  flex: 0 0 400px; /* if you want that 400px fixed height */
+  overflow-y: auto; 
+  padding: 15px;
+  min-height: 0;
+  background-color: #000000;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+}
+
+/* Big Board Section (fills leftover space) */
+.big-board-section {
+  flex: 1;         /* let it grow/shrink in leftover space */
+  min-height: 0;   /* don’t let content force infinite growth */
+  overflow-y: auto;
+  padding: 15px;
+  background-color: #000000;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+}
+
+/* Other Roster & Layout Styles */
+.two-column-rosters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: calc(100% - 60px); /* Subtract header height if needed */
+}
+.roster-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+}
+.roster-column table {
+  height: calc(100% - 80px); /* Subtract header and filter height */
+  display: block;
+  overflow-y: auto;
+}
+
+/* Section Styles */
+.flex-item {
+  background-color: #000000;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  table-layout: fixed;
+  background-color: transparent;
+}
+
+table th, table td {
+  padding: 8px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #00FF00;
+  background-color: transparent;
+}
+
+table th {
+  font-weight: bold;
+  color: #FFFF00;
+  background-color: transparent;
+}
+
+tr {
+  background-color: transparent;
+}
+
+tr:nth-child(even) {
+  background-color: rgba(0, 255, 0, 0.05);
+}
+
+tr:hover {
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+/* Subnav */
+.subnav {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  justify-content: center;
+  position: relative;
+  z-index: 1001;
+  flex-wrap: wrap;
+}
+.subnav a {
+  color: #00FF00;
+  text-decoration: none;
+  font-size: 18px;
+  position: relative;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.subnav a::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #FFFF00;
+  transition: width .3s;
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+}
+.subnav a:hover::after {
+  width: 100%;
+}
+.active-subnav {
+  color: #FFFF00 !important;
+}
+
+/* Flex container */
+.flex-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  justify-content: space-around;
+  box-sizing: border-box;
+}
+
+/* Search Container */
+#playerSearchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  z-index: 1001;
+  flex-wrap: wrap;
+}
+#playerSearch {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+  background-color: #000000;
+  color: #00FF00;
+  font-size: 14px;
+}
+#playerSearch::placeholder {
+  color: #00AA00;
+}
+#clearSearch {
+  background: none;
+  border: none;
+  color: #FF0000;
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Player Name/Row Hover */
+.player-name {
+  cursor: pointer;
+  position: relative;
+  color: #00FF00;
+  font-weight: bold;
+  word-wrap: break-word;
+}
+.player-name:hover {
+  background-color: #005500;
+  color: #00CC00;
+}
+
+/* Search Results Dropdown */
+#searchResults {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #000000;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+  display: none;
+  position: absolute;
+  width: calc(100% - 40px);
+  top: 45px;
+  z-index: 1002;
+  box-sizing: border-box;
+}
+#searchResults table {
+  width: 100%;
+  border: none;
+}
+#searchResults th,
+#searchResults td {
+  border: none;
+  padding: 8px;
+  text-align: left;
+  color: #00FF00;
+  font-size: 14px;
+}
+#searchResults th {
+  background: #000000;
+  border-bottom: 2px solid #FFFF00;
+  font-weight: bold;
+}
+#searchResults tr:hover {
+  background-color: #003300;
+  color: #FFFFFF;
+}
+
+/* General Buttons */
+button {
+  background-color: #00FF00;
+  color: #000000;
+  border: 2px solid #FFFF00;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  margin-top: 5px;
+}
+button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+
+/* Smaller Assign Buttons */
+.assign-button {
+  background-color: #00FF00;
+  color: #000000;
+  border: 2px solid #FFFF00;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+.assign-button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+
+/* Select (Dropdown) Styling */
+select {
+  background-color: #000000;
+  color: #00FF00;
+  border: 2px solid #FFFF00;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  appearance: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+select:hover {
+  background-color: #003300;
+}
+
+/* Assign Menu */
+#assignMenu {
+  position: absolute;
+  z-index: 1002;
+  width: 250px;
+  background-color: #000000;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+  padding: 10px;
+  display: none;
+  box-shadow: 2px 2px 5px rgba(255, 255, 0, 0.5);
+  box-sizing: border-box;
+}
+#assignMenu h4 {
+  margin-top: 0;
+  color: #00FF00;
+  text-align: center;
+  font-weight: bold;
+}
+#assignMenu .team-list {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+#assignMenu .team-button {
+  width: 100%;
+  background-color: #00FF00;
+  color: #000000;
+  border: 2px solid #FFFF00;
+  padding: 6px 0;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+#assignMenu .team-button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+#assignMenu .release-button, 
+#assignMenu .create-team-button, 
+#assignMenu .cancel-button {
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 8px 0;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+}
+#assignMenu .release-button {
+  background-color: #FF0000;
+  color: #FFFFFF;
+  border: 2px solid #FFFF00;
+}
+#assignMenu .release-button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+#assignMenu .create-team-button {
+  background-color: #00FF00;
+  color: #000000;
+  border: 2px solid #FFFF00;
+}
+#assignMenu .create-team-button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+#assignMenu .cancel-button {
+  background-color: #CCCCCC;
+  color: #000000;
+  border: 2px solid #FFFF00;
+}
+#assignMenu .cancel-button:hover {
+  background-color: #FFFF00;
+  color: #000000;
+}
+
+/* Footer: auto height at bottom */
+.footer {
+  flex: 0 0 auto; /* sits at bottom, auto-sized or fixed if you prefer */
+  background-color: #FFFF00;
+  color: #000000;
+  text-align: center;
+  padding: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Hidden Utility Class */
+.hidden {
+  display: none;
+}
+
+/* Overlays (Modals, etc.) */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+.overlay-content {
+  background-color: #000000;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  border: 2px solid #00FF00;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.overlay-content h2 {
+  color: #00FF00;
+  text-align: center;
+  margin: 0;
+}
+.overlay-content input {
+  padding: 8px;
+  border: 1px solid #00FF00;
+  background-color: #000000;
+  color: #00FF00;
+  border-radius: 4px;
+}
+.overlay-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.overlay-buttons button {
+  padding: 8px 16px;
+  background-color: #000000;
+  color: #00FF00;
+  border: 2px solid #00FF00;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.overlay-buttons button:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+/* Login & Register Boxes */
+.login-box,
+.register-box {
+  background-color: #000000;
+  padding: 20px;
+  border: 2px solid #FFFF00;
+  border-radius: 4px;
+  width: 300px;
+  max-width: 90%;
+}
+.login-box h2,
+.register-box h2 {
+  color: #00FF00;
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.login-box input,
+.register-box input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #FFFF00;
+  background-color: #000000;
+  color: #FFFFFF;
+  box-sizing: border-box;
+}
+.login-box button,
+.register-box button {
+  width: 100%;
+  padding: 10px;
+  background-color: #00FF00;
+  color: #000000;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.login-box p,
+.register-box p {
+  text-align: center;
+  margin: 10px 0 0;
+}
+.login-box a,
+.register-box a {
+  color: #00FF00;
+  text-decoration: none;
+}
+.login-box a:hover,
+.register-box a:hover {
+  text-decoration: underline;
+}
+
+/* Notices */
+.notice {
+  background-color: #000000;
+  border: 2px solid #FFFF00;
+  color: #FFFF00;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  border-radius: 4px;
+}
+.notice.hidden {
+  display: none;
+}
+
+/* Taken Row Style */
+.taken-row {
+  opacity: 0.5;
+}
+.player-name {
+  cursor: pointer;
+  color: #00FF00;
+}
+.player-name:hover {
+  text-decoration: underline;
+}
+
+/* Assign Button Variation */
+.assign-button {
+  background-color: #00FF00;
+  color: #000000;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.assign-button:hover {
+  background-color: #00CC00;
+}
+
+/* Best Hitters & Pitchers Tables */
+#bestHittersTable,
+#bestPitchersTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+#bestHittersTable th,
+#bestPitchersTable th,
+#bestHittersTable td,
+#bestPitchersTable td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+#bestHittersTable th:not(:first-child):not(:nth-child(2)):not(:nth-child(3)),
+#bestPitchersTable th:not(:first-child):not(:nth-child(2)):not(:nth-child(3)),
+#bestHittersTable td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)),
+#bestPitchersTable td:not(:first-child):not(:nth-child(2)):not(:nth-child(3)) {
+  text-align: right;
+  width: 60px;
+}
+#bestHittersTable th:first-child,
+#bestPitchersTable th:first-child,
+#bestHittersTable td:first-child,
+#bestPitchersTable td:first-child {
+  width: 50px;
+}
+#bestHittersTable th:nth-child(2),
+#bestPitchersTable th:nth-child(2),
+#bestHittersTable td:nth-child(2),
+#bestPitchersTable td:nth-child(2) {
+  width: 150px;
+}
+#bestHittersTable th:nth-child(3),
+#bestPitchersTable th:nth-child(3),
+#bestHittersTable td:nth-child(3),
+#bestPitchersTable td:nth-child(3) {
+  width: 70px;
+}
+
+/* Team Roster Styles */
+.team-roster {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+  padding: 15px;
+  color: #00FF00;
+}
+.team-roster h3 {
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #333;
+  color: #00FF00;
+}
+.roster-section {
+  margin-bottom: 20px;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+.roster-section:last-child {
+  margin-bottom: 0;
+}
+.roster-section h4 {
+  margin: 0 0 10px 0;
+  color: #00FF00;
+}
+.roster-section table {
+  width: 100%;
+  min-width: 600px; /* Prevent table from becoming too narrow */
+  border-collapse: collapse;
+}
+.roster-section table th,
+.roster-section table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+  color: #00FF00;
+}
+.roster-section table th {
+  background-color: #2a2a2a;
+  font-weight: 600;
+}
+.roster-section table th:not(:first-child):not(:nth-child(2)),
+.roster-section table td:not(:first-child):not(:nth-child(2)) {
+  text-align: right;
+  width: 60px;
+}
+.roster-section table th:first-child,
+.roster-section table td:first-child {
+  width: 150px;
+}
+.roster-section table th:nth-child(2),
+.roster-section table td:nth-child(2) {
+  width: 70px;
+}
+.roster-section table tr:hover {
+  background-color: #2a2a2a;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .two-column-rosters {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  table th, table td {
+    padding: 8px 4px;
+    font-size: 14px;
+  }
+  
+  #bestHittersTable th:nth-child(n+4),
+  #bestPitchersTable th:nth-child(n+4),
+  #bigBoardTable th:nth-child(n+4):not(:last-child) {
+    width: 8%;  /* Smaller stats columns */
+  }
+  
+  #bestHittersTable th:nth-child(2),
+  #bestPitchersTable th:nth-child(2),
+  #bigBoardTable th:nth-child(2) {
+    width: 20%;  /* Smaller name column */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .navbar {
+    padding: 10px;
+  }
+
+  .navbar img {
+    height: 30px;
+    margin-right: 10px;
+  }
+
+  .navbar a {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+
+  .user-menu {
+    font-size: 16px;
+  }
+
+  .roster-section table,
+  #bestHittersTable,
+  #bestPitchersTable,
+  #bigBoardTable {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin: 0;
+  }
+
+  table th, table td {
+    padding: 6px 4px;
+    font-size: 13px;
+    min-width: 60px;
+  }
+
+  table th:first-child,
+  table td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #0000FF;
+    z-index: 1;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navbar {
+    justify-content: space-between;
+  }
+
+  .navbar a {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .user-menu-container {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .user-menu {
+    justify-content: center;
+  }
+
+  .dropdown {
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  table th, table td {
+    padding: 4px 3px;
+    font-size: 12px;
+    min-width: 50px;
+  }
+  
+  #bestHittersTable th:nth-child(2),
+  #bestPitchersTable th:nth-child(2),
+  #bigBoardTable th:nth-child(2) {
+    min-width: 80px;  /* Ensure name column is readable */
+  }
+
+  #assignMenu {
+    width: 90%;
+    left: 50% !important;
+    transform: translateX(-50%);
+  }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .roster-section table {
+    min-width: 500px; /* Prevent table from becoming too narrow */
+  }
+  #bigBoardTable {
+    min-width: 600px; /* Prevent table from becoming too narrow */
+  }
+
+  /* Ensure content doesn't overflow viewport */
+  .content-wrapper {
+    max-width: 100vw;
+    overflow-x: hidden;
+    /* NEW: stack columns vertically */
+    flex-direction: column;
+  }
+
+  /* Left & Right columns: let each take full width in stacked layout */
+  .left-column,
+  .right-column {
+    flex: 0 0 auto;   /* no fixed width */
+    width: 100%;      /* full screen width on mobile */
+    max-width: 100%;
+    min-height: auto; 
+    overflow-x: visible; /* or 'auto' if you prefer separate horizontal scroll */
+  }
+
+  .two-column-rosters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .roster-column {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  #bestHittersTable,
+  #bestPitchersTable {
+    min-width: 500px; /* Prevent table from becoming too narrow */
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 5px 10px;
+  }
+  .navbar img {
+    height: 30px;
+  }
+  .navbar a {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  .flex-item {
+    min-width: 100%;
+  }
+  .two-column-rosters {
+    flex-direction: column;
+  }
+  .roster-column {
+    min-width: 100%;
+  }
+  #searchResults {
+    width: 100%;
+    left: 0;
+  }
+  .user-menu {
+    font-size: 16px;
+  }
+  select {
+    font-size: 16px; /* Better for mobile tapping */
+  }
+  .big-board-container {
+    height: 500px;  /* Fixed height on mobile */
+  }
+}
+
+/* Logged-out blur */
+.logged-out {
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+/* Final login-notice position */
+.login-notice {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #000000;
+  color: #00FF00;
+  padding: 20px;
+  border: 2px solid #00FF00;
+  border-radius: 8px;
+  z-index: 999;
+  font-size: 18px;
+}
+.login-notice.visible {
+  display: block;
+}

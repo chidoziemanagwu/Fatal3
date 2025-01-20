@@ -1,0 +1,379 @@
+body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #0000FF;
+      color: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      background-color: #000000;
+      padding: 10px 20px;
+      border-bottom: 2px solid #FFFF00;
+      position: relative;
+      z-index: 1001;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+    }
+    .navbar img {
+      height: 40px;
+      margin-right: 20px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .navbar a {
+      color: #00FF00;
+      text-decoration: none;
+      margin-right: 20px;
+      font-size: 18px;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .navbar a::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 2px;
+      background: #FFFF00;
+      transition: width .3s;
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+    }
+    .navbar a:hover::after {
+      width: 100%;
+    }
+
+    .user-menu-container {
+      margin-left: auto;
+      position: relative;
+    }
+
+    .user-menu {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: #00FF00;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    /* Remove the border and background styling from .user-menu when showing login buttons */
+    .user-menu:not(.logged-in) {
+      border: none;
+      background: none;
+      padding: 0;
+    }
+
+    .user-menu.logged-in {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+      text-shadow: 0 0 5px #00FF00;
+      background-color: #000000;
+    }
+
+    .user-menu.logged-in:hover {
+      background-color: #003300;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      background-color: #000000;
+      border: 2px solid #FFFF00;
+      min-width: 200px;
+      z-index: 2000;
+      top: 110%;
+      right: 0;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .dropdown.active {
+      display: block;
+    }
+
+    .dropdown button, .dropdown div {
+      background-color: #000000;
+      color: #00FF00;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 5px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .dropdown button:hover, .dropdown div:hover {
+      background-color: #00FF00;
+      color: #000000;
+    }
+
+    h1, h2, h3, h4 {
+      color: #00FF00;
+      text-shadow: 0 0 5px #00FF00;
+      margin: 10px;
+      font-weight: normal;
+    }
+    h1 {
+      text-align: center;
+    }
+
+    .content-wrapper {
+      padding: 10px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .management-sections {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .management-section {
+      flex: 1 1 calc(50% - 20px);
+      min-width: 300px;
+      background-color: #000000;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .notice {
+      text-align: center;
+      color: #FFFFFF;
+      font-size: 16px;
+      margin: 20px 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .links-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .links-section a {
+      color: #00FF00;
+      text-decoration: none;
+      border: 2px solid #FFFF00;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0 10px;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .links-section a:hover {
+      background-color: #003300;
+      color: #FFFFFF;
+    }
+
+    button {
+      background-color: #00FF00;
+      color: #000000;
+      border: 2px solid #FFFF00;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #FFFF00;
+      color: #000000;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 20px 0;
+      background-color: #000000;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+    }
+    th, td {
+      border: 1px solid #FFFF00;
+      padding: 8px;
+      text-align: left;
+      color: #00FF00;
+      font-size: 14px;
+    }
+    th {
+      background-color: #000000;
+      font-weight: bold;
+      text-align: center;
+    }
+    tr:nth-child(even) {
+      background-color: #001100;
+    }
+    tr:hover {
+      background-color: #003300;
+      color: #FFFFFF;
+    }
+
+    .footer {
+      background-color: #FFFF00;
+      color: #000000;
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .formula-container {
+      margin-top: 20px;
+    }
+
+    .formula-toggle {
+      background-color: #000000;
+      color: #00FF00;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .formula-toggle:hover {
+      background-color: #003300;
+    }
+
+    .formula-content {
+      display: none;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #FFFF00;
+      margin-bottom: 20px;
+    }
+    .tablink {
+      background: #000000;
+      color: #00FF00;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      border-right: 1px solid #FFFF00;
+    }
+    .tablink.active {
+      background: #003300;
+      color: #FFFFFF;
+    }
+
+    .tabcontent {
+      display: none;
+    }
+
+    #importInput {
+      display: none;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .login-box, .register-box {
+      background-color: #000000;
+      border: 2px solid #00FF00;
+      border-radius: 4px;
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+    }
+
+    .login-box h3, .register-box h3 {
+      color: #00FF00;
+      margin-bottom: 20px;
+      text-shadow: 0 0 5px #00FF00;
+    }
+
+    .login-box input, .register-box input {
+      width: 80%;
+      padding: 8px;
+      margin: 10px 0;
+      background-color: #000000;
+      color: #00FF00;
+      border: 2px solid #00FF00;
+      border-radius: 4px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    .login-box button, .register-box button {
+      background-color: #00FF00;
+      color: #000000;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: 'Courier New', Courier, monospace;
+      margin-top: 10px;
+    }
+
+    .login-box button:hover, .register-box button:hover {
+      background-color: #FFFFFF;
+      color: #00FF00;
+    }
+
+    .blurred {
+      filter: blur(5px);
+    }
+
+    .login-register-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-button {
+      background-color: #000000;
+      color: #00FF00;
+      border: 2px solid #FFFF00;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    .nav-button:hover {
+      background-color: #00FF00;
+      color: #000000;
+    }

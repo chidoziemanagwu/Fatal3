@@ -1,0 +1,222 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+}
+
+.background-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: left center;
+  z-index: -1;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: auto;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  transition: filter 0.3s;
+  background: rgba(0,0,0,0.3);
+}
+
+.logo {
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  border: 2px solid #FFFFFF;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.menu-title {
+  color: #FFFFFF;
+  text-align: center;
+  background-color: rgba(0,0,255,0.7);
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 0 0 5px #00FF00;
+  margin: 0;
+}
+
+.menu-item {
+  color: #FFFFFF;
+  padding: 15px 10px;
+  font-size: 18px;
+  cursor: pointer;
+  text-shadow: 0 0 5px #00FF00;
+  background-color: rgba(0,0,0,0.5);
+  transition: background 0.3s, color 0.3s;
+  border-top: 1px solid #FFFFFF;
+}
+
+.menu-item:first-of-type {
+  border-top: none;
+}
+
+.menu-item:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+.bottom-actions {
+  display: flex;
+  flex-direction: row;  /* Changed from column to row */
+  padding: 10px;
+  border-top: 1px solid #FFFFFF;
+  align-items: center;
+  justify-content: center;  /* Added to center the buttons */
+  gap: 10px;  /* Added to create space between buttons */
+  background-color: rgba(0,0,0,0.5);
+}
+
+.bottom-actions div {
+  background-color: rgba(0,0,0,0.5);
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  text-shadow: 0 0 5px #00FF00;
+  transition: background 0.3s, color 0.3s;
+  /* Removed margin-top since we're using gap */
+}
+
+.bottom-actions div:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+.footer {
+  background-color: #FFFF00;
+  color: #000000;
+  text-align: center;
+  padding: 10px 0;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.overlay.active {
+  display: flex;
+}
+
+.login-box, .register-box {
+  background-color: #000000;
+  border: 2px solid #00FF00;
+  border-radius: 4px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+}
+
+.login-box h3, .register-box h3 {
+  color: #00FF00;
+  margin-bottom: 20px;
+  text-shadow: 0 0 5px #00FF00;
+}
+
+.login-box input, .register-box input {
+  width: 80%;
+  padding: 8px;
+  margin: 10px 0;
+  background-color: #000000;
+  color: #00FF00;
+  border: 2px solid #00FF00;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.login-box button, .register-box button {
+  background-color: #00FF00;
+  color: #000000;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  margin-top: 10px;
+}
+
+.login-box button:hover, .register-box button:hover {
+  background-color: #FFFFFF;
+  color: #00FF00;
+}
+
+.blurred {
+  filter: blur(5px);
+}
+
+.welcome-text {
+  color: #FFFFFF;
+  text-shadow: 0 0 5px #00FF00;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.logout-button {
+  background-color: #000000;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  text-shadow: 0 0 5px #00FF00;
+  transition: background 0.3s, color 0.3s;
+  margin-top: 5px;
+}
+
+.logout-button:hover {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+.logout-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

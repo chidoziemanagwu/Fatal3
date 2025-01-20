@@ -1,0 +1,23 @@
+{
+  "name": "baseball-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@realfavicongenerator/generate-favicon": "^0.4.12",
+    "@realfavicongenerator/image-adapter-node": "^0.4.12",
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "connect-pg-simple": "^10.0.0",
+    "csv-parse": "^5.6.0",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "pg": "^8.13.1"
+  }
+}

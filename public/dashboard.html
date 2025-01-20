@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+<link rel="shortcut icon" href="/img/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Fatals" />
+<link rel="manifest" href="img/site.webmanifest" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Dashboard | Fatals</title>
+  <link rel="stylesheet" href="/dashboardstyles.css" />
+</head>
+<body>
+  <div class="navbar">
+    <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
+    <a href="javascript:void(0)" id="dashLink">Dashboard</a>
+    <a href="settings.html" id="settingsLink">Settings</a>
+    <div class="user-menu-container">
+      <div class="user-menu" id="userMenuContainer" style="display: none">
+        <!-- Will be populated by JavaScript -->
+      </div>
+      <div class="dropdown"></div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="left-column">
+      <div id="playerSearchContainer">
+        <input type="text" id="playerSearch" placeholder="Search for a player..." />
+        <button id="clearSearch" title="Clear Search">X</button>
+        <div id="searchResults">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Pos</th>
+                <th>Availability</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex-item">
+        <h4>Team Rosters</h4>
+        <div id="teamsSelectorContainer">
+          <select id="teamsSelector">
+            <option value="">Select a Team</option>
+          </select>
+        </div>
+        <div id="teamsContainer"></div>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div id="bestAvailableSection" class="best-available-section">
+        <div id="bestAvailableNotice" class="notice hidden">Please select or create a league to use Best Available.</div>
+        <div class="flex-item">
+          <h4>Best Available</h4>
+          <div class="two-column-rosters">
+            <div class="roster-column">
+              <h4>Hitters</h4>
+              <select id="bestHittersPosition">
+                <option value="All">All Positions</option>
+                <option value="C">C</option>
+                <option value="1B">1B</option>
+                <option value="2B">2B</option>
+                <option value="3B">3B</option>
+                <option value="SS">SS</option>
+                <option value="OF">OF</option>
+                <option value="DH">DH</option>
+              </select>
+              <table id="bestHittersTable">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Pos</th>
+                    <th>HR</th>
+                    <th>R</th>
+                    <th>RBI</th>
+                    <th>SB</th>
+                    <th>AVG</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="roster-column">
+              <h4>Pitchers</h4>
+              <select id="bestPitchersPosition">
+                <option value="All">All Positions</option>
+                <option value="SP">SP</option>
+                <option value="RP">RP</option>
+              </select>
+              <table id="bestPitchersTable">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Pos</th>
+                    <th>W</th>
+                    <th>SV</th>
+                    <th>K</th>
+                    <th>ERA</th>
+                    <th>WHIP</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="bigBoardSection" class="big-board-section">
+        <div class="flex-item">
+          <h4>Big Board</h4>
+          <select id="bigBoardPosition">
+            <option value="All">All Positions</option>
+            <option value="C">C</option>
+            <option value="1B">1B</option>
+            <option value="2B">2B</option>
+            <option value="3B">3B</option>
+            <option value="SS">SS</option>
+            <option value="OF">OF</option>
+            <option value="DH">DH</option>
+            <option value="SP">SP</option>
+            <option value="RP">RP</option>
+          </select>
+          <table id="bigBoardTable">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Pos</th>
+                <th>HR/W</th>
+                <th>R/SV</th>
+                <th>RBI/ERA</th>
+                <th>SB/WHIP</th>
+                <th>AVG/K</th>
+                <th>Availability</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="assignMenu">
+    <h4 id="assignMenuTitle">Assign Player</h4>
+    <div class="team-list" id="teamList"></div>
+    <button class="release-button" id="releasePlayer">Release Player</button>
+    <button class="create-team-button" id="createNewTeam">Create New Team</button>
+    <button class="cancel-button" id="cancelAssign">Cancel</button>
+  </div>
+
+  <div class="login-notice">Please log in to use the Dashboard</div>
+
+  <div class="footer">
+    Copyright 2024 - Fatals Fantasy Sports
+  </div>
+
+  <div id="bigBoardNotice" class="notice hidden">Please select or create a league to use this feature.</div>
+
+<script>
+    let allPlayers = [];
+    let currentPlayer = null;
+    let loggedInUser = null;
+    let leagues = [];
+    let currentLeagueId = null;
+    let teams = [];
+    let needsTeamRefresh = true;
+
+    const playerSearchInput = document.getElementById('playerSearch');
+    const searchResultsContainer = document.getElementById('searchResults');
+    const bigBoardPosition = document.getElementById('bigBoardPosition');
+    const bestAvailableSection = document.getElementById('bestAvailableSection');
+    const bigBoardSection = document.getElementById('bigBoardSection');
+    const bestHittersPosition = document.getElementById('bestHittersPosition');
+    const bestPitchersPosition = document.getElementById('bestPitchersPosition');
+    const clearSearchBtn = document.getElementById('clearSearch');
+    const releasePlayerBtn = document.getElementById('releasePlayer');
+    const createNewTeamBtn = document.getElementById('createNewTeam');
+    const cancelAssignBtn = document.getElementById('cancelAssign');
+    const userMenuContainer = document.getElementById('userMenuContainer');
+    const dropdown = document.querySelector('.dropdown');
+    const assignMenu = document.getElementById('assignMenu');
+    const assignMenuTitle = document.getElementById('assignMenuTitle');
+    const teamListDiv = document.getElementById('teamList');
+    const bestAvailableNotice = document.getElementById('bestAvailableNotice');
+    const bigBoardNotice = document.getElementById('bigBoardNotice');
+    const teamsContainer = document.getElementById('teamsContainer');
+    const homeLogo = document.getElementById('homeLogo');
+    const teamsSelector = document.getElementById('teamsSelector');
+
+    // Event listeners for search functionality
+    playerSearchInput.addEventListener('input', async (e) => {
+      const query = e.target.value.trim();
+      if (query.length >= 2) {
+        await performSearch(query);
+        searchResultsContainer.style.display = 'block';
+      } else {
+        searchResultsContainer.style.display = 'none';
+      }
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      playerSearchInput.value = '';
+      searchResultsContainer.style.display = 'none';
+    });
+
+    teamsSelector.addEventListener('change', () => {
+      const selectedTeam = teamsSelector.value;
+      if (selectedTeam) {
+        selectFavoriteTeam(selectedTeam);
+      }
+      updateTeamsContainer();
+    });
+
+    homeLogo.addEventListener('click', () => {
+      window.location.href = "index.html";
+    });
+
+    document.getElementById('dashLink').addEventListener('click', () => {
+      window.location.reload();
+    });
+
+    document.getElementById('settingsLink').addEventListener('click', () => {
+      window.location.href = "settings.html";
+    });
+
+    // Global click handlers
+    document.addEventListener('click', (e) => {
+      // Close user dropdown if clicking outside it and not on user menu button
+      if (!userMenuContainer.contains(e.target) && !e.target.classList.contains('user-menu')) {
+        dropdown.classList.remove('active');
+      }
+
+      // Hide search results if clicking outside them and not on certain elements
+      if (
+        !searchResultsContainer.contains(e.target) && 
+        e.target !== playerSearchInput && 
+        !e.target.classList.contains('assign-button') && 
+        !e.target.classList.contains('player-name')
+      ) {
+        searchResultsContainer.style.display = 'none';
+      }
+    });
+
+    searchResultsContainer.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Event Listeners
+    document.addEventListener('click', (e) => {
+      if (!assignMenu.contains(e.target) && 
+          !e.target.classList.contains('player-name') && 
+          !e.target.classList.contains('assign-button')) {
+        hideAssignMenu();
+      }
+    });
+
+    bestHittersPosition.addEventListener('change', () => {
+      loadBestAvailable(bestHittersPosition.value, bestPitchersPosition.value);
+    });
+
+    bestPitchersPosition.addEventListener('change', () => {
+      loadBestAvailable(bestHittersPosition.value, bestPitchersPosition.value);
+    });
+
+    bigBoardPosition.addEventListener('change', loadBigBoard);
+
+    releasePlayerBtn.addEventListener('click', async () => {
+      if (!currentPlayer) return;
+      
+      try {
+        const response = await fetch(`/api/players/${currentPlayer.playerid}/release`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to release player');
+        }
+
+        hideAssignMenu();
+        reloadData();
+      } catch (err) {
+        console.error('Error releasing player:', err);
+      }
+    });
+
+    createNewTeamBtn.addEventListener('click', () => {
+      const teamName = prompt('Enter team name:');
+      if (teamName) {
+        fetch('/create-team', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ teamName: teamName })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to create team');
+          return response.json();
+        })
+        .then(async () => {
+          await fetchTeamNamesForLeague();
+          await updateAssignMenuTeams();
+          await loadTeamsForLeague();
+        })
+        .catch(err => {
+          console.error('Error creating team:', err);
+        });
+      }
+    });
+
+    cancelAssignBtn.addEventListener('click', hideAssignMenu);
+
+    userMenuContainer.addEventListener('click', toggleUserDropdown);
+
+    async function fetchAllPlayers() {
+      try {
+        const [hfsRes, pfsRes] = await Promise.all([
+          fetch('/api/hfs'),
+          fetch('/api/pfs')
+        ]);
+
+        if (!hfsRes.ok || !pfsRes.ok) {
+          throw new Error('Failed to fetch player data.');
+        }
+
+        const [hfsData, pfsData] = await Promise.all([
+          hfsRes.json(),
+          pfsRes.json()
+        ]);
+
+        allPlayers = [...hfsData, ...pfsData];
+      } catch (error) {
+        console.error('Error fetching all players:', error);
+      }
+    }
+
+    function normalizeName(name) {
+      if (!name || typeof name !== 'string') return '';
+      name = name.replace(/<[^>]*>/g, '');
+      let cleaned = name.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+      cleaned = cleaned.trim().toLowerCase();
+      if (cleaned.includes(',')) {
+        const parts = cleaned.split(',').map(p => p.trim());
+        if (parts.length === 2) {
+          cleaned = parts[1] + ' ' + parts[0];
+        }
+      }
+      return cleaned;
+    }
+
+    async function loadBestAvailable(positionHitters = 'All', positionPitchers = 'All') {
+      if(!loggedInUser || !currentLeagueId) {
+        return;
+      }
+
+      const bestHittersTbody = document.querySelector('#bestHittersTable tbody');
+      const bestPitchersTbody = document.querySelector('#bestPitchersTable tbody');
+
+      bestHittersTbody.innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
+      bestPitchersTbody.innerHTML = '<tr><td colspan="8">Loading...</td></tr>';
+
+      try {
+        if (allPlayers.length === 0) {
+          await fetchAllPlayers();
+        }
+
+        const availablePlayers = allPlayers.filter(player => player.Availability && player.Availability.toLowerCase() === 'available');
+
+        let bestHitters = availablePlayers.filter(player => {
+          const pos = player.Pos ? player.Pos.toUpperCase() : '';
+          return ['C', '1B', '2B', '3B', 'SS', 'OF', 'DH'].some(p => pos.includes(p));
+        });
+
+        let bestPitchers = availablePlayers.filter(player => {
+          const pos = player.Pos ? player.Pos.toUpperCase() : '';
+          return ['SP', 'RP'].some(p => pos.includes(p));
+        });
+
+        if (positionHitters !== 'All') {
+          bestHitters = bestHitters.filter(player => {
+            const pos = player.Pos ? player.Pos.toUpperCase() : '';
+            return pos.split('/').map(p => p.trim()).includes(positionHitters.toUpperCase());
+          });
+        }
+        if (positionPitchers !== 'All') {
+          bestPitchers = bestPitchers.filter(player => {
+            const pos = player.Pos ? player.Pos.toUpperCase() : '';
+            return pos.split('/').map(p => p.trim()).includes(positionPitchers.toUpperCase());
+          });
+        }
+
+        bestHitters = bestHitters.sort((a, b) => a.Rank - b.Rank).slice(0, 20);
+        bestPitchers = bestPitchers.sort((a, b) => a.Rank - b.Rank).slice(0, 20);
+
+        bestHittersTbody.innerHTML = '';
+        bestHitters.forEach((player) => {
+          const tr = document.createElement('tr');
+          const tdRank = document.createElement('td');
+          tdRank.textContent = player.Rank || 'N/A';
+          tr.appendChild(tdRank);
+
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name || 'Unknown';
+          tdName.classList.add('player-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
+
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos || 'Unknown';
+          tr.appendChild(tdPos);
+
+          const tdHR = document.createElement('td');
+          tdHR.textContent = player.HR || 'N/A';
+          tr.appendChild(tdHR);
+
+          const tdR = document.createElement('td');
+          tdR.textContent = player.R || 'N/A';
+          tr.appendChild(tdR);
+
+          const tdRBI = document.createElement('td');
+          tdRBI.textContent = player.RBI || 'N/A';
+          tr.appendChild(tdRBI);
+
+          const tdSB = document.createElement('td');
+          tdSB.textContent = player.SB || 'N/A';
+          tr.appendChild(tdSB);
+
+          const tdAVG = document.createElement('td');
+          tdAVG.textContent = player.AVG || 'N/A';
+          tr.appendChild(tdAVG);
+
+          bestHittersTbody.appendChild(tr);
+        });
+
+        bestPitchersTbody.innerHTML = '';
+        bestPitchers.forEach((player) => {
+          const tr = document.createElement('tr');
+
+          const tdRank = document.createElement('td');
+          tdRank.textContent = player.Rank || 'N/A';
+          tr.appendChild(tdRank);
+
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name || 'Unknown';
+          tdName.classList.add('player-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
+
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos || 'Unknown';
+          tr.appendChild(tdPos);
+
+          const tdW = document.createElement('td');
+          tdW.textContent = player.W || 'N/A';
+          tr.appendChild(tdW);
+
+          const tdSV = document.createElement('td');
+          tdSV.textContent = player.SV || 'N/A';
+          tr.appendChild(tdSV);
+
+          const tdK = document.createElement('td');
+          tdK.textContent = player.K || 'N/A';
+          tr.appendChild(tdK);
+
+          const tdERA = document.createElement('td');
+          tdERA.textContent = player.ERA || 'N/A';
+          tr.appendChild(tdERA);
+
+          const tdWHIP = document.createElement('td');
+          tdWHIP.textContent = player.WHIP || 'N/A';
+          tr.appendChild(tdWHIP);
+
+          bestPitchersTbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading Best Available:', err);
+        document.querySelector('#bestHittersTable tbody').innerHTML = '<tr><td colspan="8">Failed to load Best Hitters.</td></tr>';
+        document.querySelector('#bestPitchersTable tbody').innerHTML = '<tr><td colspan="8">Failed to load Best Pitchers.</td></tr>';
+      }
+    }
+
+    async function loadBigBoard() {
+      const bigBoardTbody = document.querySelector('#bigBoardTable tbody');
+      bigBoardTbody.innerHTML = '<tr><td colspan="9">Loading...</td></tr>';
+
+      try {
+        if (allPlayers.length === 0) {
+          await fetchAllPlayers();
+        }
+
+        const filterValue = bigBoardPosition.value;
+        let filteredData = [...allPlayers];
+        
+        if (filterValue && filterValue !== 'All') {
+          filteredData = allPlayers.filter(p => p.Pos && p.Pos.includes(filterValue));
+        }
+
+        bigBoardTbody.innerHTML = '';
+        filteredData.forEach((player, index) => {
+          const tr = document.createElement('tr');
+
+          if (player.Availability && player.Availability.toLowerCase() === 'taken') {
+            tr.classList.add('taken-row');
+          }
+
+          const tdRank = document.createElement('td');
+          tdRank.textContent = index + 1;
+          tr.appendChild(tdRank);
+
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
+
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos || 'Unknown';
+          tr.appendChild(tdPos);
+
+          const tdHRW = document.createElement('td');
+          tdHRW.textContent = player.HR || player.W || 'N/A';
+          tr.appendChild(tdHRW);
+
+          const tdRSV = document.createElement('td');
+          tdRSV.textContent = player.R || player.SV || 'N/A';
+          tr.appendChild(tdRSV);
+
+          const tdRBIERA = document.createElement('td');
+          tdRBIERA.textContent = player.RBI || player.ERA || 'N/A';
+          tr.appendChild(tdRBIERA);
+
+          const tdSBWHIP = document.createElement('td');
+          tdSBWHIP.textContent = player.SB || player.WHIP || 'N/A';
+          tr.appendChild(tdSBWHIP);
+
+          const tdAVGK = document.createElement('td');
+          tdAVGK.textContent = player.AVG || player.K || 'N/A';
+          tr.appendChild(tdAVGK);
+
+          const tdAvail = document.createElement('td');
+          tdAvail.textContent = player.Availability || 'Unknown';
+          tr.appendChild(tdAvail);
+
+          bigBoardTbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Error loading Big Board:', err);
+        bigBoardTbody.innerHTML = '<tr><td colspan="9">Failed to load Big Board.</td></tr>';
+      }
+    }
+
+    async function performSearch(query) {
+      if (allPlayers.length === 0) {
+        await fetchAllPlayers();
+      }
+
+      const normalizedQuery = normalizeName(query);
+      if (normalizedQuery === '') {
+        searchResultsContainer.style.display = 'none';
+        return;
+      }
+
+      const filteredPlayers = allPlayers.filter(player => {
+        const playerNameNormalized = normalizeName(player.name);
+        return playerNameNormalized.includes(normalizedQuery);
+      });
+
+      const tbody = searchResultsContainer.querySelector('tbody');
+      tbody.innerHTML = '';
+
+      if (filteredPlayers.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '4');
+        td.textContent = 'No players found.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      } else {
+        filteredPlayers.forEach(player => {
+          const tr = document.createElement('tr');
+
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
+
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos || 'Unknown';
+          tr.appendChild(tdPos);
+
+          const tdAvail = document.createElement('td');
+          tdAvail.textContent = player.Availability || 'Unknown';
+          tr.appendChild(tdAvail);
+
+          const tdAction = document.createElement('td');
+          const assignBtn = document.createElement('button');
+          assignBtn.textContent = 'Assign';
+          assignBtn.classList.add('assign-button');
+          assignBtn.addEventListener('click', () => assignPlayer(player));
+          tdAction.appendChild(assignBtn);
+          tr.appendChild(tdAction);
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      searchResultsContainer.style.display = 'block';
+    }
+
+    function showAssignMenu(x, y) {
+      assignMenu.style.top = `${y}px`;
+      assignMenu.style.left = `${x}px`;
+      assignMenu.style.display = 'block';
+    }
+
+    function hideAssignMenu() {
+      assignMenu.style.display = 'none';
+      currentPlayer = null;
+    }
+
+    async function assignPlayer(player) {
+      currentPlayer = player;
+      const playerElements = Array.from(document.getElementsByClassName('player-name'))
+        .filter(el => el.textContent.trim() === player.name &&
+          ((player.playerid && el.getAttribute('data-pid') === player.playerid) || (!player.playerid && !el.getAttribute('data-pid'))));
+
+      let playerElement = null;
+      if (playerElements.length > 0) {
+        playerElement = playerElements[0];
+      }
+
+      const x = playerElement ? (playerElement.getBoundingClientRect().left + window.scrollX) : (window.innerWidth / 2 - 125);
+      const y = playerElement ? (playerElement.getBoundingClientRect().top + window.scrollY + playerElement.getBoundingClientRect().height) : (window.innerHeight / 2 - 75);
+
+      if(!loggedInUser) {
+        assignMenuTitle.textContent = "Need to be logged in to use this feature";
+        teamListDiv.innerHTML = '';
+        releasePlayerBtn.style.display = 'none';
+        createNewTeamBtn.style.display = 'none';
+      } else if(!currentLeagueId) {
+        assignMenuTitle.textContent = "Please select or create a league";
+        teamListDiv.innerHTML = '';
+        releasePlayerBtn.style.display = 'none';
+        createNewTeamBtn.style.display = 'none';
+      } else {
+        assignMenuTitle.textContent = "Assign Player";
+        releasePlayerBtn.style.display = 'block';
+        createNewTeamBtn.style.display = 'block';
+        teamListDiv.innerHTML = '<p>Loading teams...</p>';
+        setTimeout(async ()=>{ 
+          await updateAssignMenuTeams();
+        },200);
+      }
+
+      showAssignMenu(x, y);
+    }
+
+    async function updatePlayerTeam(player, teamName) {
+      if(!loggedInUser) {
+        alert('Need to be logged in.');
+        return;
+      }
+      if(!currentLeagueId) {
+        alert('Please select or create a league.');
+        return;
+      }
+
+      try {
+        const pid = player.playerid ? `id-${player.playerid}` : `name-${normalizeName(player.name)}`;
+        const response = await fetch('/update-player-team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerid: pid, team: teamName })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+
+        const data = await response.json();
+        await reloadData();
+      } catch (err) {
+        console.error('Error updating player team:', err);
+      }
+    }
+
+    async function reloadData() {
+      allPlayers = [];
+      await fetchAllPlayers();
+      if(!bigBoardSection.classList.contains('hidden')) {
+        loadBigBoard();
+      }
+      if(!bestAvailableSection.classList.contains('hidden') && loggedInUser && currentLeagueId) {
+        loadBestAvailable(bestHittersPosition.value, bestPitchersPosition.value);
+      }
+      // Always update teams container if a team is selected, regardless of view
+      if (teamsSelector.value && loggedInUser && currentLeagueId) {
+        updateTeamsContainer();
+      }
+    }
+
+    async function fetchTeamNamesForLeague() {
+      if(!currentLeagueId) return [];
+      try {
+        const res = await fetch('/teams');
+        if(!res.ok) return [];
+        const data = await res.json();
+        teams = data.map(team => team.name);
+        return teams;
+      } catch (err) {
+        console.error('Error fetching teams:', err);
+        return [];
+      }
+    }
+
+    async function updateAssignMenuTeams() {
+      if (needsTeamRefresh) {
+        await fetchTeamNamesForLeague();
+        needsTeamRefresh = false; 
+      }
+
+      teamListDiv.innerHTML = '<p>Select a team to assign:</p>';
+      if (teams.length === 0) {
+        teamListDiv.innerHTML += '<p>No existing teams available.</p>';
+      } else {
+        teams.forEach(team => {
+          const teamBtn = document.createElement('button');
+          teamBtn.textContent = team;
+          teamBtn.classList.add('team-button');
+          teamBtn.addEventListener('click', async () => {
+            await updatePlayerTeam(currentPlayer, team);
+            hideAssignMenu();
+          });
+          teamListDiv.appendChild(teamBtn);
+        });
+      }
+    }
+
+    async function loadTeamsForLeague() {
+      if(!loggedInUser || !currentLeagueId) {
+        teamsContainer.innerHTML = '';
+        teamsSelector.innerHTML = '<option value="">Select a Team</option>';
+        return;
+      }
+
+      const response = await fetch('/api/check-login');
+      const data = await response.json();
+      const favoriteTeamName = data.favoriteTeamName;
+
+      const teamNames = await fetchTeamNamesForLeague();
+      if(teamNames.length === 0) {
+        teamsContainer.innerHTML = '<p>No teams available.</p>';
+        teamsSelector.innerHTML = '<option value="">Select a Team</option>';
+        return;
+      }
+
+      teamsSelector.innerHTML = '<option value="">Select a Team</option>';
+      let favoriteTeamFound = false;
+  
+      teamNames.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t + (t === favoriteTeamName ? ' ★' : '');
+        if (t === favoriteTeamName) {
+          opt.selected = true;
+          favoriteTeamFound = true;
+        }
+        teamsSelector.appendChild(opt);
+      });
+
+      // If we found and selected the favorite team, update the teams container
+      if (favoriteTeamFound) {
+        await updateTeamsContainer();
+      }
+    }
+
+    async function selectFavoriteTeam(teamId) {
+      try {
+        const response = await fetch('/api/set-favorite-team', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamId })
+        });
+        if (!response.ok) throw new Error('Failed to set favorite team');
+        
+        // Auto reload teams after setting favorite
+        await loadTeamsForLeague();
+      } catch (err) {
+        console.error('Error setting favorite team:', err);
+      }
+    }
+
+    async function toggleUserDropdown() {
+      dropdown.innerHTML = '';
+      if(!loggedInUser) {
+        dropdown.innerHTML = '<div>Not logged in</div>';
+      } else {
+        if(leagues.length === 0) {
+          const noLeagues = document.createElement('div');
+          noLeagues.textContent = "No leagues yet";
+          dropdown.appendChild(noLeagues);
+        } else {
+          leagues.forEach(lg => {
+            const leagueBtn = document.createElement('button');
+            leagueBtn.textContent = lg.name;
+            leagueBtn.addEventListener('click', async () => {
+              await selectLeague(lg.id);
+              dropdown.classList.remove('active');
+            });
+            dropdown.appendChild(leagueBtn);
+          });
+        }
+
+        const createLeagueBtn = document.createElement('button');
+        createLeagueBtn.textContent = "Create New League";
+        createLeagueBtn.addEventListener('click', async () => {
+          const leagueName = prompt("Enter new league name:");
+          if(leagueName && leagueName.trim() !== '') {
+            await createLeague(leagueName.trim());
+          }
+          dropdown.classList.remove('active');
+        });
+        dropdown.appendChild(createLeagueBtn);
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = "Log Out";
+        logoutBtn.addEventListener('click', async () => {
+          await logout();
+          dropdown.classList.remove('active');
+        });
+        dropdown.appendChild(logoutBtn);
+      }
+
+      dropdown.classList.toggle('active');
+    }
+
+    async function selectLeague(leagueId) {
+      const res = await fetch('/select-league', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({leagueId})
+      });
+      const data = await res.json();
+      if(data.status === 'League selected') {
+        currentLeagueId = leagueId;
+        localStorage.setItem('currentLeagueId', leagueId);
+        await reloadData();
+        await loadTeamsForLeague();
+      } else {
+        alert(data.error || 'Failed to select league');
+      }
+    }
+
+    async function createLeague(name) {
+      const res = await fetch('/create-league', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({name})
+      });
+      const data = await res.json();
+      if(data.id) {
+        leagues.push(data);
+        currentLeagueId = data.id;
+        localStorage.setItem('currentLeagueId', currentLeagueId);
+        await reloadData();
+      } else {
+        alert(data.error || 'Failed to create league.');
+      }
+    }
+
+    async function logout() {
+      const res = await fetch('/logout', {method:'POST'});
+      const data = await res.json();
+      if(data.status === 'Logged out') {
+        loggedInUser = null;
+        currentLeagueId = null;
+        leagues = [];
+        teams = [];
+        localStorage.removeItem('currentLeagueId');
+        updateUIState();
+      } else {
+        alert('Failed to logout');
+      }
+    }
+
+    async function checkLoginStatus() {
+      try {
+        const response = await fetch('/api/check-login');
+        const data = await response.json();
+        loggedInUser = data.loggedIn ? data.username : null;
+        
+        if (data.loggedIn) {
+          document.getElementById('userMenuContainer').innerHTML = `
+            <span>${data.username}</span>
+            <button class="nav-button" onclick="logout()">Logout</button>
+          `;
+          
+          // Load leagues first
+          await loadUserLeagues();
+          
+          // If there's a favorite league, select it
+          if (data.favoriteLeagueId) {
+            await selectLeague(data.favoriteLeagueId);
+            
+            // If there's also a favorite team, select it
+            if (data.favoriteTeamId) {
+              await selectFavoriteTeam(data.favoriteTeamId);
+            }
+          }
+          
+          return true;
+        } else {
+          document.getElementById('userMenuContainer').innerHTML = `
+            <button class="nav-button" onclick="showLoginOverlay()">Login</button>
+            <button class="nav-button" onclick="showRegisterOverlay()">Register</button>
+          `;
+          return false;
+        }
+      } catch (err) {
+        console.error('Error checking login status:', err);
+        return false;
+      }
+    }
+
+    async function loadUserLeagues() {
+      if(!loggedInUser) {
+        leagues = [];
+        return;
+      }
+      const res = await fetch('/leagues');
+      if(!res.ok) {
+        leagues = [];
+        return;
+      }
+      leagues = await res.json();
+    }
+
+    function updateUIState() {
+      const userMenuContainer = document.getElementById('userMenuContainer');
+      const contentWrapper = document.querySelector('.content-wrapper');
+      const loginNotice = document.querySelector('.login-notice');
+      const bestAvailableNotice = document.getElementById('bestAvailableNotice');
+
+      userMenuContainer.style.display = 'none'; // Hide first
+
+      if (!loggedInUser) {
+        contentWrapper.classList.add('logged-out');
+        loginNotice.classList.add('visible');
+        userMenuContainer.innerHTML = `
+          <div class="user-menu">
+            <button onclick="showLoginOverlay()" class="nav-button">Log In</button>
+            <button onclick="showRegisterOverlay()" class="nav-button">Register</button>
+          </div>
+        `;
+        userMenuContainer.style.display = 'block';
+        userMenuContainer.classList.remove('logged-in');
+        teamsContainer.innerHTML = '';
+        teamsSelector.innerHTML = '<option value="">Select a Team</option>';
+        bestAvailableNotice.classList.add('hidden');
+        return;
+      }
+
+      // Update UI immediately for logged-in state
+      contentWrapper.classList.remove('logged-out');
+      loginNotice.classList.remove('visible');
+      userMenuContainer.innerHTML = `<div class="user-menu logged-in">Welcome, ${loggedInUser}</div>`;
+      userMenuContainer.style.display = 'block';
+
+      // Update notices based on league state
+      if (leagues.length === 0) {
+        bestAvailableNotice.classList.remove('hidden');
+      } else {
+        bestAvailableNotice.classList.add('hidden');
+      }
+    }
+
+    async function updateTeamsContainer() {
+      teamsContainer.innerHTML = '';
+      const selectedTeam = teamsSelector.value;
+      if(!selectedTeam) {
+        teamsContainer.innerHTML = '<p>Please select a team to view its roster.</p>';
+        return;
+      }
+
+      const teamPlayers = allPlayers.filter(p => p.team && p.team.toLowerCase() === selectedTeam.toLowerCase() && p.Availability.toLowerCase() === 'taken');
+      if(teamPlayers.length === 0) {
+        teamsContainer.innerHTML = '<p>No players found for this team.</p>';
+        return;
+      }
+      teamPlayers.sort((a, b) => a.Rank - b.Rank);
+      const hitterPriority = ['C', '1B', '2B', '3B', 'SS', 'OF', 'DH'];
+      const pitchers = teamPlayers.filter(p => p.Pos && (p.Pos.toUpperCase().includes('SP') || p.Pos.toUpperCase().includes('RP')));
+      const hitters = teamPlayers.filter(p => {
+        const pos = p.Pos ? p.Pos.toUpperCase() : '';
+        return hitterPriority.some(h => pos.includes(h));
+      });
+
+      const teamDiv = document.createElement('div');
+      teamDiv.className = 'team-roster';
+
+      const teamName = document.createElement('h3');
+      teamName.textContent = selectedTeam;
+      teamDiv.appendChild(teamName);
+
+      // Create Hitters section
+      const hittersDiv = document.createElement('div');
+      hittersDiv.className = 'roster-section';
+      const hittersTitle = document.createElement('h4');
+      hittersTitle.textContent = 'Hitters';
+      hittersDiv.appendChild(hittersTitle);
+
+      const hittersTable = document.createElement('table');
+      const hittersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'HR', 'R', 'RBI', 'SB', 'AVG'];
+      const hittersThead = document.createElement('thead');
+      const hittersHeaderRow = document.createElement('tr');
+      hittersHeaders.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        hittersHeaderRow.appendChild(th);
+      });
+      hittersThead.appendChild(hittersHeaderRow);
+      hittersTable.appendChild(hittersThead);
+
+      const hittersTbody = document.createElement('tbody');
+      if(hitters.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '9');
+        td.textContent = 'No hitters on this team.';
+        tr.appendChild(td);
+        hittersTbody.appendChild(tr);
+      } else {
+        hitters.forEach(player => {
+          const tr = document.createElement('tr');
+          
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
+
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos;
+          tr.appendChild(tdPos);
+
+          const tdRank = document.createElement('td');
+          tdRank.textContent = player.Rank || 'N/A';
+          tr.appendChild(tdRank);
+
+          const tdPosRank = document.createElement('td');
+          tdPosRank.textContent = player.PositionRank || 'N/A';
+          tr.appendChild(tdPosRank);
+
+          const tdHR = document.createElement('td');
+          tdHR.textContent = player.HR || 'N/A';
+          tr.appendChild(tdHR);
+
+          const tdR = document.createElement('td');
+          tdR.textContent = player.R || 'N/A';
+          tr.appendChild(tdR);
+
+          const tdRBI = document.createElement('td');
+          tdRBI.textContent = player.RBI || 'N/A';
+          tr.appendChild(tdRBI);
+
+          const tdSB = document.createElement('td');
+          tdSB.textContent = player.SB || 'N/A';
+          tr.appendChild(tdSB);
+
+          const tdAVG = document.createElement('td');
+          tdAVG.textContent = player.AVG || 'N/A';
+          tr.appendChild(tdAVG);
+
+          hittersTbody.appendChild(tr);
+        });
+      }
+      hittersTable.appendChild(hittersTbody);
+      hittersDiv.appendChild(hittersTable);
+      teamDiv.appendChild(hittersDiv);
+
+      // Create Pitchers section
+      const pitchersDiv = document.createElement('div');
+      pitchersDiv.className = 'roster-section';
+      const pitchersTitle = document.createElement('h4');
+      pitchersTitle.textContent = 'Pitchers';
+      pitchersDiv.appendChild(pitchersTitle);
+
+      const pitchersTable = document.createElement('table');
+      const pitchersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'W', 'SV', 'ERA', 'WHIP', 'K'];
+      const pitchersThead = document.createElement('thead');
+      const pitchersHeaderRow = document.createElement('tr');
+      pitchersHeaders.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        pitchersHeaderRow.appendChild(th);
+      });
+      pitchersThead.appendChild(pitchersHeaderRow);
+      pitchersTable.appendChild(pitchersThead);
+
+      const pitchersTbody = document.createElement('tbody');
+      if(pitchers.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '9');
+        td.textContent = 'No pitchers on this team.';
+        tr.appendChild(td);
+        pitchersTbody.appendChild(tr);
+      } else {
+        pitchers.forEach(player => {
+          const tr = document.createElement('tr');
+          
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
+
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos;
+          tr.appendChild(tdPos);
+
+          const tdRank = document.createElement('td');
+          tdRank.textContent = player.Rank || 'N/A';
+          tr.appendChild(tdRank);
+
+          const tdPosRank = document.createElement('td');
+          tdPosRank.textContent = player.PositionRank || 'N/A';
+          tr.appendChild(tdPosRank);
+
+          const tdW = document.createElement('td');
+          tdW.textContent = player.W || 'N/A';
+          tr.appendChild(tdW);
+
+          const tdSV = document.createElement('td');
+          tdSV.textContent = player.SV || 'N/A';
+          tr.appendChild(tdSV);
+
+          const tdERA = document.createElement('td');
+          tdERA.textContent = player.ERA || 'N/A';
+          tr.appendChild(tdERA);
+
+          const tdWHIP = document.createElement('td');
+          tdWHIP.textContent = player.WHIP || 'N/A';
+          tr.appendChild(tdWHIP);
+
+          const tdK = document.createElement('td');
+          tdK.textContent = player.K || 'N/A';
+          tr.appendChild(tdK);
+
+          pitchersTbody.appendChild(tr);
+        });
+      }
+      pitchersTable.appendChild(pitchersTbody);
+      pitchersDiv.appendChild(pitchersTable);
+      teamDiv.appendChild(pitchersDiv);
+
+      teamsContainer.appendChild(teamDiv);
+    }
+
+    (async function initialLoad() {
+      await checkLoginStatus();
+      await loadUserLeagues();
+      updateUIState();
+      // Load data after UI is ready
+      if (loggedInUser && currentLeagueId) {
+        await Promise.all([
+          fetchAllPlayers(),
+          loadBestAvailable(),
+          loadBigBoard(),
+          loadTeamsForLeague()
+        ]);
+      } else if (loggedInUser) {
+        await fetchAllPlayers();
+      }
+    })();
+
+    function showLoginOverlay() {
+      document.getElementById('overlayLogin').style.display = 'flex';
+      document.querySelector('.content-wrapper').classList.add('blurred');
+    }
+
+    function showRegisterOverlay() {
+      document.getElementById('overlayRegister').style.display = 'flex';
+      document.querySelector('.content-wrapper').classList.add('blurred');
+    }
+
+    function closeOverlay() {
+      document.getElementById('overlayLogin').style.display = 'none';
+      document.getElementById('overlayRegister').style.display = 'none';
+      document.querySelector('.content-wrapper').classList.remove('blurred');
+    }
+
+    async function performRegister() {
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (!response.ok) {
+          throw new Error('Registration failed');
+        }
+
+        closeOverlay();
+        showLoginOverlay();
+        alert('Registration successful! Please log in.');
+      } catch (err) {
+        console.error('Registration error:', err);
+        alert('Registration failed. Please try again.');
+      }
+    }
+</script>
+
+  <!-- Add login/register overlays -->
+  <div id="overlayLogin" class="overlay">
+    <div class="overlay-content">
+      <h2>Login</h2>
+      <form id="loginForm" onsubmit="event.preventDefault(); performLogin();">
+        <input type="text" id="loginUsername" placeholder="Username" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="javascript:void(0)" onclick="showRegisterOverlay()">Register</a></p>
+    </div>
+  </div>
+
+  <div id="overlayRegister" class="overlay">
+    <div class="overlay-content">
+      <h2>Register</h2>
+      <input type="text" id="registerUsername" placeholder="Username">
+      <input type="password" id="registerPassword" placeholder="Password">
+      <input type="password" id="registerConfirmPassword" placeholder="Confirm Password">
+      <div class="overlay-buttons">
+        <button onclick="performRegister()">Register</button>
+        <button onclick="closeOverlay()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bigBoardNotice" class="notice hidden">Please select or create a league to use this feature.</div>
+</body>
+</html>

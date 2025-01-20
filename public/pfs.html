@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+<link rel="shortcut icon" href="/img/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="Fatals" />
+<link rel="manifest" href="img/site.webmanifest" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PFS Combined Scores</title>
+  <style>
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #0000FF;
+      color: #FFFFFF;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      background-color: #000000;
+      padding: 10px 20px;
+      border-bottom: 2px solid #FFFF00;
+    }
+    .navbar img {
+      height: 40px;
+      margin-right: 20px;
+    }
+    .navbar a {
+      color: #00FF00;
+      text-decoration: none;
+      margin-right: 20px;
+      font-size: 18px;
+      position: relative;
+      cursor: pointer;
+    }
+    .navbar a::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 2px;
+      background: #FFFF00;
+      transition: width .3s;
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+    }
+    .navbar a:hover::after {
+      width: 100%;
+    }
+
+    h1 {
+      color: #00FF00;
+      text-shadow: 0 0 5px #00FF00;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .content-wrapper {
+      padding: 20px;
+      flex: 1;
+      background-color: #000000;
+      border: 2px solid #FFFF00;
+      margin: 20px;
+      border-radius: 5px;
+    }
+
+    label, select, button {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+    }
+
+    label {
+      color: #00FF00;
+      margin-right: 10px;
+    }
+
+    select {
+      background-color: #000000;
+      color: #00FF00;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+      padding: 4px;
+      margin-left: 10px;
+      margin-bottom: 10px;
+      appearance: none;
+      cursor: pointer;
+    }
+    select:hover {
+      background-color: #003300;
+    }
+
+    button {
+      background-color: #00FF00;
+      color: #000000;
+      border: 2px solid #FFFF00;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #FFFF00;
+      color: #000000;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 20px 0;
+      background-color: #000000;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+    }
+    th, td {
+      border: 1px solid #FFFF00;
+      padding: 8px;
+      text-align: left;
+      color: #00FF00;
+    }
+    th {
+      background-color: #000000;
+    }
+    tr:nth-child(even) {
+      background-color: #001100;
+    }
+    tr:hover {
+      background-color: #003300;
+      color: #FFFFFF;
+    }
+
+    .footer {
+      background-color: #FFFF00;
+      color: #000000;
+      text-align: center;
+      padding: 10px 0;
+      position: relative;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: auto;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      justify-content: center;
+    }
+
+    #pfsContainer {
+      position: relative;
+    }
+
+    #loadingMessage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: #00FF00;
+      background-color: #000000;
+      padding: 10px 20px;
+      border: 2px solid #FFFF00;
+      border-radius: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <img src="/img/logowebsite.png" alt="Logo">
+    <a href="index.html">Dashboard</a>
+    <a href="settings.html">Settings</a>
+  </div>
+
+  <h1>Pitcher FG + Statcast Combined Scores</h1>
+  
+  <div class="content-wrapper" id="pfsContainer">
+    <div class="filters">
+      <button id="loadPFS">Load Combined Data</button>
+      <label for="pitcherPositionFilter">Filter by Position: </label>
+      <select id="pitcherPositionFilter">
+        <option value="">All</option>
+        <option value="SP">SP</option>
+        <option value="RP">RP</option>
+        <option value="Unknown">Unknown</option>
+      </select>
+    </div>
+
+    <div id="loadingMessage">Loading PFS Data...</div>
+    <table id="pfsTable"></table>
+  </div>
+
+  <div class="footer">
+    © 2024 - Fatals Fantasy Sports
+  </div>
+
+  <script>
+    let pfsData = [];
+
+    async function loadPFSData() {
+      const loadButton = document.getElementById('loadPFS');
+      const loadingMessage = document.getElementById('loadingMessage');
+      const pfsTable = document.getElementById('pfsTable');
+
+      loadButton.disabled = true;
+      loadingMessage.style.display = 'block';
+      pfsTable.innerHTML = '';
+
+      try {
+        const response = await fetch('/api/pfs');
+        if (!response.ok) {
+          throw new Error('Failed to fetch PFS data.');
+        }
+        const data = await response.json();
+        pfsData = data; 
+        buildTable(pfsTable, pfsData);
+      } catch (error) {
+        console.error('Error loading PFS data:', error);
+        pfsTable.innerHTML = `<tr><td colspan="9" style="color: red;">Error loading PFS data: ${error.message}</td></tr>`;
+      } finally {
+        loadButton.disabled = false;
+        loadingMessage.style.display = 'none';
+      }
+    }
+
+    function buildTable(tableElement, data) {
+      tableElement.innerHTML = '';
+      if (!data || data.length === 0) {
+        tableElement.innerHTML = '<tr><td colspan="9" style="text-align: center;">No data found</td></tr>';
+        return;
+      }
+
+      const headers = ['playerid', 'Name', 'FG Score', 'Statcast Score', 'Combined Score', 'Pos', 'Rank', 'PositionRank', 'Availability'];
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      tableElement.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        const cells = [
+          row.playerid || 'N/A',
+          row.name || 'Unknown',
+          row.fgScore !== undefined && !isNaN(row.fgScore) ? row.fgScore.toFixed(2) : 'N/A',
+          row.statcastScore !== undefined && !isNaN(row.statcastScore) ? row.statcastScore.toFixed(2) : 'N/A',
+          row.combinedScore !== undefined && !isNaN(row.combinedScore) ? row.combinedScore.toFixed(2) : 'N/A',
+          row.Pos || 'Unknown',
+          row.Rank || 'N/A',
+          row.PositionRank || 'N/A',
+          row.Availability || 'Unknown'
+        ];
+        cells.forEach(val => {
+          const td = document.createElement('td');
+          td.textContent = val;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      tableElement.appendChild(tbody);
+    }
+
+    function filterPitchersByPosition() {
+      const filterValue = document.getElementById('pitcherPositionFilter').value;
+      const pfsTable = document.getElementById('pfsTable');
+      if (!filterValue) {
+        buildTable(pfsTable, pfsData);
+        return;
+      }
+      const filtered = pfsData.filter(player => player.Pos === filterValue);
+      buildTable(pfsTable, filtered);
+    }
+
+    document.getElementById('loadPFS').addEventListener('click', loadPFSData);
+    document.getElementById('pitcherPositionFilter').addEventListener('change', filterPitchersByPosition);
+
+    window.addEventListener('load', loadPFSData);
+  </script>
+</body>
+</html>

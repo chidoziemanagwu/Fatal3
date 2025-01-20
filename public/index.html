@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Fatals" />
+  <link rel="manifest" href="img/site.webmanifest" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fatals Fantasy Sports</title>
+  <link rel="stylesheet" href="/indexstyles.css" />
+</head>
+<body>
+  <!-- Background Video -->
+  <video class="background-video" autoplay muted loop playsinline>
+    <source src="/img/websitebgvid.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="content-wrapper" id="contentWrapper">
+    <img src="img/logowebsite.png" alt="Logo" class="logo"/>
+    <div class="menu-container" id="menuContainer">
+      <div class="menu-title">Fantasy Baseball</div>
+      <div class="menu-item" onclick="window.location.href='dashboard.html'">Dashboard</div>
+      <div class="menu-item" onclick="window.location.href='settings.html'">Settings</div>
+      <div class="bottom-actions" id="bottomActions">
+        <!-- Filled dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Copyright 2024 - Fatals Fantasy Sports
+  </div>
+
+  <div class="overlay" id="overlayLogin">
+    <div class="login-box">
+      <h3>Log In</h3>
+      <form id="loginForm" onsubmit="performLogin(); return false;">
+        <input type="text" placeholder="Username" id="loginUsername"/>
+        <input type="password" placeholder="Password" id="loginPassword"/>
+        <button type="submit">Submit</button>
+        <button type="button" onclick="closeOverlay()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlayRegister">
+    <div class="register-box">
+      <h3>Register</h3>
+      <form id="registerForm" onsubmit="performRegister(); return false;">
+        <input type="text" placeholder="Username" id="registerUsername"/>
+        <input type="password" placeholder="Password" id="registerPassword"/>
+        <button type="submit">Submit</button>
+        <button type="button" onclick="closeOverlay()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const contentWrapper = document.getElementById('contentWrapper');
+    const overlayLogin = document.getElementById('overlayLogin');
+    const overlayRegister = document.getElementById('overlayRegister');
+    const bottomActions = document.getElementById('bottomActions');
+    const menuContainer = document.getElementById('menuContainer');
+
+    let loggedInUser = null;
+
+    async function checkLoginStatus() {
+      try {
+        const res = await fetch('/api/check-login');
+        const data = await res.json();
+        if (data.loggedIn) {
+          loggedInUser = data.username;
+          showLoggedInState();
+        } else {
+          loggedInUser = null;
+          showLoggedOutState();
+        }
+      } catch(e) {
+        // If error, assume not logged in
+        showLoggedOutState();
+      }
+    }
+
+    function showLoggedInState() {
+      bottomActions.innerHTML = `
+        <div class="welcome-text" id="welcomeText">Welcome, ${loggedInUser}</div>
+      `;
+      const welcomeText = document.getElementById('welcomeText');
+      welcomeText.addEventListener('click', () => {
+        // Show logout option
+        bottomActions.innerHTML = `
+          <div class="logout-container">
+            <div class="welcome-text">Welcome, ${loggedInUser}</div>
+            <div class="logout-button" id="logoutButton">Log Out</div>
+          </div>
+        `;
+        const logoutButton = document.getElementById('logoutButton');
+        logoutButton.addEventListener('click', performLogout);
+      });
+    }
+
+    function showLoggedOutState() {
+      bottomActions.innerHTML = `
+        <div id="loginButton">Log In</div>
+        <div id="registerButton">Register</div>
+      `;
+      const newLoginButton = document.getElementById('loginButton');
+      const newRegisterButton = document.getElementById('registerButton');
+      newLoginButton.addEventListener('click', () => {
+        overlayLogin.classList.add('active');
+        contentWrapper.classList.add('blurred');
+      });
+      newRegisterButton.addEventListener('click', () => {
+        overlayRegister.classList.add('active');
+        contentWrapper.classList.add('blurred');
+      });
+    }
+
+    function closeOverlay() {
+      overlayLogin.classList.remove('active');
+      overlayRegister.classList.remove('active');
+      contentWrapper.classList.remove('blurred');
+    }
+
+    async function performLogin() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      if(!username || !password) {
+        alert('Please enter username and password.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({username, password})
+        });
+        const data = await res.json();
+        if(data.status === 'Logged in') {
+          loggedInUser = username;
+          showLoggedInState();
+          closeOverlay();
+        } else {
+          alert(data.error || 'Login failed.');
+        }
+      } catch(e) {
+        console.error('Error logging in:', e);
+        alert('Login error.');
+      }
+    }
+
+    async function performRegister() {
+      const username = document.getElementById('registerUsername').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+
+      if(!username || !password) {
+        alert('Please enter username and password.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({username, password})
+        });
+        const data = await res.json();
+        if(data.status === 'Registered') {
+          alert('Registration successful!');
+          loggedInUser = username;
+          showLoggedInState();
+          closeOverlay();
+        } else {
+          alert(data.error || 'Registration failed.');
+        }
+      } catch(e) {
+        console.error('Error registering:', e);
+        alert('Registration error.');
+      }
+    }
+
+    async function performLogout() {
+      try {
+        const res = await fetch('/logout', {method:'POST'});
+        const data = await res.json();
+        if(data.status === 'Logged out') {
+          alert('Logged out successfully.');
+          loggedInUser = null;
+          showLoggedOutState();
+        } else {
+          alert('Logout failed.');
+        }
+      } catch(e) {
+        console.error('Error logging out:', e);
+        alert('Logout error.');
+      }
+    }
+
+    checkLoginStatus();
+  </script>
+</body>
+</html>
