@@ -26,18 +26,6 @@ app.get('/pfs', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'pfs.html'));
 });
 
-app.get('/api/player/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query('SELECT * FROM player_profiles WHERE player_id = \$1', [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Player not found' });
-    }
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch player data' });
-  }
-});
 
 
 app.get('/api/league/:id/rankings', async (req, res) => {
@@ -66,36 +54,92 @@ app.post('/api/subscription', async (req, res) => {
   }
 });
 
-app.get('/api/player/:id', async (req, res) => {
-  const { id } = req.params;
 
+// In your Express server file
+// Add this endpoint to your server.js
+app.get('/api/players/:id', async (req, res) => {
   try {
-    // Fetch data from the player_profiles table
-    const profileResult = await pool.query('SELECT * FROM player_profiles WHERE player_id = \$1', [id]);
-    if (profileResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Player not found in profiles table' });
-    }
-    const profileData = profileResult.rows[0];
+      const playerId = req.params.id;
+      console.log('Fetching player with ID:', playerId);
 
-    // Fetch data from Fangraphs
-    const fgData = await fetchHitterProjectionsFG(); // Assuming this function fetches all hitters
-    const fgPlayer = fgData.find(player => player.playerid === id);
+      // First try to fetch from hitters
+      const hfsResponse = await fetch('http://localhost:3000/api/hfs');
+      if (!hfsResponse.ok) {
+          throw new Error('Failed to fetch hitter data');
+      }
+      const hitters = await hfsResponse.json();
 
-    // Fetch data from Statcast
-    const scData = await fetchHitterStatcast(); // Assuming this function fetches all hitters
-    const scPlayer = scData.find(player => player.playerid === id);
+      // Then fetch from pitchers
+      const pfsResponse = await fetch('http://localhost:3000/api/pfs');
+      if (!pfsResponse.ok) {
+          throw new Error('Failed to fetch pitcher data');
+      }
+      const pitchers = await pfsResponse.json();
 
-    // Combine data
-    const combinedData = {
-      ...profileData,
-      fangraphs: fgPlayer || {},
-      statcast: scPlayer || {}
-    };
+      console.log('Data fetched successfully');
+      console.log('Number of hitters:', hitters.length);
+      console.log('Number of pitchers:', pitchers.length);
 
-    res.json(combinedData);
-  } catch (err) {
-    console.error('Error fetching player data:', err);
-    res.status(500).json({ error: 'Failed to fetch player data' });
+      // Find the player in either dataset
+      const player = [...hitters, ...pitchers].find(p => String(p.playerid) === String(playerId));
+
+      if (!player) {
+          console.log('Player not found');
+          return res.status(404).json({ 
+              error: 'Player not found',
+              searchedId: playerId
+          });
+      }
+
+      console.log('Found player:', player.name);
+
+      // Format the response
+      const playerData = {
+          id: player.playerid,
+          name: player.name,
+          team: player.team || 'N/A',
+          position: player.Pos || 'N/A',
+          currentStats: {},
+          rank: player.Rank || 'N/A',
+          availability: player.Availability || 'Unknown'
+      };
+
+      // Add stats based on position
+      if (player.Pos && (player.Pos.includes('SP') || player.Pos.includes('RP'))) {
+          playerData.currentStats = {
+              wins: player.W || 0,
+              saves: player.SV || 0,
+              strikeouts: player.K || 0,
+              era: player.ERA || '0.00',
+              whip: player.WHIP || '0.00'
+          };
+      } else {
+          playerData.currentStats = {
+              homeRuns: player.HR || 0,
+              runs: player.R || 0,
+              rbi: player.RBI || 0,
+              stolenBases: player.SB || 0,
+              avg: player.AVG || '.000'
+          };
+      }
+
+      // Add performance metrics
+      playerData.metrics = {
+          fgScore: player.fgScore || 0,
+          statcastScore: player.statcastScore || 0,
+          combinedScore: player.combinedScore || 0
+      };
+
+      console.log('Sending response:', playerData);
+      res.json(playerData);
+
+  } catch (error) {
+      console.error('Server Error:', error);
+      res.status(500).json({ 
+          error: 'Internal server error', 
+          message: error.message,
+          stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
   }
 });
 

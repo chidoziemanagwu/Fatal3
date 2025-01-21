@@ -356,6 +356,26 @@
       }
     }
 
+    // Add this to places where player names are rendered (in loadBestAvailable, loadBigBoard, etc.)
+function createPlayerNameCell(player) {
+    const tdName = document.createElement('td');
+    tdName.textContent = player.name;
+    tdName.classList.add('player-name');
+    tdName.setAttribute('data-pid', player.playerid || '');
+    
+    // Add click handler for both assignment and profile navigation
+    tdName.addEventListener('click', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            // Open profile in new tab if Ctrl/Cmd clicked
+            window.open(`player-profile.html?id=${player.playerid}&name=${encodeURIComponent(player.name)}`, '_blank');
+        } else {
+            assignPlayer(player);
+        }
+    });
+    
+    return tdName;
+}
+
     function normalizeName(name) {
       if (!name || typeof name !== 'string') return '';
       name = name.replace(/<[^>]*>/g, '');
@@ -421,12 +441,7 @@
           tdRank.textContent = player.Rank || 'N/A';
           tr.appendChild(tdRank);
 
-          const tdName = document.createElement('td');
-          tdName.textContent = player.name || 'Unknown';
-          tdName.classList.add('player-name');
-          tdName.setAttribute('data-pid', player.playerid || '');
-          tdName.addEventListener('click', () => assignPlayer(player));
-          tr.appendChild(tdName);
+          tr.appendChild(createPlayerNameCell(player));
 
           const tdPos = document.createElement('td');
           tdPos.textContent = player.Pos || 'Unknown';
@@ -463,12 +478,7 @@
           tdRank.textContent = player.Rank || 'N/A';
           tr.appendChild(tdRank);
 
-          const tdName = document.createElement('td');
-          tdName.textContent = player.name || 'Unknown';
-          tdName.classList.add('player-name');
-          tdName.setAttribute('data-pid', player.playerid || '');
-          tdName.addEventListener('click', () => assignPlayer(player));
-          tr.appendChild(tdName);
+          tr.appendChild(createPlayerNameCell(player));
 
           const tdPos = document.createElement('td');
           tdPos.textContent = player.Pos || 'Unknown';
@@ -531,12 +541,7 @@
           tdRank.textContent = index + 1;
           tr.appendChild(tdRank);
 
-          const tdName = document.createElement('td');
-          tdName.textContent = player.name;
-          tdName.classList.add('player-name');
-          tdName.setAttribute('data-pid', player.playerid || '');
-          tdName.addEventListener('click', () => assignPlayer(player));
-          tr.appendChild(tdName);
+          tr.appendChild(createPlayerNameCell(player));
 
           const tdPos = document.createElement('td');
           tdPos.textContent = player.Pos || 'Unknown';
@@ -645,7 +650,8 @@
       currentPlayer = null;
     }
 
-    async function assignPlayer(player) {
+// In the assignPlayer function in your dashboard code, update the viewProfile link
+async function assignPlayer(player) {
     currentPlayer = player;
     const playerElements = Array.from(document.getElementsByClassName('player-name'))
         .filter(el => el.textContent.trim() === player.name &&
@@ -664,15 +670,19 @@
         (playerElement.getBoundingClientRect().bottom + window.scrollY) : 
         (window.innerHeight / 2 - 100);
 
-    // Update the profile link
+    // Update the profile link with player ID and name
     const viewProfile = document.getElementById('viewProfile');
-    if (viewProfile) {  // Add this check
+    if (viewProfile) {
         viewProfile.href = `player-profile.html?id=${player.playerid}&name=${encodeURIComponent(player.name)}`;
+        viewProfile.style.display = player.playerid ? 'block' : 'none'; // Only show if we have a player ID
     }
     
     // Show the assign menu
     showAssignMenu(x, y);
 }
+
+
+
 
 async function updatePlayerTeam(player, teamName) {
       if(!loggedInUser) {
@@ -1211,6 +1221,50 @@ async function updatePlayerTeam(player, teamName) {
       document.querySelector('.content-wrapper').classList.remove('blurred');
     }
 
+    async function performLogin() {
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        console.log(response)
+        if (!response.ok == true) {
+            throw new Error('Login failed');
+        }
+
+        const data = await response.json();
+        
+        console.log(data)
+        if (response.ok) {
+            loggedInUser = username;
+            closeOverlay();
+            await checkLoginStatus();
+            await loadUserLeagues();
+            updateUIState();
+            
+            // Load data after successful login
+            await Promise.all([
+                fetchAllPlayers(),
+                loadBestAvailable(),
+                loadBigBoard(),
+                loadTeamsForLeague()
+            ]);
+        } else {
+            throw new Error(data.message || 'Login failed');
+        }
+    } catch (err) {
+        console.error('Login error:', err);
+        alert('Login failed. Please check your credentials and try again.');
+    }
+}
+
     async function performRegister() {
       const username = document.getElementById('registerUsername').value;
       const password = document.getElementById('registerPassword').value;
@@ -1222,7 +1276,7 @@ async function updatePlayerTeam(player, teamName) {
       }
 
       try {
-        const response = await fetch('/api/auth/register', {
+        const response = await fetch('/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

@@ -1067,19 +1067,30 @@ select:hover {
   display: block;
 }
 
+/* Add to your CSS */
 .menu-link {
   display: block;
-  padding: 8px 12px;
-  margin-bottom: 10px;
   color: #00FF00;
   text-decoration: none;
-  text-align: center;
-  border: 1px solid #FFFF00;
+  padding: 8px 12px;
+  margin: 5px 0;
+  border: 1px solid #00FF00;
   border-radius: 4px;
-  cursor: pointer;
+  text-align: center;
 }
 
 .menu-link:hover {
-  background-color: #001100;
+  background-color: #003300;
   color: #FFFF00;
+}
+
+/* Style for clickable player names */
+.player-name {
+  cursor: pointer;
+  color: #00FF00;
+}
+
+.player-name:hover {
+  color: #FFFF00;
+  text-decoration: underline;
 }
