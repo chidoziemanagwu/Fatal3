@@ -159,11 +159,13 @@
 
   <div id="assignMenu">
     <h4 id="assignMenuTitle">Assign Player</h4>
+    <!-- Add this line -->
+    <a href="#" class="menu-link" id="viewProfile">View Player Profile</a>
     <div class="team-list" id="teamList"></div>
     <button class="release-button" id="releasePlayer">Release Player</button>
     <button class="create-team-button" id="createNewTeam">Create New Team</button>
     <button class="cancel-button" id="cancelAssign">Cancel</button>
-  </div>
+</div>
 
   <div class="login-notice">Please log in to use the Dashboard</div>
 
@@ -644,43 +646,35 @@
     }
 
     async function assignPlayer(player) {
-      currentPlayer = player;
-      const playerElements = Array.from(document.getElementsByClassName('player-name'))
+    currentPlayer = player;
+    const playerElements = Array.from(document.getElementsByClassName('player-name'))
         .filter(el => el.textContent.trim() === player.name &&
-          ((player.playerid && el.getAttribute('data-pid') === player.playerid) || (!player.playerid && !el.getAttribute('data-pid'))));
+            ((player.playerid && el.getAttribute('data-pid') === player.playerid) || 
+             (!player.playerid && !el.getAttribute('data-pid'))));
 
-      let playerElement = null;
-      if (playerElements.length > 0) {
+    let playerElement = null;
+    if (playerElements.length > 0) {
         playerElement = playerElements[0];
-      }
-
-      const x = playerElement ? (playerElement.getBoundingClientRect().left + window.scrollX) : (window.innerWidth / 2 - 125);
-      const y = playerElement ? (playerElement.getBoundingClientRect().top + window.scrollY + playerElement.getBoundingClientRect().height) : (window.innerHeight / 2 - 75);
-
-      if(!loggedInUser) {
-        assignMenuTitle.textContent = "Need to be logged in to use this feature";
-        teamListDiv.innerHTML = '';
-        releasePlayerBtn.style.display = 'none';
-        createNewTeamBtn.style.display = 'none';
-      } else if(!currentLeagueId) {
-        assignMenuTitle.textContent = "Please select or create a league";
-        teamListDiv.innerHTML = '';
-        releasePlayerBtn.style.display = 'none';
-        createNewTeamBtn.style.display = 'none';
-      } else {
-        assignMenuTitle.textContent = "Assign Player";
-        releasePlayerBtn.style.display = 'block';
-        createNewTeamBtn.style.display = 'block';
-        teamListDiv.innerHTML = '<p>Loading teams...</p>';
-        setTimeout(async ()=>{ 
-          await updateAssignMenuTeams();
-        },200);
-      }
-
-      showAssignMenu(x, y);
     }
 
-    async function updatePlayerTeam(player, teamName) {
+    const x = playerElement ? 
+        (playerElement.getBoundingClientRect().left + window.scrollX) : 
+        (window.innerWidth / 2 - 125);
+    const y = playerElement ? 
+        (playerElement.getBoundingClientRect().bottom + window.scrollY) : 
+        (window.innerHeight / 2 - 100);
+
+    // Update the profile link
+    const viewProfile = document.getElementById('viewProfile');
+    if (viewProfile) {  // Add this check
+        viewProfile.href = `player-profile.html?id=${player.playerid}&name=${encodeURIComponent(player.name)}`;
+    }
+    
+    // Show the assign menu
+    showAssignMenu(x, y);
+}
+
+async function updatePlayerTeam(player, teamName) {
       if(!loggedInUser) {
         alert('Need to be logged in.');
         return;

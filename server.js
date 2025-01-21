@@ -65,6 +65,41 @@ app.post('/api/subscription', async (req, res) => {
     res.status(500).json({ error: 'Failed to create subscription' });
   }
 });
+
+app.get('/api/player/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Fetch data from the player_profiles table
+    const profileResult = await pool.query('SELECT * FROM player_profiles WHERE player_id = \$1', [id]);
+    if (profileResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Player not found in profiles table' });
+    }
+    const profileData = profileResult.rows[0];
+
+    // Fetch data from Fangraphs
+    const fgData = await fetchHitterProjectionsFG(); // Assuming this function fetches all hitters
+    const fgPlayer = fgData.find(player => player.playerid === id);
+
+    // Fetch data from Statcast
+    const scData = await fetchHitterStatcast(); // Assuming this function fetches all hitters
+    const scPlayer = scData.find(player => player.playerid === id);
+
+    // Combine data
+    const combinedData = {
+      ...profileData,
+      fangraphs: fgPlayer || {},
+      statcast: scPlayer || {}
+    };
+
+    res.json(combinedData);
+  } catch (err) {
+    console.error('Error fetching player data:', err);
+    res.status(500).json({ error: 'Failed to fetch player data' });
+  }
+});
+
+
 app.use(express.static('public'));
 app.use(express.json());
 
