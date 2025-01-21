@@ -1,0 +1,61 @@
+<!-- public/rankings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Fatals" />
+    <link rel="manifest" href="img/site.webmanifest" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>League Rankings | Fatals</title>
+    <link rel="stylesheet" href="/rankingstyles.css" />
+</head>
+<body>
+    <div class="navbar">
+        <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="settings.html">Settings</a>
+    </div>
+
+    <div class="content-wrapper">
+        <h1>League Rankings</h1>
+        
+        <div class="rankings-filters">
+            <select id="leagueSelect">
+                <option value="">Select League</option>
+            </select>
+            <select id="timeframeSelect">
+                <option value="season">Season</option>
+                <option value="month">Last 30 Days</option>
+                <option value="week">Last 7 Days</option>
+            </select>
+        </div>
+
+        <div class="rankings-grid">
+            <div class="rankings-card overall">
+                <h2>Overall Rankings</h2>
+                <table id="overallRankings"></table>
+            </div>
+
+            <div class="rankings-card categorical">
+                <h2>Category Leaders</h2>
+                <div id="categoryLeaders"></div>
+            </div>
+        </div>
+
+        <div class="head-to-head-section">
+            <h2>Head-to-Head Records</h2>
+            <table id="h2hRecords"></table>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2024 - Fatals Fantasy Sports
+    </div>
+
+    <script src="/js/rankings.js"></script>
+</body>
+</html>

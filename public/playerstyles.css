@@ -1,0 +1,89 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #000;
+    color: #00FF00;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #000;
+    padding: 10px 20px;
+    border-bottom: 2px solid #FFFF00;
+  }
+  
+  .navbar img {
+    height: 40px;
+    cursor: pointer;
+  }
+  
+  .navbar a {
+    color: #00FF00;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 18px;
+    position: relative;
+  }
+  
+  .navbar a:hover {
+    color: #FFFF00;
+  }
+  
+  .content-wrapper {
+    padding: 20px;
+  }
+  
+  .player-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .player-header h1 {
+    font-size: 36px;
+    margin: 0;
+  }
+  
+  .player-meta {
+    font-size: 18px;
+    margin-top: 10px;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .stats-card {
+    background-color: #001100;
+    border: 2px solid #FFFF00;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  
+  .stats-card h2 {
+    margin-top: 0;
+    color: #FFFF00;
+  }
+  
+  .charts-section {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  canvas {
+    max-width: 400px;
+    max-height: 300px;
+  }
+  
+  .footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #FFFF00;
+    color: #000;
+    margin-top: 20px;
+  }

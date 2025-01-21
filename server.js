@@ -26,6 +26,45 @@ app.get('/pfs', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'pfs.html'));
 });
 
+app.get('/api/player/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM player_profiles WHERE player_id = \$1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch player data' });
+  }
+});
+
+
+app.get('/api/league/:id/rankings', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM league_rankings WHERE league_id = \$1 ORDER BY rank ASC',
+      [id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch league rankings' });
+  }
+});
+
+app.post('/api/subscription', async (req, res) => {
+  const { userId, plan } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO subscriptions (user_id, plan, status) VALUES (\$1, \$2, \$3)',
+      [userId, plan, 'active']
+    );
+    res.json({ status: 'Subscription created' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create subscription' });
+  }
+});
 app.use(express.static('public'));
 app.use(express.json());
 

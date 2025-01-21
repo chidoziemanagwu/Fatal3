@@ -1,0 +1,82 @@
+<!-- public/subscription.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Fatals" />
+    <link rel="manifest" href="img/site.webmanifest" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Subscription Plans | Fatals</title>
+    <link rel="stylesheet" href="/subscriptionstyles.css" />
+</head>
+<body>
+    <div class="navbar">
+        <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="settings.html">Settings</a>
+    </div>
+
+    <div class="content-wrapper">
+        <h1>Choose Your Plan</h1>
+
+        <div class="plans-container">
+            <div class="plan-card free">
+                <h2>Free</h2>
+                <div class="price">\$0/month</div>
+                <ul class="features">
+                    <li>Basic Stats</li>
+                    <li>Single League</li>
+                    <li>Limited Players</li>
+                </ul>
+                <button class="select-plan" data-plan="free">Select Plan</button>
+            </div>
+
+            <div class="plan-card premium">
+                <h2>Premium</h2>
+                <div class="price">\$9.99/month</div>
+                <ul class="features">
+                    <li>Advanced Stats</li>
+                    <li>Multiple Leagues</li>
+                    <li>Historical Data</li>
+                    <li>Priority Support</li>
+                </ul>
+                <button class="select-plan" data-plan="premium">Select Plan</button>
+            </div>
+
+            <div class="plan-card pro">
+                <h2>Pro</h2>
+                <div class="price">\$19.99/month</div>
+                <ul class="features">
+                    <li>All Premium Features</li>
+                    <li>Custom Analytics</li>
+                    <li>API Access</li>
+                    <li>24/7 Support</li>
+                </ul>
+                <button class="select-plan" data-plan="pro">Select Plan</button>
+            </div>
+        </div>
+
+        <div class="referral-section">
+            <h2>Referral Program</h2>
+            <p>Share your referral code and earn rewards!</p>
+            <div class="referral-code" id="referralCode"></div>
+            <button id="copyReferral">Copy Code</button>
+            <div class="referral-stats">
+                <div>Total Referrals: <span id="referralCount">0</span></div>
+                <div>Rewards Earned: <span id="rewardsEarned">\$0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2024 - Fatals Fantasy Sports
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/js/subscription.js"></script>
+</body>
+</html>

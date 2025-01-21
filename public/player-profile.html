@@ -1,0 +1,67 @@
+<!-- public/player-profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+    <link rel="shortcut icon" href="/img/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Fatals" />
+    <link rel="manifest" href="img/site.webmanifest" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Player Profile | Fatals</title>
+    <link rel="stylesheet" href="/playerstyles.css" />
+</head>
+<body>
+    <div class="navbar">
+        <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="settings.html">Settings</a>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="player-header">
+            <h1 id="playerName"></h1>
+            <div class="player-meta">
+                <span id="playerTeam"></span>
+                <span id="playerPosition"></span>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stats-card current">
+                <h2>Current Season Stats</h2>
+                <div id="currentStats"></div>
+            </div>
+
+            <div class="stats-card historical">
+                <h2>Historical Performance</h2>
+                <div id="historicalStats"></div>
+            </div>
+
+            <div class="stats-card projections">
+                <h2>Projections</h2>
+                <div id="projectionStats"></div>
+            </div>
+
+            <div class="stats-card advanced">
+                <h2>Advanced Metrics</h2>
+                <div id="advancedStats"></div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <canvas id="performanceChart"></canvas>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2024 - Fatals Fantasy Sports
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/player-profile.js"></script>
+</body>
+</html>
