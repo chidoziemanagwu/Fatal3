@@ -1,131 +1,166 @@
 // public/js/player-profile.js
 
-async function loadPlayerProfile() {
-    try {
-        // Get player ID from URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const playerId = urlParams.get('id');
-        
-        console.log('Loading player profile for ID:', playerId);
+class PlayerProfile {
+    constructor() {
+        this.playerData = null;
+    }
 
-        if (!playerId) {
-            throw new Error('No player ID provided in the URL');
+    async loadPlayerProfile() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const playerName = urlParams.get('name');
+            const playerId = urlParams.get('id');
+
+            if (!playerName && !playerId) {
+                throw new Error('No player name or ID provided');
+            }
+
+            const playerData = await Tank01API.getPlayerInfo(playerName || playerId);
+            console.log('Tank01 Player Data:', playerData);
+
+            if (!playerData || !playerData.body || !playerData.body[0]) {
+                throw new Error('No player data found');
+            }
+
+            this.playerData = playerData.body[0];
+            this.updateUI();
+        } catch (error) {
+            console.error('Error loading player profile:', error);
+            this.handleError(error);
+        }
+    }
+
+    updateUI() {
+        const data = this.playerData;
+
+        // Update name and jersey number
+        document.getElementById('playerName').textContent = data.longName || data.fullName || 'N/A';
+        document.getElementById('playerNumber').textContent = data.jerseyNum ? `#${data.jerseyNum}` : '#00';
+
+        // Update info cards values
+        const infoCards = document.querySelectorAll('.info-card');
+        infoCards.forEach(card => {
+            const label = card.querySelector('.label').textContent.toLowerCase();
+            const valueElement = card.querySelector('.value');
+            
+            switch(label) {
+                case 'position':
+                    valueElement.textContent = data.pos || 'N/A';
+                    break;
+                case 'team':
+                    valueElement.textContent = data.team || 'N/A';
+                    break;
+                case 'bats/throws':
+                    valueElement.textContent = `${data.bat || 'N/A'}/${data.throw || 'N/A'}`;
+                    break;
+                case 'height/weight':
+                    valueElement.textContent = `${data.height || 'N/A'}, ${data.weight || 'N/A'}lb`;
+                    break;
+                case 'born':
+                    valueElement.textContent = data.bDay || 'N/A';
+                    break;
+                case 'last game':
+                    valueElement.textContent = data.lastGamePlayed || 'N/A';
+                    break;
+            }
+        });
+
+        // Update player image
+        const playerImage = document.getElementById('playerImage');
+        if (playerImage) {
+            playerImage.src = data.mlbHeadshot || data.espnHeadshot || 'https://cdn-icons-png.flaticon.com/512/166/166366.png';
+            playerImage.onerror = () => {
+                playerImage.src = 'https://cdn-icons-png.flaticon.com/512/166/166366.png';
+            };
         }
 
-        // Fetch player data
-        const response = await fetch(`/api/players/${playerId}`);
-        console.log('API Response status:', response.status);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to fetch player data');
-        }
-
-        const playerData = await response.json();
-        console.log('Player data received:', playerData);
-
-        // Update DOM elements
-        document.getElementById('playerName').textContent = playerData.name;
-        document.getElementById('playerTeam').textContent = playerData.team;
-        document.getElementById('playerPosition').textContent = playerData.position;
-
-        // Update current stats
-        const currentStatsElement = document.getElementById('currentStats');
-        if (playerData.position.includes('P')) {
-            // Pitcher stats
-            currentStatsElement.innerHTML = `
-                <div class="stat-grid">
-                    <div class="stat-item">
-                        <label>Wins</label>
-                        <span>${playerData.currentStats.wins}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>Saves</label>
-                        <span>${playerData.currentStats.saves}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>Strikeouts</label>
-                        <span>${playerData.currentStats.strikeouts}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>ERA</label>
-                        <span>${playerData.currentStats.era}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>WHIP</label>
-                        <span>${playerData.currentStats.whip}</span>
-                    </div>
+        // Update links section
+        const linksSection = document.getElementById('playerLinks');
+        if (linksSection) {
+            linksSection.innerHTML = `
+                <h3 style="color: #00FF00; margin-bottom: 15px;">External Links</h3>
+                <div class="player-links">
+                    ${data.mlbLink ? `<a href="${data.mlbLink}" target="_blank" class="btn-primary">MLB Profile</a>` : ''}
+                    ${data.espnLink ? `<a href="${data.espnLink}" target="_blank" class="btn-primary">ESPN Profile</a>` : ''}
+                    ${data.yahooLink ? `<a href="${data.yahooLink}" target="_blank" class="btn-primary">Yahoo Profile</a>` : ''}
+                    ${data.fantasyProsLink ? `<a href="${data.fantasyProsLink}" target="_blank" class="btn-primary">FantasyPros Profile</a>` : ''}
                 </div>
             `;
-        } else {
-            // Hitter stats
-            currentStatsElement.innerHTML = `
-                <div class="stat-grid">
-                    <div class="stat-item">
-                        <label>Home Runs</label>
-                        <span>${playerData.currentStats.homeRuns}</span>
+        }
+
+        // Update injury section
+        const injurySection = document.getElementById('playerInjury');
+        if (injurySection) {
+            if (data.injury && (data.injury.designation || data.injury.description)) {
+                injurySection.innerHTML = `
+                    <h3 style="color: #00FF00; margin-bottom: 15px;">Injury Status</h3>
+                    <div class="injury-alert">
+                        <p style="color: #FF0000; font-weight: bold;">${data.injury.designation || 'N/A'}</p>
+                        <p style="color: #FF9999;">${data.injury.description || 'No details available'}</p>
+                        ${data.injury.injReturnDate ? `<p style="color: #FFFF00;">Expected Return: ${data.injury.injReturnDate}</p>` : ''}
                     </div>
-                    <div class="stat-item">
-                        <label>Runs</label>
-                        <span>${playerData.currentStats.runs}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>RBI</label>
-                        <span>${playerData.currentStats.rbi}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>Stolen Bases</label>
-                        <span>${playerData.currentStats.stolenBases}</span>
-                    </div>
-                    <div class="stat-item">
-                        <label>AVG</label>
-                        <span>${playerData.currentStats.avg}</span>
-                    </div>
+                `;
+            } else {
+                injurySection.innerHTML = `
+                    <h3 style="color: #00FF00; margin-bottom: 15px;">Injury Status</h3>
+                    <p class="healthy-status">No current injuries</p>
+                `;
+            }
+        }
+
+        // Update IDs section
+        const idsSection = document.getElementById('playerIds');
+        if (idsSection) {
+            idsSection.innerHTML = `
+                <h3 style="color: #00FF00; margin-bottom: 15px;">Player IDs</h3>
+                <div class="info-cards">
+                    ${this.createIdCard('MLB ID', data.mlbID)}
+                    ${this.createIdCard('ESPN ID', data.espnID)}
+                    ${this.createIdCard('CBS ID', data.cbsPlayerID)}
+                    ${this.createIdCard('Yahoo ID', data.yahooPlayerID)}
+                    ${this.createIdCard('Fantasy Pros ID', data.fantasyProsPlayerID)}
+                    ${this.createIdCard('RotoWire ID', data.rotoWirePlayerID)}
+                    ${this.createIdCard('Sleeper Bot ID', data.sleeperBotID)}
+                    ${this.createIdCard('MLB ID Full', data.mlbIDFull)}
+                    ${this.createIdCard('RotoWire ID Full', data.rotoWirePlayerIDFull)}
+                    ${this.createIdCard('Player ID', data.playerID)}
                 </div>
             `;
         }
+    }
 
-        // Update metrics
-        const advancedStatsElement = document.getElementById('advancedStats');
-        advancedStatsElement.innerHTML = `
-            <div class="stat-grid">
-                <div class="stat-item">
-                    <label>FG Score</label>
-                    <span>${playerData.metrics.fgScore.toFixed(2)}</span>
-                </div>
-                <div class="stat-item">
-                    <label>Statcast Score</label>
-                    <span>${playerData.metrics.statcastScore.toFixed(2)}</span>
-                </div>
-                <div class="stat-item">
-                    <label>Combined Score</label>
-                    <span>${playerData.metrics.combinedScore.toFixed(2)}</span>
-                </div>
-                <div class="stat-item">
-                    <label>Rank</label>
-                    <span>#${playerData.rank}</span>
-                </div>
-                <div class="stat-item">
-                    <label>Status</label>
-                    <span>${playerData.availability}</span>
-                </div>
+    createIdCard(label, value) {
+        return `
+            <div class="info-card">
+                <span class="label">${label}</span>
+                <span class="value">${value || 'N/A'}</span>
             </div>
         `;
+    }
 
-    } catch (error) {
-        console.error('Error loading player profile:', error);
-        const contentWrapper = document.querySelector('.content-wrapper');
-        if (contentWrapper) {
-            contentWrapper.innerHTML = `
-                <div class="error-message">
-                    <h2>Error Loading Player Profile</h2>
-                    <p>${error.message}</p>
-                    <a href="dashboard.html" class="button">Return to Dashboard</a>
+    handleError(error) {
+        const errorContainer = document.getElementById('errorContainer');
+        if (errorContainer) {
+            errorContainer.innerHTML = `
+                <div class="alert-danger">
+                    <h4 style="color: #FF0000; margin: 0 0 10px 0;">Error Loading Player Profile</h4>
+                    <p style="margin: 0;">${error.message}</p>
                 </div>
             `;
         }
     }
 }
 
-// Wait for DOM to load
-document.addEventListener('DOMContentLoaded', loadPlayerProfile);
+// Initialize the player profile when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const profile = new PlayerProfile();
+    profile.loadPlayerProfile();
+});
+
+// Add global error handling
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+    console.error('Global error:', {msg, url, lineNo, columnNo, error});
+    const profile = new PlayerProfile();
+    profile.handleError(error || new Error(msg));
+    return false;
+};

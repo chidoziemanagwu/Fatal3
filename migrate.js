@@ -61,11 +61,11 @@ async function migrate() {
     try {
       await pool.query(`
         ALTER TABLE users 
-        ADD COLUMN favorite_league_id INT REFERENCES leagues(id) ON DELETE SET NULL;
+        ADD COLUMN IF NOT EXISTS favorite_league_id INT REFERENCES leagues(id) ON DELETE SET NULL;
       `);
       await pool.query(`
         ALTER TABLE users 
-        ADD COLUMN favorite_team_id INT REFERENCES teams(id) ON DELETE SET NULL;
+        ADD COLUMN IF NOT EXISTS favorite_team_id INT REFERENCES teams(id) ON DELETE SET NULL;
       `);
     } catch (e) {
       // Columns might already exist, continue
@@ -83,7 +83,7 @@ async function migrate() {
     `);
     console.log('Taken_players table created.');
 
-    // 7. Create player_profiles table
+    // 7. Create player_profiles table with new columns
     await pool.query(`
       CREATE TABLE IF NOT EXISTS player_profiles (
         id SERIAL PRIMARY KEY,
@@ -92,6 +92,9 @@ async function migrate() {
         team TEXT,
         position TEXT,
         stats JSON,
+        primary_position TEXT,
+        secondary_positions TEXT[],
+        statcast_data JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -134,6 +137,19 @@ async function migrate() {
     `);
     console.log('Referrals table created.');
 
+    // 11. Create player_historical_stats table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS player_historical_stats (
+        id SERIAL PRIMARY KEY,
+        player_id TEXT NOT NULL,
+        season_year INTEGER NOT NULL,
+        stats JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(player_id, season_year)
+      );
+    `);
+    console.log('Player_historical_stats table created.');
+
     // Create indexes
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_leagues_user_id ON leagues(user_id);
@@ -145,6 +161,25 @@ async function migrate() {
       CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
     `);
     console.log('Indexes created.');
+
+    // Add unique constraint to league_rankings if it doesn't exist
+    try {
+      await pool.query(`
+      -- migrations/add_position_columns.sql
+      ALTER TABLE player_profiles
+      ADD COLUMN IF NOT EXISTS primary_position VARCHAR(10),
+      ADD COLUMN IF NOT EXISTS secondary_positions TEXT[];
+      
+      -- Update existing records with default values
+      UPDATE player_profiles 
+      SET primary_position = position,
+          secondary_positions = ARRAY[]::TEXT[]
+      WHERE primary_position IS NULL;
+      `);
+    } catch (e) {
+      // Constraint might already exist, continue
+    }
+    console.log('Constraints checked.');
 
     console.log('Migration completed successfully.');
     process.exit(0);

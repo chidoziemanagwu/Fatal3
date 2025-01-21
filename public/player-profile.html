@@ -1,4 +1,3 @@
-<!-- public/player-profile.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,39 +20,55 @@
     </div>
 
     <div class="content-wrapper">
+        <div id="errorContainer"></div>
+
+        <!-- Player Header Section -->
         <div class="player-header">
-            <h1 id="playerName"></h1>
-            <div class="player-meta">
-                <span id="playerTeam"></span>
-                <span id="playerPosition"></span>
+            <img id="playerImage" src="https://cdn-icons-png.flaticon.com/512/166/166366.png" alt="Player Image">
+            <div class="player-info">
+                <div class="name-number">
+                    <h1 id="playerName">Player Name</h1>
+                    <span id="playerNumber" class="jersey-number">#00</span>
+                </div>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <span class="label">Position</span>
+                        <span id="playerPosition" class="value">-</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="label">Team</span>
+                        <span id="playerTeam" class="value">-</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="label">Bats/Throws</span>
+                        <span id="playerBatsThrows" class="value">-</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="label">Height/Weight</span>
+                        <span id="playerHeightWeight" class="value">-</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="label">Born</span>
+                        <span id="playerBorn" class="value">-</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="label">Last Game</span>
+                        <span id="playerDebut" class="value">-</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stats-card current">
-              <h2>Current Season Stats</h2>
-              <div id="currentStats"></div>
-            </div>
-          
-            <div class="stats-card historical">
-              <h2>Historical Performance</h2>
-              <div id="historicalStats"></div>
-            </div>
-          
-            <div class="stats-card projections">
-              <h2>Projections</h2>
-              <div id="projectionStats"></div>
-            </div>
-          
-            <div class="stats-card advanced">
-              <h2>Advanced Metrics</h2>
-              <div id="advancedStats"></div>
-            </div>
-          </div>
+        <!-- Player Details -->
+        <div class="player-details">
+            <!-- Links Section -->
+            <div id="playerLinks" class="links-section"></div>
 
-        <div class="charts-section">
-            <canvas id="performanceChart"></canvas>
-            <canvas id="comparisonChart"></canvas>
+            <!-- Injury Section -->
+            <div id="playerInjury" class="injury-section"></div>
+
+            <!-- IDs Section -->
+            <div id="playerIds" class="ids-section"></div>
         </div>
     </div>
 
@@ -61,7 +76,7 @@
         © 2024 - Fatals Fantasy Sports
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/services/tank01-api.js"></script>
     <script src="/js/player-profile.js"></script>
 </body>
 </html>

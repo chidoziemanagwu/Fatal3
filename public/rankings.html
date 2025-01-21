@@ -16,45 +16,50 @@
 <body>
     <div class="navbar">
         <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="settings.html">Settings</a>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="settings.html">Settings</a>
+        </div>
     </div>
 
     <div class="content-wrapper">
-        <h1>League Rankings</h1>
-        
-        <div class="rankings-filters">
-            <select id="leagueSelect">
-                <option value="">Select League</option>
-            </select>
-            <select id="timeframeSelect">
-                <option value="season">Season</option>
-                <option value="month">Last 30 Days</option>
-                <option value="week">Last 7 Days</option>
-            </select>
-        </div>
+        <header class="page-header">
+            <h1>League Rankings</h1>
+            <div class="rankings-filters">
+                <select id="leagueSelect" class="filter-select">
+                    <option value="">Select League</option>
+                </select>
+                <select id="timeframeSelect" class="filter-select">
+                    <option value="season">Season</option>
+                    <option value="month">Last 30 Days</option>
+                    <option value="week">Last 7 Days</option>
+                </select>
+            </div>
+        </header>
 
-        <div class="rankings-grid">
+        <div class="rankings-container">
             <div class="rankings-card overall">
                 <h2>Overall Rankings</h2>
-                <table id="overallRankings"></table>
-            </div>
-
-            <div class="rankings-card categorical">
-                <h2>Category Leaders</h2>
-                <div id="categoryLeaders"></div>
+                <div class="table-wrapper">
+                    <table id="overallRankings">
+                        <!-- Table content will be dynamically populated -->
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="head-to-head-section">
-            <h2>Head-to-Head Records</h2>
-            <table id="h2hRecords"></table>
-        </div>
+        <!-- <div class="export-import-section">
+            <button id="exportLeague" class="action-button">Export League</button>
+            <div class="import-wrapper">
+                <input type="file" id="importLeagueFile" class="file-input" />
+                <button id="importLeague" class="action-button">Import League</button>
+            </div>
+        </div> -->
     </div>
 
-    <div class="footer">
+    <footer class="footer">
         © 2024 - Fatals Fantasy Sports
-    </div>
+    </footer>
 
     <script src="/js/rankings.js"></script>
 </body>

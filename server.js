@@ -27,20 +27,6 @@ app.get('/pfs', (req, res) => {
 });
 
 
-
-app.get('/api/league/:id/rankings', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query(
-      'SELECT * FROM league_rankings WHERE league_id = \$1 ORDER BY rank ASC',
-      [id]
-    );
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch league rankings' });
-  }
-});
-
 app.post('/api/subscription', async (req, res) => {
   const { userId, plan } = req.body;
   try {
@@ -938,6 +924,273 @@ app.post('/api/set-favorite-team', async (req, res) => {
     res.status(500).json({ error: 'Failed to update favorite team' });
   }
 });
+
+async function calculateLeagueRankings(leagueId) {
+  if (!leagueId) {
+      throw new Error('League ID is required');
+  }
+
+  try {
+      // Convert leagueId to integer
+      const numericLeagueId = parseInt(leagueId, 10);
+      if (isNaN(numericLeagueId)) {
+          throw new Error('Invalid league ID format');
+      }
+
+      // First verify the league exists
+      const leagueCheck = await pool.query(
+          'SELECT id FROM leagues WHERE id = \$1',
+          [numericLeagueId]
+      );
+
+      if (leagueCheck.rows.length === 0) {
+          throw new Error('League not found');
+      }
+
+      // Get all teams in league with their players and scores
+      const teamScoresQuery = await pool.query(`
+          WITH player_scores AS (
+              SELECT 
+                  tp.team_id,
+                  COALESCE(SUM(CASE 
+                      WHEN p.stats->>'combinedScore' IS NOT NULL 
+                      THEN (p.stats->>'combinedScore')::float 
+                      ELSE 0 
+                  END), 0) as total_score
+              FROM teams t
+              LEFT JOIN taken_players tp ON t.id = tp.team_id
+              LEFT JOIN player_profiles p ON tp.player_id = p.player_id::text
+              WHERE t.league_id = \$1
+              GROUP BY tp.team_id
+          )
+          SELECT 
+              t.id as team_id,
+              t.name as team_name,
+              COALESCE(ps.total_score, 0) as score
+          FROM teams t
+          LEFT JOIN player_scores ps ON t.id = ps.team_id
+          WHERE t.league_id = \$1
+          ORDER BY ps.total_score DESC NULLS LAST`,
+          [numericLeagueId]
+      );
+
+      // Transform query results into rankings
+      const rankings = teamScoresQuery.rows.map((team, index) => ({
+          team_id: team.team_id,
+          team_name: team.team_name,
+          rank: index + 1,
+          score: parseFloat(team.score) || 0
+      }));
+
+      // Update rankings in database
+      await Promise.all(rankings.map(team => 
+          pool.query(
+              `INSERT INTO league_rankings (league_id, team_id, rank, score)
+               VALUES (\$1, \$2, \$3, \$4)
+               ON CONFLICT (league_id, team_id) 
+               DO UPDATE SET rank = \$3, score = \$4`,
+              [numericLeagueId, team.team_id, team.rank, team.score]
+          )
+      ));
+
+      return rankings;
+
+  } catch (error) {
+      console.error('Error calculating rankings:', error);
+      throw error;
+  }
+}
+
+// Update the API endpoint
+app.get('/api/league/:id/rankings', async (req, res) => {
+  try {
+      const { id } = req.params;
+      
+      if (!id || id === 'null' || id === 'undefined') {
+          return res.status(400).json({ error: 'Valid league ID is required' });
+      }
+
+      const numericId = parseInt(id, 10);
+      if (isNaN(numericId)) {
+          return res.status(400).json({ error: 'League ID must be a number' });
+      }
+
+      const rankings = await calculateLeagueRankings(numericId);
+      res.json(rankings);
+  } catch (err) {
+      console.error('Error fetching rankings:', err);
+      res.status(500).json({ 
+          error: 'Failed to fetch league rankings',
+          message: err.message 
+      });
+  }
+});
+
+// Add these endpoints
+// In server.js
+app.get('/api/player/historical-stats', async (req, res) => {
+  try {
+      const { name } = req.query;
+
+      if (!name) {
+          return res.status(400).json({ error: 'Player name is required' });
+      }
+
+      console.log('Fetching historical stats for player:', name);
+
+      // Fetch historical stats using BaseballStatsAPI
+      const historicalStats = await BaseballStatsAPI.fetchHistoricalStats(null, name);
+
+      res.json(historicalStats);
+  } catch (error) {
+      console.error('Error fetching historical stats:', error);
+      res.status(500).json({ error: 'Failed to fetch historical stats' });
+  }
+});
+
+app.get('/api/player/positions', async (req, res) => {
+  try {
+      const { name } = req.query;
+
+      if (!name) {
+          return res.status(400).json({ error: 'Player name is required' });
+      }
+
+      console.log('Fetching positions for player:', name);
+
+      // Fetch player positions using BaseballStatsAPI
+      const positions = await BaseballStatsAPI.fetchPlayerPositions(null, name);
+
+      res.json(positions);
+  } catch (error) {
+      console.error('Error fetching player positions:', error);
+      res.status(500).json({ error: 'Failed to fetch player positions' });
+  }
+});
+
+
+app.get('/api/player/:id/statcast', async (req, res) => {
+  try {
+      const { id } = req.params;
+      const statcastData = await BaseballStatsAPI.fetchStatcastData(id);
+      res.json(statcastData);
+  } catch (error) {
+      console.error('Error fetching Statcast data:', error);
+      res.status(500).json({ error: 'Failed to fetch Statcast data' });
+  }
+});
+
+
+// Add API for category leaders
+app.get('/api/league/:id/category-leaders', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        t.name AS team_name,
+        SUM(CASE WHEN p.HR >= 1 THEN 1 ELSE 0 END) AS hr_leaders,
+        SUM(CASE WHEN p.RBI >= 1 THEN 1 ELSE 0 END) AS rbi_leaders,
+        AVG(p.AVG) AS avg_leaders
+      FROM teams t
+      JOIN taken_players tp ON t.id = tp.team_id
+      JOIN player_profiles p ON tp.player_id = p.id
+      WHERE t.league_id = \$1
+      GROUP BY t.id, t.name
+    `, [id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch category leaders' });
+  }
+});
+
+// Add API for head-to-head records
+app.get('/api/league/:id/head-to-head', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        team1.name AS team1_name,
+        team2.name AS team2_name,
+        h2h.wins_team1,
+        h2h.wins_team2
+      FROM head_to_head h2h
+      JOIN teams team1 ON h2h.team1_id = team1.id
+      JOIN teams team2 ON h2h.team2_id = team2.id
+      WHERE h2h.league_id = \$1
+    `, [id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch head-to-head records' });
+  }
+});
+
+// Add API for historical rankings
+app.get('/api/league/:id/historical-rankings', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        team_id, 
+        rank, 
+        score, 
+        created_at 
+      FROM league_rankings
+      WHERE league_id = \$1
+      ORDER BY created_at DESC
+    `, [id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch historical rankings' });
+  }
+});
+
+// Add API for exporting league data
+app.get('/api/league/:id/export', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const leagueData = await pool.query('SELECT * FROM leagues WHERE id = \$1', [id]);
+    const teamsData = await pool.query('SELECT * FROM teams WHERE league_id = \$1', [id]);
+    const playersData = await pool.query('SELECT * FROM taken_players WHERE league_id = \$1', [id]);
+    res.json({
+      league: leagueData.rows[0],
+      teams: teamsData.rows,
+      players: playersData.rows,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to export league data' });
+  }
+});
+
+// Add API for importing league data
+app.post('/api/league/import', async (req, res) => {
+  const { league, teams, players } = req.body;
+  try {
+    const leagueResult = await pool.query(
+      'INSERT INTO leagues (name, user_id) VALUES (\$1, \$2) RETURNING id',
+      [league.name, league.user_id]
+    );
+    const leagueId = leagueResult.rows[0].id;
+
+    for (const team of teams) {
+      await pool.query(
+        'INSERT INTO teams (name, league_id) VALUES (\$1, \$2)',
+        [team.name, leagueId]
+      );
+    }
+
+    for (const player of players) {
+      await pool.query(
+        'INSERT INTO taken_players (league_id, player_id, team_id) VALUES (\$1, \$2, \$3)',
+        [leagueId, player.player_id, player.team_id]
+      );
+    }
+
+    res.json({ status: 'League imported successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to import league data' });
+  }
+});
+
 
 // Add this route to serve the navbar component
 app.get('/components/navbar.html', (req, res) => {

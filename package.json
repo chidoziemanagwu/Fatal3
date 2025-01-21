@@ -14,10 +14,12 @@
     "@realfavicongenerator/image-adapter-node": "^0.4.12",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
+    "cheerio": "^1.0.0",
     "connect-pg-simple": "^10.0.0",
     "csv-parse": "^5.6.0",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "mlb-stats-api": "^1.5.1",
     "pg": "^8.13.1"
   }
 }
