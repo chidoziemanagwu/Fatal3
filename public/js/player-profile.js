@@ -3,9 +3,31 @@
 class PlayerProfile {
     constructor() {
         this.playerData = null;
+        this.loadingOverlay = this.createLoadingOverlay();
+        document.body.appendChild(this.loadingOverlay);
+    }
+
+    createLoadingOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Player Data...</div>
+        `;
+        overlay.style.display = 'none';
+        return overlay;
+    }
+
+    showLoading() {
+        this.loadingOverlay.style.display = 'flex';
+    }
+
+    hideLoading() {
+        this.loadingOverlay.style.display = 'none';
     }
 
     async loadPlayerProfile() {
+        this.showLoading();
         try {
             const urlParams = new URLSearchParams(window.location.search);
             const playerName = urlParams.get('name');
@@ -15,18 +37,34 @@ class PlayerProfile {
                 throw new Error('No player name or ID provided');
             }
 
-            const playerData = await Tank01API.getPlayerInfo(playerName || playerId);
-            console.log('Tank01 Player Data:', playerData);
+            // Load data from multiple sources in parallel
+            const [tank01Data, hfsData, pfsData] = await Promise.all([
+                Tank01API.getPlayerInfo(playerName || playerId),
+                fetch('/api/hfs').then(r => r.json()).catch(() => null),
+                fetch('/api/pfs').then(r => r.json()).catch(() => null)
+            ]);
 
-            if (!playerData || !playerData.body || !playerData.body[0]) {
+            if (!tank01Data || !tank01Data.body || !tank01Data.body[0]) {
                 throw new Error('No player data found');
             }
 
-            this.playerData = playerData.body[0];
+            // Find player in HFS/PFS data
+            const hfsPlayer = hfsData ? hfsData.find(p => p.playerid === playerId) : null;
+            const pfsPlayer = pfsData ? pfsData.find(p => p.playerid === playerId) : null;
+
+            // Combine all data sources
+            this.playerData = {
+                ...tank01Data.body[0],
+                hfsData: hfsPlayer || null,
+                pfsData: pfsPlayer || null
+            };
+
             this.updateUI();
         } catch (error) {
             console.error('Error loading player profile:', error);
             this.handleError(error);
+        } finally {
+            this.hideLoading();
         }
     }
 
@@ -65,13 +103,20 @@ class PlayerProfile {
             }
         });
 
-        // Update player image
+        // Update player image with loading state
         const playerImage = document.getElementById('playerImage');
         if (playerImage) {
-            playerImage.src = data.mlbHeadshot || data.espnHeadshot || 'https://cdn-icons-png.flaticon.com/512/166/166366.png';
-            playerImage.onerror = () => {
-                playerImage.src = 'https://cdn-icons-png.flaticon.com/512/166/166366.png';
+            playerImage.style.opacity = '0.5';
+            const newImage = new Image();
+            newImage.onload = () => {
+                playerImage.src = newImage.src;
+                playerImage.style.opacity = '1';
             };
+            newImage.onerror = () => {
+                playerImage.src = 'https://cdn-icons-png.flaticon.com/512/166/166366.png';
+                playerImage.style.opacity = '1';
+            };
+            newImage.src = data.mlbHeadshot || data.espnHeadshot || 'https://cdn-icons-png.flaticon.com/512/166/166366.png';
         }
 
         // Update links section
@@ -108,6 +153,20 @@ class PlayerProfile {
             }
         }
 
+        // Add HFS/PFS data section
+        const statsSection = document.createElement('div');
+        statsSection.className = 'stats-section';
+        statsSection.innerHTML = `
+            <h3 style="color: #00FF00; margin: 20px 0;">Additional Stats</h3>
+            ${this.createStatsTable()}
+        `;
+        
+        // Insert stats section before the links section
+        const linksSection2 = document.getElementById('playerLinks');
+        if (linksSection2) {
+            linksSection2.parentNode.insertBefore(statsSection, linksSection2);
+        }
+
         // Update IDs section
         const idsSection = document.getElementById('playerIds');
         if (idsSection) {
@@ -127,6 +186,61 @@ class PlayerProfile {
                 </div>
             `;
         }
+    }
+
+    createStatsTable() {
+        const { hfsData, pfsData } = this.playerData;
+        if (!hfsData && !pfsData) return '<p>No additional stats available</p>';
+
+        return `
+            <div class="stats-table">
+                ${hfsData ? `
+                    <div class="stats-group">
+                        <h4>HFS Stats</h4>
+                        <table>
+                            <tr>
+                                <th>Rank</th>
+                                <td>${hfsData.Rank || 'N/A'}</td>
+                                <th>Position Rank</th>
+                                <td>${hfsData.PositionRank || 'N/A'}</td>
+                            </tr>
+                            ${this.createStatRows(hfsData)}
+                        </table>
+                    </div>
+                ` : ''}
+                ${pfsData ? `
+                    <div class="stats-group">
+                        <h4>PFS Stats</h4>
+                        <table>
+                            <tr>
+                                <th>Rank</th>
+                                <td>${pfsData.Rank || 'N/A'}</td>
+                                <th>Position Rank</th>
+                                <td>${pfsData.PositionRank || 'N/A'}</td>
+                            </tr>
+                            ${this.createStatRows(pfsData)}
+                        </table>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    createStatRows(data) {
+        const excludeKeys = ['Rank', 'PositionRank', 'playerid', 'name', 'Pos', 'team', 'Availability'];
+        const rows = [];
+        
+        for (const [key, value] of Object.entries(data)) {
+            if (!excludeKeys.includes(key)) {
+                rows.push(`
+                    <tr>
+                        <th>${key}</th>
+                        <td>${value || 'N/A'}</td>
+                    </tr>
+                `);
+            }
+        }
+        return rows.join('');
     }
 
     createIdCard(label, value) {

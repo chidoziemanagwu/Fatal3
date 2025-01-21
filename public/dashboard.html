@@ -864,22 +864,41 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     async function selectLeague(leagueId) {
-      const res = await fetch('/select-league', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({leagueId})
-      });
-      const data = await res.json();
-      if(data.status === 'League selected') {
-        currentLeagueId = leagueId;
-        localStorage.setItem('currentLeagueId', leagueId);
-        await reloadData();
-        await loadTeamsForLeague();
-      } else {
-        alert(data.error || 'Failed to select league');
-      }
+    try {
+        const res = await fetch('/select-league', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({leagueId})
+        });
+        const data = await res.json();
+        
+        if(data.status === 'League selected') {
+            currentLeagueId = leagueId;
+            localStorage.setItem('currentLeagueId', leagueId);
+            
+            // Show loading state for data refresh
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-overlay';
+            loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
+            document.body.appendChild(loadingDiv);
+            
+            try {
+                await Promise.all([
+                    reloadData(),
+                    loadTeamsForLeague()
+                ]);
+            } finally {
+                loadingDiv.remove();
+            }
+        } else {
+            alert(data.error || 'Failed to select league');
+        }
+    } catch (error) {
+        console.error('Error selecting league:', error);
+        alert('Failed to select league');
     }
-
+}    
+    
     async function createLeague(name) {
       const res = await fetch('/create-league', {
         method: 'POST',
@@ -913,44 +932,50 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     async function checkLoginStatus() {
-      try {
+    try {
         const response = await fetch('/api/check-login');
         const data = await response.json();
         loggedInUser = data.loggedIn ? data.username : null;
         
         if (data.loggedIn) {
-          document.getElementById('userMenuContainer').innerHTML = `
-            <span>${data.username}</span>
-            <button class="nav-button" onclick="logout()">Logout</button>
-          `;
-          
-          // Load leagues first
-          await loadUserLeagues();
-          
-          // If there's a favorite league, select it
-          if (data.favoriteLeagueId) {
-            await selectLeague(data.favoriteLeagueId);
+            document.getElementById('userMenuContainer').innerHTML = `
+                <span>${data.username}</span>
+                <button class="nav-button" onclick="logout()">Logout</button>
+            `;
             
-            // If there's also a favorite team, select it
-            if (data.favoriteTeamId) {
-              await selectFavoriteTeam(data.favoriteTeamId);
+            // Load leagues first
+            await loadUserLeagues();
+            
+            // Auto-select most recent league if no favorite league
+            if (!data.favoriteLeagueId && leagues.length > 0) {
+                // Get most recent league (assuming last in array is most recent)
+                const mostRecentLeague = leagues[leagues.length - 1];
+                await selectLeague(mostRecentLeague.id);
             }
-          }
-          
-          return true;
+            // If there's a favorite league, select it
+            else if (data.favoriteLeagueId) {
+                await selectLeague(data.favoriteLeagueId);
+                
+                // If there's also a favorite team, select it
+                if (data.favoriteTeamId) {
+                    await selectFavoriteTeam(data.favoriteTeamId);
+                }
+            }
+            
+            return true;
         } else {
-          document.getElementById('userMenuContainer').innerHTML = `
-            <button class="nav-button" onclick="showLoginOverlay()">Login</button>
-            <button class="nav-button" onclick="showRegisterOverlay()">Register</button>
-          `;
-          return false;
+            document.getElementById('userMenuContainer').innerHTML = `
+                <button class="nav-button" onclick="showLoginOverlay()">Login</button>
+                <button class="nav-button" onclick="showRegisterOverlay()">Register</button>
+            `;
+            return false;
         }
-      } catch (err) {
+    } catch (err) {
         console.error('Error checking login status:', err);
         return false;
-      }
     }
-
+}    
+    
     async function loadUserLeagues() {
       if(!loggedInUser) {
         leagues = [];
@@ -1189,21 +1214,32 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     (async function initialLoad() {
-      await checkLoginStatus();
-      await loadUserLeagues();
-      updateUIState();
-      // Load data after UI is ready
-      if (loggedInUser && currentLeagueId) {
-        await Promise.all([
-          fetchAllPlayers(),
-          loadBestAvailable(),
-          loadBigBoard(),
-          loadTeamsForLeague()
-        ]);
-      } else if (loggedInUser) {
-        await fetchAllPlayers();
-      }
-    })();
+    // Show loading state
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loading-overlay';
+    loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading...</div>';
+    document.body.appendChild(loadingDiv);
+
+    try {
+        await checkLoginStatus();
+        updateUIState();
+        
+        // Load data after UI is ready
+        if (loggedInUser) {
+            await Promise.all([
+                fetchAllPlayers(),
+                loadBestAvailable(),
+                loadBigBoard(),
+                loadTeamsForLeague()
+            ]);
+        }
+    } catch (error) {
+        console.error('Error during initial load:', error);
+    } finally {
+        // Remove loading overlay
+        loadingDiv.remove();
+    }
+})();
 
     function showLoginOverlay() {
       document.getElementById('overlayLogin').style.display = 'flex';
