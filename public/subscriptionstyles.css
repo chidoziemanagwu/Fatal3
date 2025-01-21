@@ -112,3 +112,14 @@ body {
     color: #000;
     margin-top: 20px;
   }
+
+  /* Add to public/subscriptionstyles.css */
+.plan-card.current-plan {
+    border-color: #00FF00;
+    box-shadow: 0 0 10px #00FF00;
+}
+
+.plan-card.current-plan button {
+    background-color: #003300;
+    cursor: not-allowed;
+}

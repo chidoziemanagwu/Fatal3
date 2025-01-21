@@ -113,17 +113,37 @@ async function migrate() {
     `);
     console.log('League_rankings table created.');
 
-    // 9. Create subscriptions table
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS subscriptions (
-        id SERIAL PRIMARY KEY,
-        user_id INT REFERENCES users(id) ON DELETE CASCADE,
-        plan TEXT NOT NULL,
-        status TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-    console.log('Subscriptions table created.');
+// Replace the subscription-related migration (part 9) with this:
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS subscriptions (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    plan TEXT NOT NULL,
+    status TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// Add subscription_status column if it doesn't exist
+try {
+  await pool.query(`
+    DO $ 
+    BEGIN 
+      IF NOT EXISTS (
+        SELECT 1 
+        FROM information_schema.columns 
+        WHERE table_name = 'users' 
+        AND column_name = 'subscription_status'
+      ) THEN 
+        ALTER TABLE users ADD COLUMN subscription_status TEXT DEFAULT 'free';
+      END IF;
+    END $;
+  `);
+} catch (e) {
+  console.log('Subscription status column already exists, skipping...');
+}
+console.log('Subscriptions table and user column checked/created.');
 
     // 10. Create referrals table
     await pool.query(`

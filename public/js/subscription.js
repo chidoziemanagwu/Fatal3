@@ -1,14 +1,31 @@
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.select-plan').forEach((button) => {
-      button.addEventListener('click', async () => {
-        const plan = button.dataset.plan;
-        const response = await fetch('/api/subscription', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: 1, plan }), // Replace with actual user ID
-        });
-        const result = await response.json();
-        alert(result.status);
-      });
-    });
+// public/js/subscription.js
+async function checkSubscriptionStatus() {
+    try {
+      const response = await fetch('/api/subscription/status');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching subscription status:', error);
+      return { 
+        status: 'error', 
+        plan: null, 
+        error: error.message 
+      };
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const status = await checkSubscriptionStatus();
+      console.log('Subscription status:', status);
+      // Handle the subscription status
+      if (status.error) {
+        console.error('Subscription error:', status.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   });

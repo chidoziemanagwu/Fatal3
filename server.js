@@ -9,6 +9,59 @@ const path = require('path');
 
 const app = express();
 
+// 1. Basic middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  store: new pgSession({
+    pool: pool,
+    tableName: 'session'
+  }),
+  secret: 'some_secret_key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, maxAge: 24*60*60*1000 }
+}));
+
+app.use(express.static('public'));
+
+// Add this endpoint to your server.js
+app.get('/api/subscription/status', async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.json({
+        status: 'none',
+        plan: null,
+        message: 'No active session'
+      });
+    }
+
+    const subscriptionQuery = await pool.query(
+      'SELECT plan, status FROM subscriptions WHERE user_id = \$1 ORDER BY created_at DESC LIMIT 1',
+      [req.session.userId]
+    );
+
+    if (subscriptionQuery.rows.length === 0) {
+      return res.json({
+        status: 'none',
+        plan: null
+      });
+    }
+
+    const subscription = subscriptionQuery.rows[0];
+    res.json({
+      status: subscription.status,
+      plan: subscription.plan
+    });
+  } catch (err) {
+    console.error('Error fetching subscription status:', err);
+    res.status(500).json({ error: 'Failed to fetch subscription status' });
+  }
+});
+
+
+
 // Clean URL routes
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
@@ -130,19 +183,7 @@ app.get('/api/players/:id', async (req, res) => {
 });
 
 
-app.use(express.static('public'));
-app.use(express.json());
 
-app.use(session({
-  store: new pgSession({
-    pool: pool,
-    tableName: 'session'
-  }),
-  secret: 'some_secret_key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24*60*60*1000 }
-}));
 
 function normalizeName(name) {
   if(!name||typeof name!=='string')return '';
@@ -1194,9 +1235,27 @@ app.post('/api/league/import', async (req, res) => {
 
 // Add this route to serve the navbar component
 app.get('/components/navbar.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/components/navbar.html'));
+  res.sendFile(path.join(__dirname, 'public/components/navbar.html'));
 });
 
-app.listen(3000,()=>{
-  console.log('Server is listening on http://localhost:3000');
+// Error handling middleware (add this at the end of your routes)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Something broke!',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found' });
+});
+
+// Start server with error handling
+app.listen(3000, () => {
+  console.log('Server is listening on http://localhost:3000');
+}).on('error', (err) => {
+  console.error('Server error:', err);
+});
+
