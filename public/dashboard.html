@@ -11,22 +11,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Dashboard | Fatals</title>
   <link rel="stylesheet" href="/dashboardstyles.css" />
+  <link rel="stylesheet" href="/css/navbar.css">
 </head>
 <body>
-  <div class="navbar">
-    <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
-    <a href="javascript:void(0)" id="dashLink">Dashboard</a>
-    <!-- <li><a href="player-profile.html">Player Profiles</a></li> -->
-    <li><a href="rankings.html">League Rankings</a></li>
-    <li><a href="subscription.html">Subscription</a></li>
-    <li><a href="settings.html" id="settingsLink">Settings</a></li>
-    <div class="user-menu-container">
-      <div class="user-menu" id="userMenuContainer" style="display: none">
-        <!-- Will be populated by JavaScript -->
-      </div>
-      <div class="dropdown"></div>
-    </div>
-  </div>
+  <div id="navbar-container"></div>
 
   <div class="content-wrapper">
     <div class="left-column">
@@ -175,14 +163,116 @@
 
   <div id="bigBoardNotice" class="notice hidden">Please select or create a league to use this feature.</div>
 
-<script>
-    let allPlayers = [];
-    let currentPlayer = null;
-    let loggedInUser = null;
-    let leagues = [];
-    let currentLeagueId = null;
-    let teams = [];
-    let needsTeamRefresh = true;
+  <script>
+
+// Global variables
+let loggedInUser = null;
+let leagues = [];
+let currentLeagueId = null;
+let teams = [];
+let allPlayers = [];
+let currentPlayer = null;
+let needsTeamRefresh = true;
+
+// Define toggleUserDropdown function after global variables
+function toggleUserDropdown() {
+    const dropdown = document.querySelector('.dropdown');
+    dropdown.innerHTML = '';
+    
+    if(!loggedInUser) {
+        dropdown.innerHTML = '<div>Not logged in</div>';
+    } else {
+        if(leagues.length === 0) {
+            const noLeagues = document.createElement('div');
+            noLeagues.textContent = "No leagues yet";
+            dropdown.appendChild(noLeagues);
+        } else {
+            leagues.forEach(lg => {
+                const leagueBtn = document.createElement('button');
+                leagueBtn.textContent = lg.name;
+                leagueBtn.addEventListener('click', async () => {
+                    await selectLeague(lg.id);
+                    dropdown.classList.remove('active');
+                });
+                dropdown.appendChild(leagueBtn);
+            });
+        }
+
+        const createLeagueBtn = document.createElement('button');
+        createLeagueBtn.textContent = "Create New League";
+        createLeagueBtn.addEventListener('click', async () => {
+            const leagueName = prompt("Enter new league name:");
+            if(leagueName && leagueName.trim() !== '') {
+                await createLeague(leagueName.trim());
+            }
+            dropdown.classList.remove('active');
+        });
+        dropdown.appendChild(createLeagueBtn);
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = "Log Out";
+        logoutBtn.addEventListener('click', async () => {
+            await logout();
+            dropdown.classList.remove('active');
+        });
+        dropdown.appendChild(logoutBtn);
+    }
+
+    dropdown.classList.toggle('active');
+}
+
+fetch('/components/navbar.html')
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+        
+        // Initialize navbar functionality
+        const userMenuContainer = document.getElementById('userMenuContainer');
+        userMenuContainer.addEventListener('click', toggleUserDropdown);
+        
+        // Mobile menu toggle
+        const navbarToggle = document.querySelector('.navbar-toggle');
+        if (navbarToggle) {
+            navbarToggle.addEventListener('click', () => {
+                document.querySelector('.navbar-links').classList.toggle('active');
+            });
+        }
+
+        // Logo click handler
+        document.getElementById('homeLogo').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+
+        // Add click handlers for nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            // Highlight active page
+            if(link.href === window.location.href) {
+                link.classList.add('active');
+            }
+            
+            // Add specific handlers for dashboard and settings
+            if(link.href.includes('dashboard.html')) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.reload();
+                });
+            }
+        });
+
+        // Now initialize the dashboard
+        initializeDashboard();
+    });
+
+function initializeDashboard() {
+
+    
+    // let allPlayers = [];
+    // let currentPlayer = null;
+    // let loggedInUser = null;
+    // let leagues = [];
+    // let currentLeagueId = null;
+    // let teams = [];
+    // let needsTeamRefresh = true;
 
     const playerSearchInput = document.getElementById('playerSearch');
     const searchResultsContainer = document.getElementById('searchResults');
@@ -234,13 +324,13 @@
       window.location.href = "index.html";
     });
 
-    document.getElementById('dashLink').addEventListener('click', () => {
-      window.location.reload();
-    });
+    // document.getElementById('dashLink').addEventListener('click', () => {
+    //   window.location.reload();
+    // });
 
-    document.getElementById('settingsLink').addEventListener('click', () => {
-      window.location.href = "settings.html";
-    });
+    // document.getElementById('settingsLink').addEventListener('click', () => {
+    //   window.location.href = "settings.html";
+    // });
 
     // Global click handlers
     document.addEventListener('click', (e) => {
@@ -819,49 +909,6 @@ async function updatePlayerTeam(player, teamName) {
       }
     }
 
-    async function toggleUserDropdown() {
-      dropdown.innerHTML = '';
-      if(!loggedInUser) {
-        dropdown.innerHTML = '<div>Not logged in</div>';
-      } else {
-        if(leagues.length === 0) {
-          const noLeagues = document.createElement('div');
-          noLeagues.textContent = "No leagues yet";
-          dropdown.appendChild(noLeagues);
-        } else {
-          leagues.forEach(lg => {
-            const leagueBtn = document.createElement('button');
-            leagueBtn.textContent = lg.name;
-            leagueBtn.addEventListener('click', async () => {
-              await selectLeague(lg.id);
-              dropdown.classList.remove('active');
-            });
-            dropdown.appendChild(leagueBtn);
-          });
-        }
-
-        const createLeagueBtn = document.createElement('button');
-        createLeagueBtn.textContent = "Create New League";
-        createLeagueBtn.addEventListener('click', async () => {
-          const leagueName = prompt("Enter new league name:");
-          if(leagueName && leagueName.trim() !== '') {
-            await createLeague(leagueName.trim());
-          }
-          dropdown.classList.remove('active');
-        });
-        dropdown.appendChild(createLeagueBtn);
-
-        const logoutBtn = document.createElement('button');
-        logoutBtn.textContent = "Log Out";
-        logoutBtn.addEventListener('click', async () => {
-          await logout();
-          dropdown.classList.remove('active');
-        });
-        dropdown.appendChild(logoutBtn);
-      }
-
-      dropdown.classList.toggle('active');
-    }
 
     async function selectLeague(leagueId) {
     try {
@@ -1332,6 +1379,7 @@ async function updatePlayerTeam(player, teamName) {
         alert('Registration failed. Please try again.');
       }
     }
+  }
 </script>
 
   <!-- Add login/register overlays -->

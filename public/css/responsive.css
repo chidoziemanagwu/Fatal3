@@ -1,0 +1,45 @@
+/* public/css/responsive.css */
+/* Navbar - All Pages */
+.navbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    position: relative;
+  }
+  
+  .navbar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #00FF00;
+    font-size: 1.5rem;
+    order: 1;
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  
+  @media (max-width: 768px) {
+    .navbar-toggle {
+      display: block;
+      margin-left: auto;
+    }
+    
+    .navbar-links {
+      width: 100%;
+      flex-direction: column;
+      max-height: 0;
+      overflow: hidden;
+      order: 2;
+      
+      &.active {
+        max-height: 500px;
+        padding: 1rem 0;
+      }
+    }
+  }
