@@ -1,5 +1,3 @@
-// public/js/player-profile.js
-
 class PlayerProfile {
     constructor() {
         this.playerData = null;
@@ -75,13 +73,16 @@ class PlayerProfile {
         document.getElementById('playerName').textContent = data.longName || data.fullName || 'N/A';
         document.getElementById('playerNumber').textContent = data.jerseyNum ? `#${data.jerseyNum}` : '#00';
 
+        // Remove empty divs
+        this.removeEmptyDivs();
+
         // Update info cards values
         const infoCards = document.querySelectorAll('.info-card');
         infoCards.forEach(card => {
             const label = card.querySelector('.label').textContent.toLowerCase();
             const valueElement = card.querySelector('.value');
-            
-            switch(label) {
+
+            switch (label) {
                 case 'position':
                     valueElement.textContent = data.pos || 'N/A';
                     break;
@@ -133,39 +134,8 @@ class PlayerProfile {
             `;
         }
 
-        // Update injury section
-        const injurySection = document.getElementById('playerInjury');
-        if (injurySection) {
-            if (data.injury && (data.injury.designation || data.injury.description)) {
-                injurySection.innerHTML = `
-                    <h3 style="color: #00FF00; margin-bottom: 15px;">Injury Status</h3>
-                    <div class="injury-alert">
-                        <p style="color: #FF0000; font-weight: bold;">${data.injury.designation || 'N/A'}</p>
-                        <p style="color: #FF9999;">${data.injury.description || 'No details available'}</p>
-                        ${data.injury.injReturnDate ? `<p style="color: #FFFF00;">Expected Return: ${data.injury.injReturnDate}</p>` : ''}
-                    </div>
-                `;
-            } else {
-                injurySection.innerHTML = `
-                    <h3 style="color: #00FF00; margin-bottom: 15px;">Injury Status</h3>
-                    <p class="healthy-status">No current injuries</p>
-                `;
-            }
-        }
-
-        // Add HFS/PFS data section
-        const statsSection = document.createElement('div');
-        statsSection.className = 'stats-section';
-        statsSection.innerHTML = `
-            <h3 style="color: #00FF00; margin: 20px 0;">Additional Stats</h3>
-            ${this.createStatsTable()}
-        `;
-        
-        // Insert stats section before the links section
-        const linksSection2 = document.getElementById('playerLinks');
-        if (linksSection2) {
-            linksSection2.parentNode.insertBefore(statsSection, linksSection2);
-        }
+        // Update projections section
+        this.updateProjectionsSection();
 
         // Update IDs section
         const idsSection = document.getElementById('playerIds');
@@ -188,59 +158,67 @@ class PlayerProfile {
         }
     }
 
-    createStatsTable() {
-        const { hfsData, pfsData } = this.playerData;
-        if (!hfsData && !pfsData) return '<p>No additional stats available</p>';
+    removeEmptyDivs() {
+        const emptyDivs = document.querySelectorAll('.content-wrapper > div:empty');
+        emptyDivs.forEach(div => div.remove());
+    }
 
-        return `
-            <div class="stats-table">
-                ${hfsData ? `
-                    <div class="stats-group">
-                        <h4>HFS Stats</h4>
-                        <table>
-                            <tr>
-                                <th>Rank</th>
-                                <td>${hfsData.Rank || 'N/A'}</td>
-                                <th>Position Rank</th>
-                                <td>${hfsData.PositionRank || 'N/A'}</td>
-                            </tr>
-                            ${this.createStatRows(hfsData)}
-                        </table>
-                    </div>
-                ` : ''}
-                ${pfsData ? `
-                    <div class="stats-group">
-                        <h4>PFS Stats</h4>
-                        <table>
-                            <tr>
-                                <th>Rank</th>
-                                <td>${pfsData.Rank || 'N/A'}</td>
-                                <th>Position Rank</th>
-                                <td>${pfsData.PositionRank || 'N/A'}</td>
-                            </tr>
-                            ${this.createStatRows(pfsData)}
-                        </table>
-                    </div>
-                ` : ''}
+    updateProjectionsSection() {
+        const projectionsSection = document.getElementById('projectionsSection');
+        if (!projectionsSection) return;
+    
+        const { hfsData, pfsData } = this.playerData;
+        const playerData = hfsData || pfsData; // Use whichever data exists
+    
+        if (!playerData) {
+            projectionsSection.innerHTML = `
+                <h3 class="section-title">Projections</h3>
+                <div class="projections-content">
+                    <p>No projection data available</p>
+                </div>
+            `;
+            return;
+        }
+    
+        const isPitcher = pfsData !== null;
+        
+        projectionsSection.innerHTML = `
+            <h3 class="section-title">Projections</h3>
+            <div class="projections-content">
+                <h4>${isPitcher ? 'Pitcher' : 'Hitter'} Projections</h4>
+                <div class="projection-cards">
+                    ${Object.entries(playerData)
+                        .filter(([key]) => {
+                            // Filter out non-stat fields
+                            const excludeFields = ['playerid', 'name', 'Pos', 'team', 'Availability', 'Rank', 'PositionRank'];
+                            return !excludeFields.includes(key);
+                        })
+                        .map(([key, value]) => `
+                            <div class="projection-card">
+                                <span class="stat-key">${key}</span>
+                                <span class="stat-value">${value}</span>
+                            </div>
+                        `).join('')}
+                </div>
             </div>
+            <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
         `;
     }
 
-    createStatRows(data) {
-        const excludeKeys = ['Rank', 'PositionRank', 'playerid', 'name', 'Pos', 'team', 'Availability'];
-        const rows = [];
-        
-        for (const [key, value] of Object.entries(data)) {
-            if (!excludeKeys.includes(key)) {
-                rows.push(`
-                    <tr>
-                        <th>${key}</th>
-                        <td>${value || 'N/A'}</td>
-                    </tr>
-                `);
-            }
-        }
-        return rows.join('');
+    createProjectionCard(title, data) {
+        return `
+            <div class="projection-card">
+                <h4>${title}</h4>
+                <div class="projection-stats">
+                    ${Object.entries(data).map(([key, value]) => `
+                        <div class="stat-item">
+                            <span class="stat-key">${key}</span>
+                            <span class="stat-value">${value}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
     }
 
     createIdCard(label, value) {
@@ -265,6 +243,23 @@ class PlayerProfile {
     }
 }
 
+// Utility function to toggle sections
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+
+    const content = section.querySelector('.projections-content');
+    const button = section.querySelector('.toggle-button');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        button.textContent = 'Collapse';
+    } else {
+        content.style.display = 'none';
+        button.textContent = 'Expand';
+    }
+}
+
 // Initialize the player profile when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     const profile = new PlayerProfile();
@@ -272,8 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Add global error handling
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-    console.error('Global error:', {msg, url, lineNo, columnNo, error});
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    console.error('Global error:', { msg, url, lineNo, columnNo, error });
     const profile = new PlayerProfile();
     profile.handleError(error || new Error(msg));
     return false;

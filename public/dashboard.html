@@ -163,6 +163,8 @@
 
   <div id="bigBoardNotice" class="notice hidden">Please select or create a league to use this feature.</div>
 
+
+
   <script>
 
 // Global variables
@@ -221,14 +223,109 @@ function toggleUserDropdown() {
     dropdown.classList.toggle('active');
 }
 
+
+// First, define the showToast function
+function showToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+
+    // Remove toast after delay
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+// Add the required CSS
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+    #toastContainer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        min-width: 200px;
+        margin-bottom: 10px;
+        padding: 15px;
+        border-radius: 4px;
+        color: white;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
+
+    .toast.success {
+        background-color: #4CAF50;
+    }
+
+    .toast.error {
+        background-color: #F44336;
+    }
+
+    .toast.warning {
+        background-color: #FF9800;
+    }
+
+    .toast.fade-out {
+        opacity: 0;
+    }
+`;
+document.head.appendChild(toastStyles);
+
+// Then modify your createLeague function to use showToast
+async function createLeague(name) {
+    try {
+        const res = await fetch('/create-league', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name }),
+        });
+        const data = await res.json();
+        
+        if (data.id) {
+            leagues.push(data);
+            currentLeagueId = data.id;
+            localStorage.setItem('currentLeagueId', currentLeagueId);
+            await reloadData();
+            showToast('League created successfully!', 'success');
+        } else {
+            showToast(data.error || 'Failed to create league.', 'error');
+        }
+    } catch (error) {
+        console.error('Error creating league:', error);
+        showToast('Failed to create league. Please try again.', 'error');
+    }
+}
+
+// At the top of your script, add this function
+function initializeNavbarListeners() {
+    const userMenuContainer = document.getElementById('userMenuContainer');
+    if (userMenuContainer) {
+        userMenuContainer.addEventListener('click', toggleUserDropdown);
+    }
+}
+
+// Update your fetch navbar code
 fetch('/components/navbar.html')
     .then(response => response.text())
     .then(html => {
         document.getElementById('navbar-container').innerHTML = html;
         
-        // Initialize navbar functionality
-        const userMenuContainer = document.getElementById('userMenuContainer');
-        userMenuContainer.addEventListener('click', toggleUserDropdown);
+        // Initialize all navbar functionality after content is loaded
+        initializeNavbarListeners();
         
         // Mobile menu toggle
         const navbarToggle = document.querySelector('.navbar-toggle');
@@ -239,31 +336,94 @@ fetch('/components/navbar.html')
         }
 
         // Logo click handler
-        document.getElementById('homeLogo').addEventListener('click', () => {
-            window.location.href = '/';
-        });
-
-        // Add click handlers for nav links
-        document.querySelectorAll('.nav-link').forEach(link => {
-            // Highlight active page
-            if(link.href === window.location.href) {
-                link.classList.add('active');
-            }
-            
-            // Add specific handlers for dashboard and settings
-            if(link.href.includes('dashboard.html')) {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.location.reload();
-                });
-            }
-        });
-
-        // Now initialize the dashboard
-        initializeDashboard();
+        const homeLogo = document.getElementById('homeLogo');
+        if (homeLogo) {
+            homeLogo.addEventListener('click', () => {
+                window.location.href = '/';
+            });
+        }
+    })
+    .catch(err => {
+        console.error('Error loading navbar:', err);
     });
 
-function initializeDashboard() {
+    
+
+async function createLeague(name) {
+    const res = await fetch('/create-league', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+    });
+    const data = await res.json();
+    if (data.id) {
+        leagues.push(data);
+        currentLeagueId = data.id;
+        localStorage.setItem('currentLeagueId', currentLeagueId);
+        await reloadData(); // Ensure this function is defined
+        showToast('League created successfully!', 'success'); // Optional: Show success toast
+    } else {
+        alert(data.error || 'Failed to create league.');
+    }
+}
+
+
+
+
+async function selectLeague(leagueId) {
+    try {
+        const res = await fetch('/select-league', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ leagueId }),
+        });
+        const data = await res.json();
+
+        if (data.status === 'League selected') {
+            currentLeagueId = leagueId;
+            localStorage.setItem('currentLeagueId', leagueId);
+
+            // Show loading state for data refresh
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading-overlay';
+            loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
+            document.body.appendChild(loadingDiv);
+
+            try {
+                await Promise.all([reloadData(), loadTeamsForLeague()]);
+            } finally {
+                loadingDiv.remove();
+            }
+        } else {
+            alert(data.error || 'Failed to select league');
+        }
+    } catch (error) {
+        console.error('Error selecting league:', error);
+        alert('Failed to select league');
+    }
+}
+
+
+
+
+async function reloadData() {
+      allPlayers = [];
+      await fetchAllPlayers();
+      if(!bigBoardSection.classList.contains('hidden')) {
+        loadBigBoard();
+      }
+      if(!bestAvailableSection.classList.contains('hidden') && loggedInUser && currentLeagueId) {
+        loadBestAvailable(bestHittersPosition.value, bestPitchersPosition.value);
+      }
+      // Always update teams container if a team is selected, regardless of view
+      if (teamsSelector.value && loggedInUser && currentLeagueId) {
+        updateTeamsContainer();
+      }
+    }
+
+
+
+
 
     
     // let allPlayers = [];
@@ -320,9 +480,9 @@ function initializeDashboard() {
       updateTeamsContainer();
     });
 
-    homeLogo.addEventListener('click', () => {
-      window.location.href = "index.html";
-    });
+    // homeLogo.addEventListener('click', () => {
+    //   window.location.href = "index.html";
+    // });
 
     // document.getElementById('dashLink').addEventListener('click', () => {
     //   window.location.reload();
@@ -333,23 +493,33 @@ function initializeDashboard() {
     // });
 
     // Global click handlers
-    document.addEventListener('click', (e) => {
-      // Close user dropdown if clicking outside it and not on user menu button
-      if (!userMenuContainer.contains(e.target) && !e.target.classList.contains('user-menu')) {
-        dropdown.classList.remove('active');
-      }
+    // Global click handlers
+document.addEventListener('click', (e) => {
+    // Get elements inside the handler to ensure they exist
+    const userMenuContainer = document.getElementById('userMenuContainer');
+    const dropdown = document.querySelector('.dropdown');
+    const searchResultsContainer = document.getElementById('searchResults');
+    const playerSearchInput = document.getElementById('playerSearch');
 
-      // Hide search results if clicking outside them and not on certain elements
-      if (
-        !searchResultsContainer.contains(e.target) && 
-        e.target !== playerSearchInput && 
-        !e.target.classList.contains('assign-button') && 
-        !e.target.classList.contains('player-name')
-      ) {
-        searchResultsContainer.style.display = 'none';
-      }
-    });
+    // Only proceed with dropdown logic if elements exist
+    if (userMenuContainer && dropdown) {
+        if (!userMenuContainer.contains(e.target) && !e.target.classList.contains('user-menu')) {
+            dropdown.classList.remove('active');
+        }
+    }
 
+    // Only proceed with search results logic if elements exist
+    if (searchResultsContainer && playerSearchInput) {
+        if (!searchResultsContainer.contains(e.target) && 
+            e.target !== playerSearchInput && 
+            !e.target.classList.contains('assign-button') && 
+            !e.target.classList.contains('player-name')
+        ) {
+            searchResultsContainer.style.display = 'none';
+        }
+    }
+});    
+    
     searchResultsContainer.addEventListener('click', (e) => {
       e.stopPropagation();
     });
@@ -422,7 +592,6 @@ function initializeDashboard() {
 
     cancelAssignBtn.addEventListener('click', hideAssignMenu);
 
-    userMenuContainer.addEventListener('click', toggleUserDropdown);
 
     async function fetchAllPlayers() {
       try {
@@ -803,21 +972,7 @@ async function updatePlayerTeam(player, teamName) {
       }
     }
 
-    async function reloadData() {
-      allPlayers = [];
-      await fetchAllPlayers();
-      if(!bigBoardSection.classList.contains('hidden')) {
-        loadBigBoard();
-      }
-      if(!bestAvailableSection.classList.contains('hidden') && loggedInUser && currentLeagueId) {
-        loadBestAvailable(bestHittersPosition.value, bestPitchersPosition.value);
-      }
-      // Always update teams container if a team is selected, regardless of view
-      if (teamsSelector.value && loggedInUser && currentLeagueId) {
-        updateTeamsContainer();
-      }
-    }
-
+   
     async function fetchTeamNamesForLeague() {
       if(!currentLeagueId) return [];
       try {
@@ -910,58 +1065,60 @@ async function updatePlayerTeam(player, teamName) {
     }
 
 
-    async function selectLeague(leagueId) {
-    try {
-        const res = await fetch('/select-league', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({leagueId})
-        });
-        const data = await res.json();
+//     async function selectLeague(leagueId) {
+//     try {
+//         const res = await fetch('/select-league', {
+//             method: 'POST',
+//             headers: {'Content-Type':'application/json'},
+//             body: JSON.stringify({leagueId})
+//         });
+//         const data = await res.json();
         
-        if(data.status === 'League selected') {
-            currentLeagueId = leagueId;
-            localStorage.setItem('currentLeagueId', leagueId);
+//         if(data.status === 'League selected') {
+//             currentLeagueId = leagueId;
+//             localStorage.setItem('currentLeagueId', leagueId);
             
-            // Show loading state for data refresh
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading-overlay';
-            loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
-            document.body.appendChild(loadingDiv);
+//             // Show loading state for data refresh
+//             const loadingDiv = document.createElement('div');
+//             loadingDiv.className = 'loading-overlay';
+//             loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
+//             document.body.appendChild(loadingDiv);
             
-            try {
-                await Promise.all([
-                    reloadData(),
-                    loadTeamsForLeague()
-                ]);
-            } finally {
-                loadingDiv.remove();
-            }
-        } else {
-            alert(data.error || 'Failed to select league');
-        }
-    } catch (error) {
-        console.error('Error selecting league:', error);
-        alert('Failed to select league');
-    }
-}    
-    
-    async function createLeague(name) {
-      const res = await fetch('/create-league', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({name})
-      });
-      const data = await res.json();
-      if(data.id) {
-        leagues.push(data);
-        currentLeagueId = data.id;
-        localStorage.setItem('currentLeagueId', currentLeagueId);
-        await reloadData();
-      } else {
-        alert(data.error || 'Failed to create league.');
-      }
-    }
+//             try {
+//                 await Promise.all([
+//                     reloadData(),
+//                     loadTeamsForLeague()
+//                 ]);
+//             } finally {
+//                 loadingDiv.remove();
+//             }
+//         } else {
+//             alert(data.error || 'Failed to select league');
+//         }
+//     } catch (error) {
+//         console.error('Error selecting league:', error);
+//         alert('Failed to select league');
+//     }
+// }    
+   
+
+
+    // async function createLeague(name) {
+    //   const res = await fetch('/create-league', {
+    //     method: 'POST',
+    //     headers: {'Content-Type':'application/json'},
+    //     body: JSON.stringify({name})
+    //   });
+    //   const data = await res.json();
+    //   if(data.id) {
+    //     leagues.push(data);
+    //     currentLeagueId = data.id;
+    //     localStorage.setItem('currentLeagueId', currentLeagueId);
+    //     await reloadData();
+    //   } else {
+    //     alert(data.error || 'Failed to create league.');
+    //   }
+    // }
 
     async function logout() {
       const res = await fetch('/logout', {method:'POST'});
@@ -1037,21 +1194,23 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     function updateUIState() {
-      const userMenuContainer = document.getElementById('userMenuContainer');
-      const contentWrapper = document.querySelector('.content-wrapper');
-      const loginNotice = document.querySelector('.login-notice');
-      const bestAvailableNotice = document.getElementById('bestAvailableNotice');
+    const userMenuContainer = document.getElementById('userMenuContainer');
+    const contentWrapper = document.querySelector('.content-wrapper');
+    const loginNotice = document.querySelector('.login-notice');
+    const bestAvailableNotice = document.getElementById('bestAvailableNotice');
 
-      userMenuContainer.style.display = 'none'; // Hide first
+    if (!userMenuContainer) return; // Exit if container doesn't exist yet
 
-      if (!loggedInUser) {
+    userMenuContainer.style.display = 'none'; // Hide first
+
+    if (!loggedInUser) {
         contentWrapper.classList.add('logged-out');
         loginNotice.classList.add('visible');
         userMenuContainer.innerHTML = `
-          <div class="user-menu">
-            <button onclick="showLoginOverlay()" class="nav-button">Log In</button>
-            <button onclick="showRegisterOverlay()" class="nav-button">Register</button>
-          </div>
+            <div class="user-menu">
+                <button onclick="showLoginOverlay()" class="nav-button">Log In</button>
+                <button onclick="showRegisterOverlay()" class="nav-button">Register</button>
+            </div>
         `;
         userMenuContainer.style.display = 'block';
         userMenuContainer.classList.remove('logged-in');
@@ -1059,22 +1218,22 @@ async function updatePlayerTeam(player, teamName) {
         teamsSelector.innerHTML = '<option value="">Select a Team</option>';
         bestAvailableNotice.classList.add('hidden');
         return;
-      }
-
-      // Update UI immediately for logged-in state
-      contentWrapper.classList.remove('logged-out');
-      loginNotice.classList.remove('visible');
-      userMenuContainer.innerHTML = `<div class="user-menu logged-in">Welcome, ${loggedInUser}</div>`;
-      userMenuContainer.style.display = 'block';
-
-      // Update notices based on league state
-      if (leagues.length === 0) {
-        bestAvailableNotice.classList.remove('hidden');
-      } else {
-        bestAvailableNotice.classList.add('hidden');
-      }
     }
 
+    // Update UI for logged-in state
+    contentWrapper.classList.remove('logged-out');
+    loginNotice.classList.remove('visible');
+    userMenuContainer.innerHTML = `<div class="user-menu logged-in">Welcome, ${loggedInUser}</div>`;
+    userMenuContainer.style.display = 'block';
+
+    // Update notices based on league state
+    if (leagues.length === 0) {
+        bestAvailableNotice.classList.remove('hidden');
+    } else {
+        bestAvailableNotice.classList.add('hidden');
+    }
+}    
+    
     async function updateTeamsContainer() {
       teamsContainer.innerHTML = '';
       const selectedTeam = teamsSelector.value;
@@ -1379,7 +1538,7 @@ async function updatePlayerTeam(player, teamName) {
         alert('Registration failed. Please try again.');
       }
     }
-  }
+  
 </script>
 
   <!-- Add login/register overlays -->

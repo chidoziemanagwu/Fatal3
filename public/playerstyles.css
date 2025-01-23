@@ -311,3 +311,85 @@ body {
 .stats-group td {
     color: #FFFF00;
 }
+
+.section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 2px solid #00FF00;
+    border-radius: 8px;
+    background-color: #000000;
+}
+
+.section-title {
+    color: #00FF00;
+    margin-bottom: 10px;
+    font-size: 18px;
+    text-shadow: 0 0 5px #00FF00;
+}
+
+/* Projections Section */
+.projections-content {
+    margin-top: 20px;
+}
+
+.projection-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 cards per row */
+    gap: 15px; /* Space between cards */
+    margin-top: 15px;
+}
+
+.projection-card {
+    background-color: #001800;
+    border: 2px solid #00FF00;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 0 10px #00FF00;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.projection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px #FFFF00;
+}
+
+.projection-card .stat-key {
+    display: block;
+    font-weight: bold;
+    color: #FFFF00; /* Bright yellow for the header */
+    margin-bottom: 5px;
+    font-size: 1em;
+}
+
+.projection-card .stat-value {
+    display: block;
+    color: #00FF00; /* Bright green for the value */
+    font-size: 0.9em;
+}
+
+/* Section Title */
+.section-title {
+    color: #00FF00;
+    font-size: 20px;
+    text-shadow: 0 0 5px #00FF00;
+    margin-bottom: 10px;
+}
+
+/* Toggle Button */
+.toggle-button {
+    margin-top: 15px;
+    padding: 8px 12px;
+    background-color: #00FF00;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: #FFFF00;
+    color: #000000;
+}

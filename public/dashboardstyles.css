@@ -1128,3 +1128,50 @@ select:hover {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Big Board Table Column Width Adjustments */
+#bigBoardTable th:first-child, 
+#bigBoardTable td:first-child {
+  width: 50px; /* Narrower "Rank" column */
+  text-align: center;
+}
+
+#bigBoardTable th:nth-child(2), 
+#bigBoardTable td:nth-child(2) {
+  width: 200px; /* Wider "Name" column */
+  text-align: left;
+}
+
+#bigBoardTable th:not(:first-child):not(:nth-child(2)):not(:last-child), 
+#bigBoardTable td:not(:first-child):not(:nth-child(2)):not(:last-child) {
+  width: 80px; /* Narrower stats columns */
+  text-align: center;
+}
+
+#bigBoardTable th:last-child, 
+#bigBoardTable td:last-child {
+  width: 120px; /* Adjust "Availability" column width */
+  text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  #bigBoardTable th:first-child, 
+  #bigBoardTable td:first-child {
+    width: 40px; /* Narrower "Rank" column */
+  }
+
+  #bigBoardTable th:nth-child(2), 
+  #bigBoardTable td:nth-child(2) {
+    width: 150px; /* Slightly narrower "Name" column */
+  }
+
+  #bigBoardTable th:not(:first-child):not(:nth-child(2)):not(:last-child), 
+  #bigBoardTable td:not(:first-child):not(:nth-child(2)):not(:last-child) {
+    width: 60px; /* Narrower stats columns */
+  }
+
+  #bigBoardTable th:last-child, 
+  #bigBoardTable td:last-child {
+    width: 100px; /* Adjust "Availability" column width */
+  }
+}
