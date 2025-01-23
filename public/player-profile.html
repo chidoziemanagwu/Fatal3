@@ -12,6 +12,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Player Profile | Fatals</title>
     <link rel="stylesheet" href="/playerstyles.css" />
+    <!-- Add Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="navbar">
@@ -65,47 +67,25 @@
             <!-- Links Section -->
             <div id="playerLinks" class="links-section"></div>
 
-            <!-- Injury Section -->
-            <!-- <div id="playerInjury" class="injury-section"></div> -->
-
             <!-- IDs Section -->
             <div id="playerIds" class="ids-section"></div>
         </div>
 
+        <!-- Projections Section -->
         <div id="projectionsSection" class="section">
             <h3 class="section-title">Projections</h3>
             <div class="projections-content">
-                <h4>Hitter Projections</h4>
-                <div class="projection-cards">
-                    <div class="projection-card">
-                        <span class="stat-key">HR</span>
-                        <span class="stat-value">31</span>
-                    </div>
-                    <div class="projection-card">
-                        <span class="stat-key">R</span>
-                        <span class="stat-value">101</span>
-                    </div>
-                    <div class="projection-card">
-                        <span class="stat-key">RBI</span>
-                        <span class="stat-value">94</span>
-                    </div>
-                    <div class="projection-card">
-                        <span class="stat-key">SB</span>
-                        <span class="stat-value">21</span>
-                    </div>
-                    <div class="projection-card">
-                        <span class="stat-key">AVG</span>
-                        <span class="stat-value">0.277</span>
-                    </div>
+                <!-- Stats Cards -->
+                <div class="stats-cards"></div>
+                
+                <!-- Graphs -->
+                <div class="graphs-container">
+                    <canvas id="projectionsChart"></canvas>
+                    <canvas id="trendChart"></canvas>
                 </div>
             </div>
             <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
         </div>
-        
-        <!-- <div id="underlyingDataSection" class="section"> -->
-            <!-- Underlying data content will be dynamically added here -->
-        <!-- </div> -->
-        
     </div>
 
     <div class="footer">
