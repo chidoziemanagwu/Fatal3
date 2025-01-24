@@ -113,6 +113,9 @@ class PlayerProfile {
                 };
             }
 
+            // Log the extracted stats to the console
+            console.log('Extracted Statcast Stats:', stats);
+
             // Update the projections section with the fetched stats
             this.updateProjectionsSection(stats, isPitcher);
         } catch (error) {
@@ -122,9 +125,28 @@ class PlayerProfile {
     }
 
     extractStat(doc, statName) {
-        // This function should be implemented to extract the specific stat from the parsed HTML
-        // You will need to inspect the Statcast page to find the correct selectors for each stat
-        const statElement = doc.querySelector(`selector-for-${statName}`); // Replace with actual selector
+        // Define the selectors for each stat
+        const selectors = {
+            IP: 'td[data-stat="innings_pitched"]', // Replace with actual selector
+            W: 'td[data-stat="wins"]', // Replace with actual selector
+            L: 'td[data-stat="losses"]', // Replace with actual selector
+            S: 'td[data-stat="saves"]', // Replace with actual selector
+            Holds: 'td[data-stat="holds"]', // Replace with actual selector
+            SO: 'td[data-stat="strikeouts"]', // Replace with actual selector
+            Hits: 'td[data-stat="hits"]', // Replace with actual selector
+            BB: 'td[data-stat="walks"]', // Replace with actual selector
+            ER: 'td[data-stat="earned_runs"]', // Replace with actual selector
+            PA: 'td[data-stat="plate_appearances"]', // Replace with actual selector
+            AVG: 'td[data-stat="batting_average"]', // Replace with actual selector
+            H: 'td[data-stat="hits"]', // Replace with actual selector
+            HR: 'td[data-stat="home_runs"]', // Replace with actual selector
+            R: 'td[data-stat="runs"]', // Replace with actual selector
+            RBI: 'td[data-stat="runs_batted_in"]', // Replace with actual selector
+            SB: 'td[data-stat="stolen_bases"]', // Replace with actual selector
+            OPS: 'td[data-stat="on_base_plus_slugging"]' // Replace with actual selector
+        };
+
+        const statElement = doc.querySelector(selectors[statName]);
         return statElement ? statElement.textContent.trim() : 'N/A';
     }
 
@@ -152,9 +174,6 @@ class PlayerProfile {
             </div>
             <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
         `;
-
-        // Render graphs (if needed)
-        // this.renderProjectionsGraph(stats, isPitcher); // Uncomment if you want to render graphs
     }
 
     updateUI() {
