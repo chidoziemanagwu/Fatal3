@@ -61,12 +61,100 @@ class PlayerProfile {
 
             console.log('Player Data:', this.playerData); // Debug log
             this.updateUI();
+            await this.loadStatcastData(playerId); // Load Statcast data
         } catch (error) {
             console.error('Error loading player profile:', error);
             this.handleError(error);
         } finally {
             this.hideLoading();
         }
+    }
+
+    async loadStatcastData(playerId) {
+        try {
+            // Construct the Statcast URL
+            const statcastUrl = `https://baseballsavant.mlb.com/savant-player/${playerId}`;
+            const response = await fetch(statcastUrl);
+            const text = await response.text();
+
+            // Parse the HTML to extract the relevant stats
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+
+            // Extract relevant stats based on whether the player is a hitter or pitcher
+            const isPitcher = !!this.playerData.pfsData; // Check if the player is a pitcher
+            let stats = {};
+
+            if (isPitcher) {
+                // Extract pitcher stats
+                stats = {
+                    IP: this.extractStat(doc, 'IP'),
+                    W: this.extractStat(doc, 'W'),
+                    L: this.extractStat(doc, 'L'),
+                    S: this.extractStat(doc, 'S'),
+                    Holds: this.extractStat(doc, 'Holds'),
+                    SO: this.extractStat(doc, 'SO'),
+                    Hits: this.extractStat(doc, 'Hits'),
+                    BB: this.extractStat(doc, 'BB'),
+                    ER: this.extractStat(doc, 'ER')
+                };
+            } else {
+                // Extract hitter stats
+                stats = {
+                    PA: this.extractStat(doc, 'PA'),
+                    AVG: this.extractStat(doc, 'AVG'),
+                    H: this.extractStat(doc, 'H'),
+                    BB: this.extractStat(doc, 'BB'),
+                    HR: this.extractStat(doc, 'HR'),
+                    R: this.extractStat(doc, 'R'),
+                    RBI: this.extractStat(doc, 'RBI'),
+                    SB: this.extractStat(doc, 'SB'),
+                    OPS: this.extractStat(doc, 'OPS')
+                };
+            }
+
+            // Update the projections section with the fetched stats
+            this.updateProjectionsSection(stats, isPitcher);
+        } catch (error) {
+            console.error('Error loading Statcast data:', error);
+            this.handleError(error);
+        }
+    }
+
+    extractStat(doc, statName) {
+        // This function should be implemented to extract the specific stat from the parsed HTML
+        // You will need to inspect the Statcast page to find the correct selectors for each stat
+        const statElement = doc.querySelector(`selector-for-${statName}`); // Replace with actual selector
+        return statElement ? statElement.textContent.trim() : 'N/A';
+    }
+
+    updateProjectionsSection(stats, isPitcher) {
+        const projectionsSection = document.getElementById('projectionsSection');
+        if (!projectionsSection) return;
+
+        // Update HTML structure
+        projectionsSection.innerHTML = `
+            <h3 class="section-title">Projections</h3>
+            <div class="projections-content">
+                <h4>${isPitcher ? 'Pitcher' : 'Hitter'} Projections</h4>
+                <div class="stats-cards">
+                    ${Object.entries(stats).map(([key, value]) => `
+                        <div class="projection-card">
+                            <span class="stat-key">${key}</span>
+                            <span class="stat-value">${value}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="graphs-container">
+                    <canvas id="projectionsChart"></canvas>
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+            <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
+        `;
+
+        // Render graphs (if needed)
+        // this.renderProjectionsGraph(stats, isPitcher); // Uncomment if you want to render graphs
     }
 
     updateUI() {
@@ -101,9 +189,6 @@ class PlayerProfile {
                 case 'born':
                     valueElement.textContent = data.bDay || 'N/A';
                     break;
-                case 'last game':
-                    valueElement.textContent = data.lastGamePlayed || 'N/A';
-                    break;
             }
         });
 
@@ -113,8 +198,8 @@ class PlayerProfile {
         // Update other sections
         this.updateLinksSection();
         this.updateProjectionsSection();
-        this.updateIdsSection();
     }
+
     updatePlayerImage() {
         const playerImage = document.getElementById('playerImage');
         if (playerImage) {
@@ -137,13 +222,18 @@ class PlayerProfile {
     updateLinksSection() {
         const linksSection = document.getElementById('playerLinks');
         if (linksSection) {
+            // Create the Statcast Profile link by replacing the base URL
+            const statcastLink = this.playerData.mlbLink
+                ? this.playerData.mlbLink.replace('https://www.mlb.com/player/', 'https://baseballsavant.mlb.com/savant-player/')
+                : '#'; // Fallback if mlbLink is not available
+    
             linksSection.innerHTML = `
                 <h3 style="color: #00FF00; margin-bottom: 15px;">External Links</h3>
                 <div class="player-links">
                     ${this.playerData.mlbLink ? `<a href="${this.playerData.mlbLink}" target="_blank" class="btn-primary">MLB Profile</a>` : ''}
                     ${this.playerData.espnLink ? `<a href="${this.playerData.espnLink}" target="_blank" class="btn-primary">ESPN Profile</a>` : ''}
                     ${this.playerData.yahooLink ? `<a href="${this.playerData.yahooLink}" target="_blank" class="btn-primary">Yahoo Profile</a>` : ''}
-                    ${this.playerData.fantasyProsLink ? `<a href="${this.playerData.fantasyProsLink}" target="_blank" class="btn-primary">FantasyPros Profile</a>` : ''}
+                    <a href="${statcastLink}" target="_blank" class="btn-primary">Statcast Profile</a>
                 </div>
             `;
         }
@@ -167,12 +257,13 @@ class PlayerProfile {
             return;
         }
 
-        // Filter relevant stats
+        // Filter relevant stats for hitters and pitchers
+        const relevantStats = isPitcher
+            ? ['IP', 'W', 'L', 'S', 'Holds', 'SO', 'Hits', 'BB', 'ER']
+            : ['PA', 'AVG', 'H', 'BB', 'HR', 'R', 'RBI', 'SB', 'OPS'];
+
         const statsData = Object.entries(playerData)
-            .filter(([key]) => {
-                const excludeFields = ['playerid', 'name', 'Pos', 'team', 'Availability', 'Rank', 'PositionRank'];
-                return !excludeFields.includes(key);
-            });
+            .filter(([key]) => relevantStats.includes(key));
 
         // Update HTML structure
         projectionsSection.innerHTML = `
@@ -199,6 +290,7 @@ class PlayerProfile {
         this.renderProjectionsGraph(statsData, isPitcher);
         this.renderTrendGraph(statsData, isPitcher);
     }
+
     renderProjectionsGraph(statsData, isPitcher) {
         const ctx = document.getElementById('projectionsChart').getContext('2d');
         
@@ -316,33 +408,36 @@ class PlayerProfile {
         });
     }
 
-    updateIdsSection() {
-        const idsSection = document.getElementById('playerIds');
-        if (idsSection) {
-            idsSection.innerHTML = `
-                <h3 style="color: #00FF00; margin-bottom: 15px;">Player IDs</h3>
-                <div class="info-cards">
-                    ${this.createIdCard('MLB ID', this.playerData.mlbID)}
-                    ${this.createIdCard('ESPN ID', this.playerData.espnID)}
-                    ${this.createIdCard('CBS ID', this.playerData.cbsPlayerID)}
-                    ${this.createIdCard('Yahoo ID', this.playerData.yahooPlayerID)}
-                    ${this.createIdCard('Fantasy Pros ID', this.playerData.fantasyProsPlayerID)}
-                    ${this.createIdCard('RotoWire ID', this.playerData.rotoWirePlayerID)}
-                    ${this.createIdCard('Sleeper Bot ID', this.playerData.sleeperBotID)}
-                    ${this.createIdCard('MLB ID Full', this.playerData.mlbIDFull)}
-                    ${this.createIdCard('RotoWire ID Full', this.playerData.rotoWirePlayerIDFull)}
-                    ${this.createIdCard('Player ID', this.playerData.playerID)}
+    updateUnderlyingMetricsSection(metricsData) {
+        const underlyingMetricsSection = document.getElementById('underlyingMetricsSection');
+        if (!underlyingMetricsSection) return;
+
+        // Check if metrics data is available
+        if (!metricsData || metricsData.length === 0) {
+            underlyingMetricsSection.innerHTML = `
+                <h3 class="section-title">Underlying Metrics</h3>
+                <div class="underlying-metrics-content">
+                    <p>No underlying metrics data available</p>
                 </div>
             `;
+            return;
         }
-    }
 
-    createIdCard(label, value) {
-        return `
-            <div class="info-card">
-                <span class="label">${label}</span>
-                <span class="value">${value || 'N/A'}</span>
+        // Update HTML structure for underlying metrics
+        underlyingMetricsSection.innerHTML = `
+            <h3 class="section-title">Underlying Metrics</h3>
+            <div class="underlying-metrics-content">
+                <h4>Underlying Metrics</h4>
+                <div class="stats-cards">
+                    ${metricsData.map(([key, value]) => `
+                        <div class="metric-card">
+                            <span class="metric-key">${key}</span>
+                            <span class="metric-value">${value}</span>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
+            <button class="toggle-button" onclick="toggleSection('underlyingMetricsSection')">Collapse</button>
         `;
     }
 
@@ -383,7 +478,7 @@ function toggleSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (!section) return;
 
-    const content = section.querySelector('.projections-content');
+    const content = section.querySelector('.projections-content, .underlying-metrics-content');
     const button = section.querySelector('.toggle-button');
 
     if (content.style.display === 'none') {

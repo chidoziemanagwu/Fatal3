@@ -54,10 +54,6 @@
                         <span class="label">Born</span>
                         <span id="playerBorn" class="value">-</span>
                     </div>
-                    <div class="info-card">
-                        <span class="label">Last Game</span>
-                        <span id="playerDebut" class="value">-</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -66,25 +62,28 @@
         <div class="player-details">
             <!-- Links Section -->
             <div id="playerLinks" class="links-section"></div>
-
-            <!-- IDs Section -->
-            <div id="playerIds" class="ids-section"></div>
         </div>
 
         <!-- Projections Section -->
         <div id="projectionsSection" class="section">
             <h3 class="section-title">Projections</h3>
             <div class="projections-content">
-                <!-- Stats Cards -->
                 <div class="stats-cards"></div>
-                
-                <!-- Graphs -->
                 <div class="graphs-container">
                     <canvas id="projectionsChart"></canvas>
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
             <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
+        </div>
+
+        <!-- Underlying Metrics Section -->
+        <div id="underlyingMetricsSection" class="section">
+            <h3 class="section-title">Underlying Metrics</h3>
+            <div class="underlying-metrics-content">
+                <div class="stats-cards"></div>
+            </div>
+            <button class="toggle-button" onclick="toggleSection('underlyingMetricsSection')">Collapse</button>
         </div>
     </div>
 

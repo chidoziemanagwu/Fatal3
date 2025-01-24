@@ -1233,6 +1233,39 @@ app.post('/api/league/import', async (req, res) => {
 });
 
 
+
+// Add this endpoint to your server.js
+app.post('/remove-player', async (req, res) => {
+  if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not logged in' });
+  }
+
+  const { playerid } = req.body;
+  const leagueId = await getCurrentLeagueId(req);
+
+  if (!leagueId) {
+      return res.status(400).json({ error: 'No league selected' });
+  }
+
+  if (!playerid) {
+      return res.status(400).json({ error: 'playerid is required' });
+  }
+
+  try {
+      // Remove the player from the taken_players table
+      await pool.query(
+          'DELETE FROM taken_players WHERE league_id = \$1 AND player_id = \$2',
+          [leagueId, playerid]
+      );
+
+      res.json({ status: 'Player removed successfully' });
+  } catch (err) {
+      console.error('Error removing player:', err);
+      res.status(500).json({ error: 'Failed to remove player' });
+  }
+});
+
+
 // Add this route to serve the navbar component
 app.get('/components/navbar.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/components/navbar.html'));

@@ -235,7 +235,7 @@ h1 {
 
 /* Best Available Section on the Right */
 .best-available-section {
-  flex: 0 0 400px; /* if you want that 400px fixed height */
+  flex: 0 0 400px; /* Fixed width for the section */
   overflow-y: auto; 
   padding: 15px;
   min-height: 0;
@@ -285,10 +285,10 @@ h1 {
 
 /* Table Styles */
 table {
-  width: 100%;
+  width: 100%; /* Ensure tables take full width */
   border-collapse: collapse;
   margin: 0;
-  table-layout: fixed;
+  table-layout: auto; /* Allow the browser to determine column widths */
   background-color: transparent;
 }
 
@@ -812,11 +812,13 @@ select:hover {
   margin: 0 0 10px 0;
   color: #00FF00;
 }
+
 .roster-section table {
   width: 100%;
-  min-width: 600px; /* Prevent table from becoming too narrow */
-  border-collapse: collapse;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  display: block; /* Make the table block-level to allow scrolling */
 }
+
 .roster-section table th,
 .roster-section table td {
   padding: 8px;
@@ -911,14 +913,15 @@ select:hover {
     min-width: 60px;
   }
 
-  table th:first-child,
-  table td:first-child {
+/* Target the second column (Name) for sticky positioning */
+table th:nth-child(2),
+table td:nth-child(2) {
     position: sticky;
-    left: 0;
-    background-color: #0000FF;
-    z-index: 1;
-  }
+    left: 0; /* Stick to the left */
+    background-color: #0000FF; /* Background color for visibility */
+    z-index: 1; /* Ensure it stays above other content */
 }
+
 
 @media screen and (max-width: 480px) {
   .navbar {
@@ -1174,4 +1177,119 @@ select:hover {
   #bigBoardTable td:last-child {
     width: 100px; /* Adjust "Availability" column width */
   }
+}
+
+@media screen and (max-width: 768px) {
+  table th, table td {
+    padding: 6px 4px;
+    font-size: 13px;
+  }
+
+  /* Adjust specific column widths */
+  #bestHittersTable th:nth-child(2),
+  #bestPitchersTable th:nth-child(2),
+  #bigBoardTable th:nth-child(2) {
+    min-width: 80px; /* Ensure name column is readable */
+  }
+
+  #bestHittersTable th:nth-child(n+4),
+  #bestPitchersTable th:nth-child(n+4),
+  #bigBoardTable th:nth-child(n+4):not(:last-child) {
+    width: 8%;  /* Smaller stats columns */
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column; /* Stack columns vertically */
+    padding: 10px;
+  }
+
+  .left-column, .right-column {
+    width: 100%; /* Full width on mobile */
+    min-height: auto; 
+  }
+}
+
+.table-wrapper {
+  border: 2px solid #FFFF00; /* Optional: Add a border */
+  border-radius: 4px; /* Optional: Rounded corners */
+  background-color: #000000; /* Optional: Background color */
+  overflow-x: auto; /* Enable horizontal scrolling */
+}
+
+table {
+  width: 100%; /* Ensure tables take full width */
+  border-collapse: collapse;
+}
+
+table th, table td {
+  padding: 8px; /* Add padding for table cells */
+  text-align: left; /* Align text to the left */
+  color: #00FF00; /* Text color */
+}
+
+table th {
+  background-color: #2a2a2a; /* Header background color */
+  color: #FFFF00; /* Header text color */
+}
+
+tr:nth-child(even) {
+  background-color: rgba(0, 255, 0, 0.05); /* Zebra striping */
+}
+
+tr:hover {
+  background-color: rgba(0, 255, 0, 0.1); /* Hover effect */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column; /* Stack columns on small screens */
+  }
+
+  .best-available-section {
+    flex: 1; /* Allow it to grow */
+  }
+
+  table {
+    display: block; /* Make the table block-level to allow scrolling */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    width: 100%;
+  }
+
+  table th, table td {
+    padding: 6px 4px;
+    font-size: 13px;
+  }
+}
+}
+
+.remove-button{
+  padding: 4px 6px;
+}
+
+/* Add this CSS to make the Name column sticky */
+.sticky-name {
+  position: sticky;
+  left: 0; /* Stick to the left */
+  background-color: blue; /* Background color to cover other content */
+  z-index: 10; /* Ensure it stays above other content */
+}
+
+.button-link {
+  display: inline-block; /* Make it behave like a block element */
+  padding: 10px 15px; /* Add padding for a button-like feel */
+  background-color: #4CAF50; /* Green background color */
+  color: white; /* White text color */
+  text-align: center; /* Center the text */
+  text-decoration: none; /* Remove underline */
+  border: none; /* Remove border */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.button-link:hover {
+  background-color: #45a049; /* Darker green on hover */
 }

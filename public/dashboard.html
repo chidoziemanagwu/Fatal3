@@ -12,6 +12,7 @@
   <title>Dashboard | Fatals</title>
   <link rel="stylesheet" href="/dashboardstyles.css" />
   <link rel="stylesheet" href="/css/navbar.css">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
   <div id="navbar-container"></div>
@@ -49,70 +50,81 @@
 
     <div class="right-column">
       <div id="bestAvailableSection" class="best-available-section">
-        <div id="bestAvailableNotice" class="notice hidden">Please select or create a league to use Best Available.</div>
-        <div class="flex-item">
-          <h4>Best Available</h4>
-          <div class="two-column-rosters">
-            <div class="roster-column">
-              <h4>Hitters</h4>
-              <select id="bestHittersPosition">
-                <option value="All">All Positions</option>
-                <option value="C">C</option>
-                <option value="1B">1B</option>
-                <option value="2B">2B</option>
-                <option value="3B">3B</option>
-                <option value="SS">SS</option>
-                <option value="OF">OF</option>
-                <option value="DH">DH</option>
-              </select>
-              <table id="bestHittersTable">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Pos</th>
-                    <th>HR</th>
-                    <th>R</th>
-                    <th>RBI</th>
-                    <th>SB</th>
-                    <th>AVG</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-
-            <div class="roster-column">
-              <h4>Pitchers</h4>
-              <select id="bestPitchersPosition">
-                <option value="All">All Positions</option>
-                <option value="SP">SP</option>
-                <option value="RP">RP</option>
-              </select>
-              <table id="bestPitchersTable">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Pos</th>
-                    <th>W</th>
-                    <th>SV</th>
-                    <th>K</th>
-                    <th>ERA</th>
-                    <th>WHIP</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
+        <div id="bestAvailableNotice" class="notice hidden">
+            Please select or create a league to use Best Available.
         </div>
-      </div>
+        
+        <!-- Main container with responsive flex layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Hitters Column -->
+            <div class="w-full">
+                <div class="mb-4">
+                    <h4 class="text-lg font-bold text-green-400 mb-2">Best Available Hitters</h4>
+                    <select id="bestHittersPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+                        <option value="All">All Positions</option>
+                        <option value="C">C</option>
+                        <option value="1B">1B</option>
+                        <option value="2B">2B</option>
+                        <option value="3B">3B</option>
+                        <option value="SS">SS</option>
+                        <option value="OF">OF</option>
+                        <option value="DH">DH</option>
+                    </select>
+                    <div class="overflow-x-auto border-2 border-yellow-300 rounded">
+                        <table id="bestHittersTable" class="min-w-full">
+                            <thead>
+                                <tr class="bg-black">
+                                    <th class="px-4 py-2 text-yellow-300">Rank</th>
+                                    <th class="px-4 py-2 text-yellow-300 sticky-name">Name</th>
+                                    <th class="px-4 py-2 text-yellow-300">Pos</th>
+                                    <th class="px-4 py-2 text-yellow-300">HR</th>
+                                    <th class="px-4 py-2 text-yellow-300">R</th>
+                                    <th class="px-4 py-2 text-yellow-300">RBI</th>
+                                    <th class="px-4 py-2 text-yellow-300">SB</th>
+                                    <th class="px-4 py-2 text-yellow-300">AVG</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Pitchers Column -->
+            <div class="w-full">
+                <div class="mb-4">
+                    <h4 class="text-lg font-bold text-green-400 mb-2">Best Available Pitchers</h4>
+                    <select id="bestPitchersPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+                        <option value="All">All Positions</option>
+                        <option value="SP">SP</option>
+                        <option value="RP">RP</option>
+                    </select>
+                    <div class="overflow-x-auto border-2 border-yellow-300 rounded">
+                        <table id="bestPitchersTable" class="min-w-full">
+                            <thead>
+                                <tr class="bg-black">
+                                    <th class="px-4 py-2 text-yellow-300">Rank</th>
+                                    <th class="px-4 py-2 text-yellow-300 sticky-name">Name</th>
+                                    <th class="px-4 py-2 text-yellow-300">Pos</th>
+                                    <th class="px-4 py-2 text-yellow-300">W</th>
+                                    <th class="px-4 py-2 text-yellow-300">SV</th>
+                                    <th class="px-4 py-2 text-yellow-300">K</th>
+                                    <th class="px-4 py-2 text-yellow-300">ERA</th>
+                                    <th class="px-4 py-2 text-yellow-300">WHIP</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
       <div id="bigBoardSection" class="big-board-section">
         <div class="flex-item">
           <h4>Big Board</h4>
-          <select id="bigBoardPosition">
+          <select id="bigBoardPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
             <option value="All">All Positions</option>
             <option value="C">C</option>
             <option value="1B">1B</option>
@@ -124,11 +136,13 @@
             <option value="SP">SP</option>
             <option value="RP">RP</option>
           </select>
-          <table id="bigBoardTable">
+
+          <div class="overflow-x-auto border-2 border-yellow-300 rounded">
+          <table id="bigBoardTable" class="min-w-full">
             <thead>
               <tr>
                 <th>Rank</th>
-                <th>Name</th>
+                <th class="sticky-name">Name</th> <!-- Add a class for sticky -->
                 <th>Pos</th>
                 <th>HR/W</th>
                 <th>R/SV</th>
@@ -141,6 +155,7 @@
             <tbody></tbody>
           </table>
         </div>
+        </div>
       </div>
     </div>
   </div>
@@ -148,7 +163,7 @@
   <div id="assignMenu">
     <h4 id="assignMenuTitle">Assign Player</h4>
     <!-- Add this line -->
-    <a href="#" class="menu-link" id="viewProfile">View Player Profile</a>
+    <a href="#" class="menu-link button-link" id="viewProfile">View Player Profile</a>
     <div class="team-list" id="teamList"></div>
     <button class="release-button" id="releasePlayer">Release Player</button>
     <button class="create-team-button" id="createNewTeam">Create New Team</button>
@@ -390,7 +405,10 @@ async function selectLeague(leagueId) {
             document.body.appendChild(loadingDiv);
 
             try {
-                await Promise.all([reloadData(), loadTeamsForLeague()]);
+                await Promise.all([
+                    reloadData(),
+                    loadTeamsForLeague(), // Ensure teams are loaded
+                ]);
             } finally {
                 loadingDiv.remove();
             }
@@ -619,7 +637,7 @@ document.addEventListener('click', (e) => {
 function createPlayerNameCell(player) {
     const tdName = document.createElement('td');
     tdName.textContent = player.name;
-    tdName.classList.add('player-name');
+     tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
     tdName.setAttribute('data-pid', player.playerid || '');
     
     // Add click handler for both assignment and profile navigation
@@ -870,7 +888,7 @@ function createPlayerNameCell(player) {
 
           const tdName = document.createElement('td');
           tdName.textContent = player.name;
-          tdName.classList.add('player-name');
+           tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
           tdName.setAttribute('data-pid', player.playerid || '');
           tdName.addEventListener('click', () => assignPlayer(player));
           tr.appendChild(tdName);
@@ -938,9 +956,10 @@ async function assignPlayer(player) {
     
     // Show the assign menu
     showAssignMenu(x, y);
+    
+    // Update the teams in the assign menu
+    await updateAssignMenuTeams(); // Ensure teams are updated
 }
-
-
 
 
 async function updatePlayerTeam(player, teamName) {
@@ -1234,191 +1253,246 @@ async function updatePlayerTeam(player, teamName) {
     }
 }    
     
-    async function updateTeamsContainer() {
-      teamsContainer.innerHTML = '';
-      const selectedTeam = teamsSelector.value;
-      if(!selectedTeam) {
+async function updateTeamsContainer() {
+    // Clear the teams container
+    teamsContainer.innerHTML = '';
+    const selectedTeam = teamsSelector.value;
+
+    // Check if a team is selected
+    if (!selectedTeam) {
         teamsContainer.innerHTML = '<p>Please select a team to view its roster.</p>';
         return;
-      }
+    }
 
-      const teamPlayers = allPlayers.filter(p => p.team && p.team.toLowerCase() === selectedTeam.toLowerCase() && p.Availability.toLowerCase() === 'taken');
-      if(teamPlayers.length === 0) {
+    // Filter players for the selected team
+    const teamPlayers = allPlayers.filter(p => p.team && p.team.toLowerCase() === selectedTeam.toLowerCase() && p.Availability.toLowerCase() === 'taken');
+
+    // If no players are found, show the message
+    if (teamPlayers.length === 0) {
         teamsContainer.innerHTML = '<p>No players found for this team.</p>';
         return;
-      }
-      teamPlayers.sort((a, b) => a.Rank - b.Rank);
-      const hitterPriority = ['C', '1B', '2B', '3B', 'SS', 'OF', 'DH'];
-      const pitchers = teamPlayers.filter(p => p.Pos && (p.Pos.toUpperCase().includes('SP') || p.Pos.toUpperCase().includes('RP')));
-      const hitters = teamPlayers.filter(p => {
+    }
+
+    // Sort players and separate hitters and pitchers
+    teamPlayers.sort((a, b) => a.Rank - b.Rank);
+    const hitterPriority = ['C', '1B', '2B', '3B', 'SS', 'OF', 'DH'];
+    const pitchers = teamPlayers.filter(p => p.Pos && (p.Pos.toUpperCase().includes('SP') || p.Pos.toUpperCase().includes('RP')));
+    const hitters = teamPlayers.filter(p => {
         const pos = p.Pos ? p.Pos.toUpperCase() : '';
         return hitterPriority.some(h => pos.includes(h));
-      });
+    });
 
-      const teamDiv = document.createElement('div');
-      teamDiv.className = 'team-roster';
+    // Create team roster display
+    const teamDiv = document.createElement('div');
+    teamDiv.className = 'team-roster';
 
-      const teamName = document.createElement('h3');
-      teamName.textContent = selectedTeam;
-      teamDiv.appendChild(teamName);
+    const teamName = document.createElement('h3');
+    teamName.textContent = selectedTeam;
+    teamDiv.appendChild(teamName);
 
-      // Create Hitters section
-      const hittersDiv = document.createElement('div');
-      hittersDiv.className = 'roster-section';
-      const hittersTitle = document.createElement('h4');
-      hittersTitle.textContent = 'Hitters';
-      hittersDiv.appendChild(hittersTitle);
+    // Create Hitters section
+    const hittersDiv = document.createElement('div');
+    hittersDiv.className = 'roster-section';
+    const hittersTitle = document.createElement('h4');
+    hittersTitle.textContent = 'Hitters';
+    hittersDiv.appendChild(hittersTitle);
 
-      const hittersTable = document.createElement('table');
-      const hittersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'HR', 'R', 'RBI', 'SB', 'AVG'];
-      const hittersThead = document.createElement('thead');
-      const hittersHeaderRow = document.createElement('tr');
-      hittersHeaders.forEach(h => {
+    const hittersTable = document.createElement('table');
+    const hittersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'HR', 'R', 'RBI', 'SB', 'AVG', 'Action'];
+    const hittersThead = document.createElement('thead');
+    const hittersHeaderRow = document.createElement('tr');
+    hittersHeaders.forEach(h => {
         const th = document.createElement('th');
         th.textContent = h;
         hittersHeaderRow.appendChild(th);
-      });
-      hittersThead.appendChild(hittersHeaderRow);
-      hittersTable.appendChild(hittersThead);
+    });
+    hittersThead.appendChild(hittersHeaderRow);
+    hittersTable.appendChild(hittersThead);
 
-      const hittersTbody = document.createElement('tbody');
-      if(hitters.length === 0) {
+    const hittersTbody = document.createElement('tbody');
+    if (hitters.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.setAttribute('colspan', '9');
+        td.setAttribute('colspan', '10');
         td.textContent = 'No hitters on this team.';
         tr.appendChild(td);
         hittersTbody.appendChild(tr);
-      } else {
+    } else {
         hitters.forEach(player => {
-          const tr = document.createElement('tr');
-          
-          const tdName = document.createElement('td');
-          tdName.textContent = player.name;
-          tdName.classList.add('player-name');
-          tdName.setAttribute('data-pid', player.playerid || '');
-          tdName.addEventListener('click', () => assignPlayer(player));
-          tr.appendChild(tdName);
+            const tr = document.createElement('tr');
 
-          const tdPos = document.createElement('td');
-          tdPos.textContent = player.Pos;
-          tr.appendChild(tdPos);
+            const tdName = document.createElement('td');
+            tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+            tdName.textContent = player.name;
+             tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+            tdName.setAttribute('data-pid', player.playerid || '');
+            tdName.addEventListener('click', () => assignPlayer(player));
+            tr.appendChild(tdName);
 
-          const tdRank = document.createElement('td');
-          tdRank.textContent = player.Rank || 'N/A';
-          tr.appendChild(tdRank);
+            const tdPos = document.createElement('td');
+            tdPos.textContent = player.Pos;
+            tr.appendChild(tdPos);
 
-          const tdPosRank = document.createElement('td');
-          tdPosRank.textContent = player.PositionRank || 'N/A';
-          tr.appendChild(tdPosRank);
+            const tdRank = document.createElement('td');
+            tdRank.textContent = player.Rank || 'N/A';
+            tr.appendChild(tdRank);
 
-          const tdHR = document.createElement('td');
-          tdHR.textContent = player.HR || 'N/A';
-          tr.appendChild(tdHR);
+            const tdPosRank = document.createElement('td');
+            tdPosRank.textContent = player.PositionRank || 'N/A';
+            tr.appendChild(tdPosRank);
 
-          const tdR = document.createElement('td');
-          tdR.textContent = player.R || 'N/A';
-          tr.appendChild(tdR);
+            const tdHR = document.createElement('td');
+            tdHR.textContent = player.HR || 'N/A';
+            tr.appendChild(tdHR);
 
-          const tdRBI = document.createElement('td');
-          tdRBI.textContent = player.RBI || 'N/A';
-          tr.appendChild(tdRBI);
+            const tdR = document.createElement('td');
+            tdR.textContent = player.R || 'N/A';
+            tr.appendChild(tdR);
 
-          const tdSB = document.createElement('td');
-          tdSB.textContent = player.SB || 'N/A';
-          tr.appendChild(tdSB);
+            const tdRBI = document.createElement('td');
+            tdRBI.textContent = player.RBI || 'N/A';
+            tr.appendChild(tdRBI);
 
-          const tdAVG = document.createElement('td');
-          tdAVG.textContent = player.AVG || 'N/A';
-          tr.appendChild(tdAVG);
+            const tdSB = document.createElement('td');
+            tdSB.textContent = player.SB || 'N/A';
+            tr.appendChild(tdSB);
 
-          hittersTbody.appendChild(tr);
+            const tdAVG = document.createElement('td');
+            tdAVG.textContent = player.AVG || 'N/A';
+            tr.appendChild(tdAVG);
+
+            // Create Remove button
+            const tdAction = document.createElement('td');
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.classList.add('remove-button');
+            removeBtn.addEventListener('click', async () => {
+                const response = await fetch('/remove-player', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerid: player.playerid })
+                });
+
+                if (response.ok) {
+                    updateTeamsContainer(); // Refresh the team roster
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || 'Failed to remove player');
+                }
+            });
+            tdAction.appendChild(removeBtn);
+            tr.appendChild(tdAction);
+
+            hittersTbody.appendChild(tr);
         });
-      }
-      hittersTable.appendChild(hittersTbody);
-      hittersDiv.appendChild(hittersTable);
-      teamDiv.appendChild(hittersDiv);
+    }
+    hittersTable.appendChild(hittersTbody);
+    hittersDiv.appendChild(hittersTable);
+    teamDiv.appendChild(hittersDiv);
 
-      // Create Pitchers section
-      const pitchersDiv = document.createElement('div');
-      pitchersDiv.className = 'roster-section';
-      const pitchersTitle = document.createElement('h4');
-      pitchersTitle.textContent = 'Pitchers';
-      pitchersDiv.appendChild(pitchersTitle);
+    // Create Pitchers section (similar to Hitters)
+    const pitchersDiv = document.createElement('div');
+    pitchersDiv.className = 'roster-section';
+    const pitchersTitle = document.createElement('h4');
+    pitchersTitle.textContent = 'Pitchers';
+    pitchersDiv.appendChild(pitchersTitle);
 
-      const pitchersTable = document.createElement('table');
-      const pitchersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'W', 'SV', 'ERA', 'WHIP', 'K'];
-      const pitchersThead = document.createElement('thead');
-      const pitchersHeaderRow = document.createElement('tr');
-      pitchersHeaders.forEach(h => {
+    const pitchersTable = document.createElement('table');
+    const pitchersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'W', 'SV', 'ERA', 'WHIP', 'K', 'Action'];
+    const pitchersThead = document.createElement('thead');
+    const pitchersHeaderRow = document.createElement('tr');
+    pitchersHeaders.forEach(h => {
         const th = document.createElement('th');
         th.textContent = h;
         pitchersHeaderRow.appendChild(th);
-      });
-      pitchersThead.appendChild(pitchersHeaderRow);
-      pitchersTable.appendChild(pitchersThead);
+    });
+    pitchersThead.appendChild(pitchersHeaderRow);
+    pitchersTable.appendChild(pitchersThead);
 
-      const pitchersTbody = document.createElement('tbody');
-      if(pitchers.length === 0) {
+    const pitchersTbody = document.createElement('tbody');
+    if (pitchers.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.setAttribute('colspan', '9');
+        td.setAttribute('colspan', '10');
         td.textContent = 'No pitchers on this team.';
         tr.appendChild(td);
         pitchersTbody.appendChild(tr);
-      } else {
+    } else {
         pitchers.forEach(player => {
-          const tr = document.createElement('tr');
-          
-          const tdName = document.createElement('td');
-          tdName.textContent = player.name;
-          tdName.classList.add('player-name');
-          tdName.setAttribute('data-pid', player.playerid || '');
-          tdName.addEventListener('click', () => assignPlayer(player));
-          tr.appendChild(tdName);
+            const tr = document.createElement('tr');
 
-          const tdPos = document.createElement('td');
-          tdPos.textContent = player.Pos;
-          tr.appendChild(tdPos);
+            const tdName = document.createElement('td');
+            tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+            tdName.textContent = player.name;
+             tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+            tdName.setAttribute('data-pid', player.playerid || '');
+            tdName.addEventListener('click', () => assignPlayer(player));
+            tr.appendChild(tdName);
 
-          const tdRank = document.createElement('td');
-          tdRank.textContent = player.Rank || 'N/A';
-          tr.appendChild(tdRank);
+            const tdPos = document.createElement('td');
+            tdPos.textContent = player.Pos;
+            tr.appendChild(tdPos);
 
-          const tdPosRank = document.createElement('td');
-          tdPosRank.textContent = player.PositionRank || 'N/A';
-          tr.appendChild(tdPosRank);
+            const tdRank = document.createElement('td');
+            tdRank.textContent = player.Rank || 'N/A';
+            tr.appendChild(tdRank);
 
-          const tdW = document.createElement('td');
-          tdW.textContent = player.W || 'N/A';
-          tr.appendChild(tdW);
+            const tdPosRank = document.createElement('td');
+            tdPosRank.textContent = player.PositionRank || 'N/A';
+            tr.appendChild(tdPosRank);
 
-          const tdSV = document.createElement('td');
-          tdSV.textContent = player.SV || 'N/A';
-          tr.appendChild(tdSV);
+            const tdW = document.createElement('td');
+            tdW.textContent = player.W || 'N/A';
+            tr.appendChild(tdW);
 
-          const tdERA = document.createElement('td');
-          tdERA.textContent = player.ERA || 'N/A';
-          tr.appendChild(tdERA);
+            const tdSV = document.createElement('td');
+            tdSV.textContent = player.SV || 'N/A';
+            tr.appendChild(tdSV);
 
-          const tdWHIP = document.createElement('td');
-          tdWHIP.textContent = player.WHIP || 'N/A';
-          tr.appendChild(tdWHIP);
+            const tdERA = document.createElement('td');
+            tdERA.textContent = player.ERA || 'N/A';
+            tr.appendChild(tdERA);
 
-          const tdK = document.createElement('td');
-          tdK.textContent = player.K || 'N/A';
-          tr.appendChild(tdK);
+            const tdWHIP = document.createElement('td');
+            tdWHIP.textContent = player.WHIP || 'N/A';
+            tr.appendChild(tdWHIP);
 
-          pitchersTbody.appendChild(tr);
+            const tdK = document.createElement('td');
+            tdK.textContent = player.K || 'N/A';
+            tr.appendChild(tdK);
+
+            // Create Remove button
+            const tdAction = document.createElement('td');
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.classList.add('remove-button');
+            removeBtn.addEventListener('click', async () => {
+                const response = await fetch('/remove-player', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerid: player.playerid })
+                });
+
+                if (response.ok) {
+                    updateTeamsContainer(); // Refresh the team roster
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || 'Failed to remove player');
+                }
+            });
+            tdAction.appendChild(removeBtn);
+            tr.appendChild(tdAction);
+
+            pitchersTbody.appendChild(tr);
         });
-      }
-      pitchersTable.appendChild(pitchersTbody);
-      pitchersDiv.appendChild(pitchersTable);
-      teamDiv.appendChild(pitchersDiv);
-
-      teamsContainer.appendChild(teamDiv);
     }
+    pitchersTable.appendChild(pitchersTbody);
+    pitchersDiv.appendChild(pitchersTable);
+    teamDiv.appendChild(pitchersDiv);
 
+    teamsContainer.appendChild(teamDiv);
+}
+    
     (async function initialLoad() {
     // Show loading state
     const loadingDiv = document.createElement('div');
@@ -1436,7 +1510,7 @@ async function updatePlayerTeam(player, teamName) {
                 fetchAllPlayers(),
                 loadBestAvailable(),
                 loadBigBoard(),
-                loadTeamsForLeague()
+                loadTeamsForLeague() // Ensure teams are loaded initially
             ]);
         }
     } catch (error) {
@@ -1445,9 +1519,9 @@ async function updatePlayerTeam(player, teamName) {
         // Remove loading overlay
         loadingDiv.remove();
     }
-})();
+})();   
 
-    function showLoginOverlay() {
+function showLoginOverlay() {
       document.getElementById('overlayLogin').style.display = 'flex';
       document.querySelector('.content-wrapper').classList.add('blurred');
     }
