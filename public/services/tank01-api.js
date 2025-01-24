@@ -5,7 +5,7 @@ class Tank01API {
     static API_KEY = 'eda340385emshdd4a114ddde5eeap131c54jsn5425f3315ea1'; // Replace with your actual API key
     static API_HOST = 'tank01-mlb-live-in-game-real-time-statistics.p.rapidapi.com';
 
-    static async getPlayerInfo(playerName, getStats = false, statsSeason = null) {
+    static async getPlayerInfo(playerName, getStats = true, statsSeason = null) {
         try {
             const url = new URL(`${this.BASE_URL}/getMLBPlayerInfo`);
             url.searchParams.append('playerName', playerName);

@@ -5,6 +5,58 @@ class PlayerProfile {
         this.trendChart = null;
         this.loadingOverlay = this.createLoadingOverlay();
         document.body.appendChild(this.loadingOverlay);
+
+        this.settings = {
+            RWeight: 1,
+            HRWeight: 3,
+            HWeight: 1,
+            SBWeight: 1,
+            BBWeight: 1,
+            RBIWeight: 1,
+            KWeight: 1,
+            HFGFactor: 1,
+            HBAFactor: 130,
+            HEstBAFactor: 260,
+            HSLGFactor: 80,
+            HEstSLGFactor: 180,
+            HEstWOBARactor: 150,
+            HStatcastWeight: 0.8,
+            HFGWeight: 1,
+            HPAFactor: 0.08,
+            HKpctFactor: 100,
+            HBABIPFactor: 80,
+            HwOBAFactor: 100,
+            HOPSFactor: 60,
+            HSpdFactor: 4,
+            HSoftWeight: 1,
+
+            PSVWeight: 5,
+            PWWeight: 5,
+            PSOWeight: 1,
+            PIPWeight: 3,
+            PHWeight: 1,
+            PLWeight: 5,
+            PERWeight: 2,
+            PBBWeight: 1,
+            PHoldWeight: 0,
+            PFGFactor: 2,
+            PERAFactor: 13,
+            PWHIPFactor: 40,
+            PAVGFactor: 250,
+            PTBFFactor: 0.03,
+            PK9Factor: 6,
+            PBB9Factor: 12,
+            PHR9Factor: 30,
+            PFGWeight: 2,
+
+            PEstBAFactor: 260,
+            PSLGFactor: 40,
+            PEstSLGFactor: 80,
+            PWOBFactor: 50,
+            PEstWOBAFactor: 120,
+            PXERAFactor: 10,
+            PStatcastWeight: 1
+        };
     }
 
     createLoadingOverlay() {
@@ -26,48 +78,184 @@ class PlayerProfile {
         this.loadingOverlay.style.display = 'none';
     }
 
+    async fetchHitterStatcast(playerId) {
+        // Convert playerId to string
+        const playerIdString = String(playerId);
+    
+        const url = 'https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=batter&year=2024&position=&team=&filterType=bip&min=50&csv=true';
+        const response = await axios.get(url);
+        let records = Papa.parse(response.data, { header: true, skipEmptyLines: true }).data;
+    
+        console.log('Fetched Statcast Records:', records); // Debugging: Log the entire dataset
+    
+        // Find the specific player by ID
+        const playerStats = records.find(player => player.player_id === playerIdString);
+        if (!playerStats) {
+            console.error(`No stats found for player ID: ${playerIdString}`);
+            console.error('Available Player IDs:', records.map(player => player.player_id)); // Debugging: Log all available player IDs
+            return null; // Return null if no stats found
+        }
+    
+        // Parse all required stats, defaulting to 0 if not available
+        const ba = parseFloat(playerStats.ba) || 0;           // Batting Average
+        const est_ba = parseFloat(playerStats.est_ba) || 0;   // Expected BA
+        const slg = parseFloat(playerStats.slg) || 0;         // Slugging
+        const est_slg = parseFloat(playerStats.est_slg) || 0; // Expected SLG
+        const est_woba = parseFloat(playerStats.est_woba) || 0; // Expected wOBA
+    
+        // Calculate Statcast Score using actual and expected stats
+        const StatcastScore = (
+            (ba * this.settings.HBAFactor) +              // Actual BA
+            (est_ba * this.settings.HEstBAFactor) +       // Expected BA
+            (slg * this.settings.HSLGFactor) +            // Actual SLG
+            (est_slg * this.settings.HEstSLGFactor) +     // Expected SLG
+            (est_woba * this.settings.HEstWOBARactor)     // Expected wOBA
+        ) * this.settings.HStatcastWeight;              // Apply overall weight
+    
+        playerStats.score = StatcastScore; // Add the score to the player object
+    
+        return playerStats; // Return the specific player's stats
+    }
+    
+    async fetchPitcherStatcast(playerId) {
+        const url = 'https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=pitcher&year=2024&position=&team=&min=1&csv=true';
+        const response = await axios.get(url);
+        let records = Papa.parse(response.data, { header: true, skipEmptyLines: true }).data;
+    
+        // Find the specific player by ID
+        const playerStats = records.find(player => player.player_id === playerId);
+        if (!playerStats) {
+            console.error(`No stats found for player ID: ${playerId}`);
+            return null; // Return null if no stats found
+        }
+    
+        // Parse all required stats, defaulting to 0 if not available
+        const est_ba = parseFloat(playerStats.est_ba) || 0;     // Expected BA
+        const slg = parseFloat(playerStats.slg) || 0;           // Actual SLG
+        const est_slg = parseFloat(playerStats.est_slg) || 0;   // Expected SLG
+        const woba = parseFloat(playerStats.woba) || 0;         // Actual wOBA
+        const est_woba = parseFloat(playerStats.est_woba) || 0; // Expected wOBA
+        const xera = parseFloat(playerStats.xera) || 0;         // Expected ERA
+    
+        // Calculate Statcast penalty (higher values are worse for pitchers)
+        const StatcastPenalty = (
+            (est_ba * this.settings.PEstBAFactor) +        // Expected BA
+            (slg * this.settings.PSLGFactor) +             // Actual SLG
+            (est_slg * this.settings.PEstSLGFactor) +      // Expected SLG
+            (woba * this.settings.PWOBFactor) +            // Actual wOBA
+            (est_woba * this.settings.PEstWOBAFactor) +    // Expected wOBA
+            (xera * this.settings.PXERAFactor)             // Expected ERA
+        ) * this.settings.PStatcastWeight;               // Apply overall weight
+    
+        playerStats.score = StatcastPenalty; // Add the score to the player object
+    
+        return playerStats; // Return the specific player's stats
+    }
+
     async loadPlayerProfile() {
         this.showLoading();
         try {
             const urlParams = new URLSearchParams(window.location.search);
             const playerName = urlParams.get('name');
             const playerId = urlParams.get('id');
-
+    
             if (!playerName && !playerId) {
                 throw new Error('No player name or ID provided');
             }
-
+    
             // Load data from multiple sources in parallel
             const [tank01Data, hfsData, pfsData] = await Promise.all([
                 Tank01API.getPlayerInfo(playerName || playerId),
                 fetch('/api/hfs').then(r => r.json()).catch(() => null),
                 fetch('/api/pfs').then(r => r.json()).catch(() => null)
             ]);
-
+    
             if (!tank01Data || !tank01Data.body || !tank01Data.body[0]) {
                 throw new Error('No player data found');
             }
-
+    
+            // Extract mlbID from tank01Data
+            const mlbID = tank01Data.body[0].mlbID;
+    
             // Find player in HFS/PFS data
             const hfsPlayer = hfsData ? hfsData.find(p => p.playerid === playerId) : null;
             const pfsPlayer = pfsData ? pfsData.find(p => p.playerid === playerId) : null;
-
+    
             // Combine all data sources
             this.playerData = {
                 ...tank01Data.body[0],
                 hfsData: hfsPlayer,
                 pfsData: pfsPlayer
             };
-
+    
             console.log('Player Data:', this.playerData); // Debug log
+    
+            // Check if the player is a hitter or pitcher and fetch Statcast data
+            let statcastData;
+            let isPitcher = !!this.playerData.pfsData; // Determine if the player is a pitcher
+            if (this.playerData.hfsData) {
+                // Player is a hitter
+                statcastData = await this.fetchHitterStatcast(mlbID);
+                console.log('Hitter Statcast Data:', statcastData);
+            } else if (isPitcher) {
+                // Player is a pitcher
+                statcastData = await this.fetchPitcherStatcast(mlbID);
+                console.log('Pitcher Statcast Data:', statcastData);
+            } else {
+                console.log('Player position not recognized.');
+            }
+    
+            // Update the underlying metrics section with the fetched stats
+            if (statcastData) {
+                this.updateUnderlyingMetricsSection(statcastData, isPitcher);
+            }
+    
             this.updateUI();
-            await this.loadStatcastData(playerId); // Load Statcast data
+            this.updateProjectionsSection(); // Load projections data directly from tank01Data
         } catch (error) {
             console.error('Error loading player profile:', error);
             this.handleError(error);
         } finally {
             this.hideLoading();
         }
+    }
+    
+    updateUnderlyingMetricsSection(stats, isPitcher = false) {
+        const underlyingMetricsSection = document.getElementById('underlyingMetricsSection');
+        if (!underlyingMetricsSection) return;
+    
+        // Define the keys and display names based on whether the player is a pitcher
+        const keysToDisplay = isPitcher
+            ? [
+                { key: 'est_ba', displayName: 'xBA' },
+                { key: 'est_slg', displayName: 'xSLG' },
+                { key: 'est_woba', displayName: 'xwOBA' },
+                { key: 'xera', displayName: 'xERA' },
+                { key: 'score', displayName: 'Score' }
+            ]
+            : [
+                { key: 'est_ba', displayName: 'xBA' },
+                { key: 'est_slg', displayName: 'xSLG' },
+                { key: 'est_woba', displayName: 'xwOBA' },
+                { key: 'score', displayName: 'Score' }
+            ];
+    
+        // Initialize HTML content
+        let content = `<h3 class="section-title">Underlying Metrics</h3><div class="metrics-content">`;
+    
+        // Add only the specified stats to the content
+        keysToDisplay.forEach(({ key, displayName }) => {
+            const value = stats[key] || 'N/A'; // Use 'N/A' if the value is missing
+            content += `
+                <div class="metric-card">
+                    <span class="metric-key">${displayName}</span>
+                    <span class="metric-value">${value}</span>
+                </div>
+            `;
+        });
+    
+        content += `</div>`;
+        underlyingMetricsSection.innerHTML = content; // Update the section with the constructed content
     }
 
     async loadStatcastData(playerId) {
@@ -124,6 +312,8 @@ class PlayerProfile {
         }
     }
 
+
+
     extractStat(doc, statName) {
         // Define the selectors for each stat
         const selectors = {
@@ -150,30 +340,223 @@ class PlayerProfile {
         return statElement ? statElement.textContent.trim() : 'N/A';
     }
 
-    updateProjectionsSection(stats, isPitcher) {
+    updateProjectionsSection() {
         const projectionsSection = document.getElementById('projectionsSection');
         if (!projectionsSection) return;
 
-        // Update HTML structure
-        projectionsSection.innerHTML = `
-            <h3 class="section-title">Projections</h3>
-            <div class="projections-content">
-                <h4>${isPitcher ? 'Pitcher' : 'Hitter'} Projections</h4>
-                <div class="stats-cards">
-                    ${Object.entries(stats).map(([key, value]) => `
-                        <div class="projection-card">
-                            <span class="stat-key">${key}</span>
-                            <span class="stat-value">${value}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="graphs-container">
-                    <canvas id="projectionsChart"></canvas>
-                    <canvas id="trendChart"></canvas>
-                </div>
+        // Access hitting and pitching stats directly from playerData
+        const hittingStats = this.playerData.stats.Hitting || {};
+        const pitchingStats = this.playerData.stats.Pitching || {};
+
+        // Initialize HTML content
+        let content = `<h3 class="section-title">Projections</h3><div class="projections-content">`;
+
+        // Check for hitting stats
+        if (Object.keys(hittingStats).length > 0) {
+            content += `<h4>Hitter Projections</h4><div class="stats-cards">`;
+            Object.entries(hittingStats).forEach(([key, value]) => {
+                content += `
+                    <div class="projection-card">
+                        <span class="stat-key">${key}</span>
+                        <span class="stat-value">${value || 'N/A'}</span>
+                    </div>
+                `;
+            });
+            content += `</div>`;
+        } else {
+            content += `<p>No hitting projection data available</p>`;
+        }
+
+        // Check for pitching stats
+        if (Object.keys(pitchingStats).length > 0) {
+            content += `<h4>Pitcher Projections</h4><div class="stats-cards">`;
+            Object.entries(pitchingStats).forEach(([key, value]) => {
+                content += `
+                    <div class="projection-card">
+                        <span class="stat-key">${key}</span>
+                        <span class="stat-value">${value || 'N/A'}</span>
+                    </div>
+                `;
+            });
+            content += `</div>`;
+        } else {
+            content += `<p>No pitching projection data available</p>`;
+        }
+
+        content += `
+            <div class="graphs-container">
+                <canvas id="projectionsChart"></canvas>
+                <canvas id="trendChart"></canvas>
             </div>
             <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
-        `;
+        </div>`;
+
+        // Update the projections section with the constructed content
+        projectionsSection.innerHTML = content;
+
+        // Render graphs
+        this.renderProjectionsGraph(hittingStats, pitchingStats);
+        this.renderTrendGraph(hittingStats, pitchingStats);
+    }
+
+    renderProjectionsGraph(hittingStats, pitchingStats) {
+        const ctx = document.getElementById('projectionsChart').getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (this.projectionsChart) {
+            this.projectionsChart.destroy();
+        }
+
+        const hittingLabels = Object.keys(hittingStats);
+        const hittingValues = Object.values(hittingStats).map(value => typeof value === 'string' ? parseFloat(value) : value);
+
+        // Prepare data for pitching stats if available
+        const pitchingLabels = Object.keys(pitchingStats);
+        const pitchingValues = Object.values(pitchingStats).map(value => typeof value === 'string' ? parseFloat(value) : value);
+
+        // Combine hitting and pitching data for the graph
+        const combinedLabels = [...hittingLabels, ...pitchingLabels];
+        const combinedValues = [...hittingValues, ...pitchingValues];
+
+        // Create datasets for hitting and pitching
+        const datasets = [];
+        if (hittingValues.length > 0) {
+            datasets.push({
+                label: 'Hitter Stats',
+                data: hittingValues,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Light teal for hitting
+                borderColor: 'rgba(75, 192, 192, 1)', // Dark teal for hitting
+                borderWidth: 1,
+                type: 'bar'
+            });
+        }
+        if (pitchingValues.length > 0) {
+            datasets.push({
+                label: 'Pitcher Stats',
+                data: pitchingValues,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)', // Light pink for pitching
+                borderColor: 'rgba(255, 99, 132, 1)', // Dark pink for pitching
+                borderWidth: 1,
+                type: 'bar'
+            });
+        }
+
+        this.projectionsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: combinedLabels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Projections'
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    renderTrendGraph(hittingStats, pitchingStats) {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        
+        if (this.trendChart) {
+            this.trendChart.destroy();
+        }
+
+        // Prepare data for hitting trends
+        const hittingLabels = Object.keys(hittingStats);
+        const hittingValues = Object.values(hittingStats).map(value => typeof value === 'string' ? parseFloat(value) : value);
+
+        // Prepare data for pitching trends
+        const pitchingLabels = Object.keys(pitchingStats);
+        const pitchingValues = Object.values(pitchingStats).map(value => typeof value === 'string' ? parseFloat(value) : value);
+
+        // Create datasets for hitting and pitching trends
+        const datasets = [];
+        if (hittingValues.length > 0) {
+            datasets.push({
+                label: 'Hitter Trends',
+                data: hittingValues,
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)', // Dark teal for hitting trends
+                tension: 0.1
+            });
+        }
+        if (pitchingValues.length > 0) {
+            datasets.push({
+                label: 'Pitcher Trends',
+                data: pitchingValues,
+                fill: false,
+                borderColor: 'rgba(255, 99, 132, 1)', // Dark pink for pitching trends
+                tension: 0.1
+            });
+        }
+
+        this.trendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [...hittingLabels, ...pitchingLabels],
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Trends'
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#fff'
+                        }
+                    }
+                }
+            }
+        });
     }
 
     updateUI() {
@@ -258,208 +641,6 @@ class PlayerProfile {
         }
     }
 
-    updateProjectionsSection() {
-        const projectionsSection = document.getElementById('projectionsSection');
-        if (!projectionsSection) return;
-
-        const { hfsData, pfsData } = this.playerData;
-        const isPitcher = !!pfsData;
-        const playerData = isPitcher ? pfsData : hfsData;
-
-        if (!playerData) {
-            projectionsSection.innerHTML = `
-                <h3 class="section-title">Projections</h3>
-                <div class="projections-content">
-                    <p>No projection data available</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Filter relevant stats for hitters and pitchers
-        const relevantStats = isPitcher
-            ? ['IP', 'W', 'L', 'S', 'Holds', 'SO', 'Hits', 'BB', 'ER']
-            : ['PA', 'AVG', 'H', 'BB', 'HR', 'R', 'RBI', 'SB', 'OPS'];
-
-        const statsData = Object.entries(playerData)
-            .filter(([key]) => relevantStats.includes(key));
-
-        // Update HTML structure
-        projectionsSection.innerHTML = `
-            <h3 class="section-title">Projections</h3>
-            <div class="projections-content">
-                <h4>${isPitcher ? 'Pitcher' : 'Hitter'} Projections</h4>
-                <div class="stats-cards">
-                    ${statsData.map(([key, value]) => `
-                        <div class="projection-card">
-                            <span class="stat-key">${key}</span>
-                            <span class="stat-value">${value}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="graphs-container">
-                    <canvas id="projectionsChart"></canvas>
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
-            <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
-        `;
-
-        // Render graphs
-        this.renderProjectionsGraph(statsData, isPitcher);
-        this.renderTrendGraph(statsData, isPitcher);
-    }
-
-    renderProjectionsGraph(statsData, isPitcher) {
-        const ctx = document.getElementById('projectionsChart').getContext('2d');
-        
-        // Destroy existing chart if it exists
-        if (this.projectionsChart) {
-            this.projectionsChart.destroy();
-        }
-
-        const labels = statsData.map(([key]) => key);
-        const values = statsData.map(([_, value]) => typeof value === 'string' ? parseFloat(value) : value);
-
-        this.projectionsChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: `${isPitcher ? 'Pitcher' : 'Hitter'} Stats`,
-                    data: values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `${isPitcher ? 'Pitcher' : 'Hitter'} Projections`
-                    },
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#fff'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#fff'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    renderTrendGraph(statsData, isPitcher) {
-        const ctx = document.getElementById('trendChart').getContext('2d');
-        
-        if (this.trendChart) {
-            this.trendChart.destroy();
-        }
-
-        // For demonstration, using the same data but as a line chart
-        // In a real application, you might want to use historical data
-        const labels = statsData.map(([key]) => key);
-        const values = statsData.map(([_, value]) => typeof value === 'string' ? parseFloat(value) : value);
-
-        this.trendChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: `${isPitcher ? 'Pitcher' : 'Hitter'} Trends`,
-                    data: values,
-                    fill: false,
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: `${isPitcher ? 'Pitcher' : 'Hitter'} Trends`
-                    },
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#fff'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#fff'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    updateUnderlyingMetricsSection(metricsData) {
-        const underlyingMetricsSection = document.getElementById('underlyingMetricsSection');
-        if (!underlyingMetricsSection) return;
-
-        // Check if metrics data is available
-        if (!metricsData || metricsData.length === 0) {
-            underlyingMetricsSection.innerHTML = `
-                <h3 class="section-title">Underlying Metrics</h3>
-                <div class="underlying-metrics-content">
-                    <p>No underlying metrics data available</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Update HTML structure for underlying metrics
-        underlyingMetricsSection.innerHTML = `
-            <h3 class="section-title">Underlying Metrics</h3>
-            <div class="underlying-metrics-content">
-                <h4>Underlying Metrics</h4>
-                <div class="stats-cards">
-                    ${metricsData.map(([key, value]) => `
-                        <div class="metric-card">
-                            <span class="metric-key">${key}</span>
-                            <span class="metric-value">${value}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-            <button class="toggle-button" onclick="toggleSection('underlyingMetricsSection')">Collapse</button>
-        `;
-    }
-
     removeEmptyDivs() {
         const emptyDivs = document.querySelectorAll('.content-wrapper > div:empty');
         emptyDivs.forEach(div => div.remove());
@@ -497,7 +678,7 @@ function toggleSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (!section) return;
 
-    const content = section.querySelector('.projections-content, .underlying-metrics-content');
+    const content = section.querySelector('.projections-content') || section.querySelector('.underlying-metrics-content');
     const button = section.querySelector('.toggle-button');
 
     if (content.style.display === 'none') {

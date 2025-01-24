@@ -301,6 +301,7 @@ async function fetchHitterStatcast() {
   const response = await axios.get(url);
   let records = parse(response.data, { columns: true, skip_empty_lines: true });
 
+  console.log(records)
   records.forEach(player => {
     // Parse all required stats, defaulting to 0 if not available
     const ba = parseFloat(player.ba) || 0;           // Batting Average
@@ -330,6 +331,7 @@ async function fetchPitcherStatcast() {
   const response = await axios.get(url);
   let records = parse(response.data, { columns: true, skip_empty_lines: true });
 
+  console.log(records)
   records.forEach(player => {
     // Parse all required stats, defaulting to 0 if not available
     const est_ba = parseFloat(player.est_ba) || 0;     // Expected BA

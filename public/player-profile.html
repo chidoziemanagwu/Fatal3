@@ -64,27 +64,46 @@
             <div id="playerLinks" class="links-section"></div>
         </div>
 
-        <!-- Projections Section -->
-        <div id="projectionsSection" class="section">
-            <h3 class="section-title">Projections</h3>
-            <div class="projections-content">
-                <div class="stats-cards"></div>
-                <div class="graphs-container">
-                    <canvas id="projectionsChart"></canvas>
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
-            <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
+<!-- Projections Section -->
+<div id="projectionsSection" class="section">
+    <h3 class="section-title">Projections</h3>
+    <div class="projections-content">
+        <div class="stats-cards"></div>
+        <div class="graphs-container">
+            <canvas id="projectionsChart"></canvas>
+            <canvas id="trendChart"></canvas>
         </div>
+    </div>
+    <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
+</div>
 
-        <!-- Underlying Metrics Section -->
-        <div id="underlyingMetricsSection" class="section">
-            <h3 class="section-title">Underlying Metrics</h3>
-            <div class="underlying-metrics-content">
-                <div class="stats-cards"></div>
-            </div>
-            <button class="toggle-button" onclick="toggleSection('underlyingMetricsSection')">Collapse</button>
+<!-- Underlying Metrics Section -->
+<div id="underlyingMetricsSection" class="section">
+    <h3 class="section-title">Underlying Metrics</h3>
+    <div class="underlying-metrics-content">
+        <div class="metric-card">
+            <span class="metric-key">xBA</span>
+            <span class="metric-value">0.210</span>
         </div>
+        <div class="metric-card">
+            <span class="metric-key">xSLG</span>
+            <span class="metric-value">0.350</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-key">xwOBA</span>
+            <span class="metric-value">0.290</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-key">xERA</span>
+            <span class="metric-value">3.50</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-key">Score</span>
+            <span class="metric-value">95.00</span>
+        </div>
+    </div>
+    <button class="toggle-button" onclick="toggleSection('underlyingMetricsSection')">Collapse</button>
+</div>
     </div>
 
     <div class="footer">
@@ -93,5 +112,7 @@
 
     <script src="/services/tank01-api.js"></script>
     <script src="/js/player-profile.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </body>
 </html>
