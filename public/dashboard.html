@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
-<link rel="shortcut icon" href="/img/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="Fatals" />
-<link rel="manifest" href="img/site.webmanifest" />
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+  <link rel="shortcut icon" href="/img/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="Fatals" />
+  <link rel="manifest" href="img/site.webmanifest" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Dashboard | Fatals</title>
   <link rel="stylesheet" href="/dashboardstyles.css" />
   <link rel="stylesheet" href="/css/navbar.css">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body>
   <div id="navbar-container"></div>
 
@@ -22,7 +24,7 @@
       <div id="playerSearchContainer">
         <input type="text" id="playerSearch" placeholder="Search for a player..." />
         <button id="clearSearch" title="Clear Search">X</button>
-        <div id="searchResults">
+        <div id="searchResults" style="display: none;">
           <table>
             <thead>
               <tr>
@@ -51,80 +53,83 @@
     <div class="right-column">
       <div id="bestAvailableSection" class="best-available-section">
         <div id="bestAvailableNotice" class="notice hidden">
-            Please select or create a league to use Best Available.
+          Please select or create a league to use Best Available.
         </div>
-        
+
         <!-- Main container with responsive flex layout -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Hitters Column -->
-            <div class="w-full">
-                <div class="mb-4">
-                    <h4 class="text-lg font-bold text-green-400 mb-2">Best Available Hitters</h4>
-                    <select id="bestHittersPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
-                        <option value="All">All Positions</option>
-                        <option value="C">C</option>
-                        <option value="1B">1B</option>
-                        <option value="2B">2B</option>
-                        <option value="3B">3B</option>
-                        <option value="SS">SS</option>
-                        <option value="OF">OF</option>
-                        <option value="DH">DH</option>
-                    </select>
-                    <div class="overflow-x-auto border-2 border-yellow-300 rounded">
-                        <table id="bestHittersTable" class="min-w-full">
-                            <thead>
-                                <tr class="bg-black">
-                                    <th class="px-4 py-2 text-yellow-300">Rank</th>
-                                    <th class="px-4 py-2 text-yellow-300 sticky-name">Name</th>
-                                    <th class="px-4 py-2 text-yellow-300">Pos</th>
-                                    <th class="px-4 py-2 text-yellow-300">HR</th>
-                                    <th class="px-4 py-2 text-yellow-300">R</th>
-                                    <th class="px-4 py-2 text-yellow-300">RBI</th>
-                                    <th class="px-4 py-2 text-yellow-300">SB</th>
-                                    <th class="px-4 py-2 text-yellow-300">AVG</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
+          <!-- Hitters Column -->
+          <div class="w-full">
+            <div class="mb-4">
+              <h4 class="text-lg font-bold text-green-400 mb-2">Best Available Hitters</h4>
+              <select id="bestHittersPosition"
+                class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+                <option value="All">All Positions</option>
+                <option value="C">C</option>
+                <option value="1B">1B</option>
+                <option value="2B">2B</option>
+                <option value="3B">3B</option>
+                <option value="SS">SS</option>
+                <option value="OF">OF</option>
+                <option value="DH">DH</option>
+              </select>
+              <div class="overflow-x-auto border-2 border-yellow-300 rounded">
+                <table id="bestHittersTable" class="min-w-full">
+                  <thead>
+                    <tr class="bg-black">
+                      <th class="px-4 py-2 text-yellow-300">Rank</th>
+                      <th class="px-4 py-2 text-yellow-300 sticky-name">Name</th>
+                      <th class="px-4 py-2 text-yellow-300">Pos</th>
+                      <th class="px-4 py-2 text-yellow-300">HR</th>
+                      <th class="px-4 py-2 text-yellow-300">R</th>
+                      <th class="px-4 py-2 text-yellow-300">RBI</th>
+                      <th class="px-4 py-2 text-yellow-300">SB</th>
+                      <th class="px-4 py-2 text-yellow-300">AVG</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
-    
-            <!-- Pitchers Column -->
-            <div class="w-full">
-                <div class="mb-4">
-                    <h4 class="text-lg font-bold text-green-400 mb-2">Best Available Pitchers</h4>
-                    <select id="bestPitchersPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
-                        <option value="All">All Positions</option>
-                        <option value="SP">SP</option>
-                        <option value="RP">RP</option>
-                    </select>
-                    <div class="overflow-x-auto border-2 border-yellow-300 rounded">
-                        <table id="bestPitchersTable" class="min-w-full">
-                            <thead>
-                                <tr class="bg-black">
-                                    <th class="px-4 py-2 text-yellow-300">Rank</th>
-                                    <th class="px-4 py-2 text-yellow-300 sticky-name">Name</th>
-                                    <th class="px-4 py-2 text-yellow-300">Pos</th>
-                                    <th class="px-4 py-2 text-yellow-300">W</th>
-                                    <th class="px-4 py-2 text-yellow-300">SV</th>
-                                    <th class="px-4 py-2 text-yellow-300">K</th>
-                                    <th class="px-4 py-2 text-yellow-300">ERA</th>
-                                    <th class="px-4 py-2 text-yellow-300">WHIP</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
+          </div>
+
+          <!-- Pitchers Column -->
+          <div class="w-full">
+            <div class="mb-4">
+              <h4 class="text-lg font-bold text-green-400 mb-2">Best Available Pitchers</h4>
+              <select id="bestPitchersPosition"
+                class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+                <option value="All">All Positions</option>
+                <option value="SP">SP</option>
+                <option value="RP">RP</option>
+              </select>
+              <div class="overflow-x-auto border-2 border-yellow-300 rounded">
+                <table id="bestPitchersTable" class="min-w-full">
+                  <thead>
+                    <tr class="bg-black">
+                      <th class="px-4 py-2 text-yellow-300">Rank</th>
+                      <th class="px-4 py-2 text-yellow-300 sticky-name">Name</th>
+                      <th class="px-4 py-2 text-yellow-300">Pos</th>
+                      <th class="px-4 py-2 text-yellow-300">W</th>
+                      <th class="px-4 py-2 text-yellow-300">SV</th>
+                      <th class="px-4 py-2 text-yellow-300">K</th>
+                      <th class="px-4 py-2 text-yellow-300">ERA</th>
+                      <th class="px-4 py-2 text-yellow-300">WHIP</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
 
       <div id="bigBoardSection" class="big-board-section">
         <div class="flex-item">
           <h4>Big Board</h4>
-          <select id="bigBoardPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+          <select id="bigBoardPosition"
+            class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
             <option value="All">All Positions</option>
             <option value="C">C</option>
             <option value="1B">1B</option>
@@ -138,23 +143,23 @@
           </select>
 
           <div class="overflow-x-auto border-2 border-yellow-300 rounded">
-          <table id="bigBoardTable" class="min-w-full">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th class="sticky-name">Name</th> <!-- Add a class for sticky -->
-                <th>Pos</th>
-                <th>HR/W</th>
-                <th>R/SV</th>
-                <th>RBI/ERA</th>
-                <th>SB/WHIP</th>
-                <th>AVG/K</th>
-                <th>Availability</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+            <table id="bigBoardTable" class="min-w-full">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th class="sticky-name">Name</th> <!-- Add a class for sticky -->
+                  <th>Pos</th>
+                  <th>HR/W</th>
+                  <th>R/SV</th>
+                  <th>RBI/ERA</th>
+                  <th>SB/WHIP</th>
+                  <th>AVG/K</th>
+                  <th>Availability</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -168,9 +173,15 @@
     <button class="release-button" id="releasePlayer">Release Player</button>
     <button class="create-team-button" id="createNewTeam">Create New Team</button>
     <button class="cancel-button" id="cancelAssign">Cancel</button>
-</div>
+  </div>
 
   <div class="login-notice">Please log in to use the Dashboard</div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading...</div>
+  </div>
 
   <div class="footer">
     Copyright 2024 - Fatals Fantasy Sports
@@ -182,89 +193,141 @@
 
   <script>
 
-// Global variables
-let loggedInUser = null;
-let leagues = [];
-let currentLeagueId = null;
-let teams = [];
-let allPlayers = [];
-let currentPlayer = null;
-let needsTeamRefresh = true;
+    // Global variables
+    let loggedInUser = null;
+    let leagues = [];
+    let currentLeagueId = null;
+    let teams = [];
+    let allPlayers = [];
+    let currentPlayer = null;
+    let needsTeamRefresh = true;
 
-// Define toggleUserDropdown function after global variables
-function toggleUserDropdown() {
-    const dropdown = document.querySelector('.dropdown');
-    dropdown.innerHTML = '';
+    // Show loading overlay
+    function showLoadingOverlay(message = 'Loading...') {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      console.log('Loading Overlay:', loadingOverlay); // Debugging
+      if (!loadingOverlay) {
+        console.error('Loading overlay element not found!');
+        return;
+      }
+      const loadingText = loadingOverlay.querySelector('.loading-text');
+      loadingText.textContent = message;
+      loadingOverlay.classList.remove('hidden');
+    }
+
+    // Hide loading overlay
+    function hideLoadingOverlay() {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      loadingOverlay.classList.add('hidden');
+    }
+
+    async function removePlayerFromTeam(playerId) {
+  showLoadingOverlay('Removing player...'); // Show loading overlay
+  try {
+    const response = await fetch('/remove-player', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerid: playerId }),
+    });
+
+    // Log the response status and body
+    console.log('Response Status:', response.status); // Log the response status
+
+    // Check if the response is in JSON format
+    const responseData = await response.json(); // Assuming the server returns JSON
+    console.log('Response Data:', responseData); // Log the response data
+
+    if (!response.ok) {
+      throw new Error(responseData.error || 'Failed to remove player');
+    }
+
+    window.location.reload();
+    // Player removed successfully
+    showToast('Player removed successfully!', 'success'); // Show success toast
+    // await updateTeamsContainer(); // Refresh the team roster after successful removal
+    // Reload the current page
+  } catch (err) {
+    console.error('Error removing player:', err);
+    alert(err.message || 'Failed to remove player');
+  } finally {
+    hideLoadingOverlay(); // Hide loading overlay in case of error
+  }
+} 
     
-    if(!loggedInUser) {
+
+function toggleUserDropdown() {
+      const dropdown = document.querySelector('.dropdown');
+      dropdown.innerHTML = '';
+
+      if (!loggedInUser) {
         dropdown.innerHTML = '<div>Not logged in</div>';
-    } else {
-        if(leagues.length === 0) {
-            const noLeagues = document.createElement('div');
-            noLeagues.textContent = "No leagues yet";
-            dropdown.appendChild(noLeagues);
+      } else {
+        if (leagues.length === 0) {
+          const noLeagues = document.createElement('div');
+          noLeagues.textContent = "No leagues yet";
+          dropdown.appendChild(noLeagues);
         } else {
-            leagues.forEach(lg => {
-                const leagueBtn = document.createElement('button');
-                leagueBtn.textContent = lg.name;
-                leagueBtn.addEventListener('click', async () => {
-                    await selectLeague(lg.id);
-                    dropdown.classList.remove('active');
-                });
-                dropdown.appendChild(leagueBtn);
+          leagues.forEach(lg => {
+            const leagueBtn = document.createElement('button');
+            leagueBtn.textContent = lg.name;
+            leagueBtn.addEventListener('click', async () => {
+              await selectLeague(lg.id);
+              dropdown.classList.remove('active');
             });
+            dropdown.appendChild(leagueBtn);
+          });
         }
 
         const createLeagueBtn = document.createElement('button');
         createLeagueBtn.textContent = "Create New League";
         createLeagueBtn.addEventListener('click', async () => {
-            const leagueName = prompt("Enter new league name:");
-            if(leagueName && leagueName.trim() !== '') {
-                await createLeague(leagueName.trim());
-            }
-            dropdown.classList.remove('active');
+          const leagueName = prompt("Enter new league name:");
+          if (leagueName && leagueName.trim() !== '') {
+            await createLeague(leagueName.trim());
+          }
+          dropdown.classList.remove('active');
         });
         dropdown.appendChild(createLeagueBtn);
 
         const logoutBtn = document.createElement('button');
         logoutBtn.textContent = "Log Out";
         logoutBtn.addEventListener('click', async () => {
-            await logout();
-            dropdown.classList.remove('active');
+          await logout();
+          dropdown.classList.remove('active');
         });
         dropdown.appendChild(logoutBtn);
+      }
+
+      dropdown.classList.toggle('active');
     }
 
-    dropdown.classList.toggle('active');
-}
 
-
-// First, define the showToast function
-function showToast(message, type = 'success') {
-    // Create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toastContainer');
-    if (!toastContainer) {
+    // First, define the showToast function
+    function showToast(message, type = 'success') {
+      // Create toast container if it doesn't exist
+      let toastContainer = document.getElementById('toastContainer');
+      if (!toastContainer) {
         toastContainer = document.createElement('div');
         toastContainer.id = 'toastContainer';
         document.body.appendChild(toastContainer);
-    }
+      }
 
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      toastContainer.appendChild(toast);
 
-    // Remove toast after delay
-    setTimeout(() => {
+      // Remove toast after delay
+      setTimeout(() => {
         toast.classList.add('fade-out');
         setTimeout(() => toast.remove(), 500);
-    }, 3000);
-}
+      }, 3000);
+    }
 
-// Add the required CSS
-const toastStyles = document.createElement('style');
-toastStyles.textContent = `
+    // Add the required CSS
+    const toastStyles = document.createElement('style');
+    toastStyles.textContent = `
     #toastContainer {
         position: fixed;
         top: 20px;
@@ -298,139 +361,126 @@ toastStyles.textContent = `
         opacity: 0;
     }
 `;
-document.head.appendChild(toastStyles);
+    document.head.appendChild(toastStyles);
 
-// Then modify your createLeague function to use showToast
-async function createLeague(name) {
-    try {
+    // Then modify your createLeague function to use showToast
+    async function createLeague(name) {
+      try {
         const res = await fetch('/create-league', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name }),
         });
         const data = await res.json();
-        
+
         if (data.id) {
-            leagues.push(data);
-            currentLeagueId = data.id;
-            localStorage.setItem('currentLeagueId', currentLeagueId);
-            await reloadData();
-            showToast('League created successfully!', 'success');
+          leagues.push(data);
+          currentLeagueId = data.id;
+          localStorage.setItem('currentLeagueId', currentLeagueId);
+          await reloadData();
+          showToast('League created successfully!', 'success');
         } else {
-            showToast(data.error || 'Failed to create league.', 'error');
+          showToast(data.error || 'Failed to create league.', 'error');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error creating league:', error);
         showToast('Failed to create league. Please try again.', 'error');
+      }
     }
-}
 
-// At the top of your script, add this function
-function initializeNavbarListeners() {
-    const userMenuContainer = document.getElementById('userMenuContainer');
-    if (userMenuContainer) {
+    // At the top of your script, add this function
+    function initializeNavbarListeners() {
+      const userMenuContainer = document.getElementById('userMenuContainer');
+      if (userMenuContainer) {
         userMenuContainer.addEventListener('click', toggleUserDropdown);
+      }
     }
-}
 
-// Update your fetch navbar code
-fetch('/components/navbar.html')
-    .then(response => response.text())
-    .then(html => {
+    // Update your fetch navbar code
+    fetch('/components/navbar.html')
+      .then(response => response.text())
+      .then(html => {
         document.getElementById('navbar-container').innerHTML = html;
-        
+
         // Initialize all navbar functionality after content is loaded
         initializeNavbarListeners();
-        
+
         // Mobile menu toggle
         const navbarToggle = document.querySelector('.navbar-toggle');
         if (navbarToggle) {
-            navbarToggle.addEventListener('click', () => {
-                document.querySelector('.navbar-links').classList.toggle('active');
-            });
+          navbarToggle.addEventListener('click', () => {
+            document.querySelector('.navbar-links').classList.toggle('active');
+          });
         }
 
         // Logo click handler
         const homeLogo = document.getElementById('homeLogo');
         if (homeLogo) {
-            homeLogo.addEventListener('click', () => {
-                window.location.href = '/';
-            });
+          homeLogo.addEventListener('click', () => {
+            window.location.href = '/';
+          });
         }
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         console.error('Error loading navbar:', err);
-    });
+      });
 
-    
 
-async function createLeague(name) {
-    const res = await fetch('/create-league', {
+
+    async function createLeague(name) {
+      const res = await fetch('/create-league', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name }),
-    });
-    const data = await res.json();
-    if (data.id) {
+      });
+      const data = await res.json();
+      if (data.id) {
         leagues.push(data);
         currentLeagueId = data.id;
         localStorage.setItem('currentLeagueId', currentLeagueId);
         await reloadData(); // Ensure this function is defined
         showToast('League created successfully!', 'success'); // Optional: Show success toast
-    } else {
+      } else {
         alert(data.error || 'Failed to create league.');
+      }
     }
-}
 
 
 
 
-async function selectLeague(leagueId) {
-    try {
+    async function selectLeague(leagueId) {
+      showLoadingOverlay('Loading league data...');
+      try {
         const res = await fetch('/select-league', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ leagueId }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leagueId }),
         });
         const data = await res.json();
-
         if (data.status === 'League selected') {
-            currentLeagueId = leagueId;
-            localStorage.setItem('currentLeagueId', leagueId);
-
-            // Show loading state for data refresh
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading-overlay';
-            loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
-            document.body.appendChild(loadingDiv);
-
-            try {
-                await Promise.all([
-                    reloadData(),
-                    loadTeamsForLeague(), // Ensure teams are loaded
-                ]);
-            } finally {
-                loadingDiv.remove();
-            }
+          currentLeagueId = leagueId;
+          localStorage.setItem('currentLeagueId', leagueId);
+          await reloadData();
+          await loadTeamsForLeague();
         } else {
-            alert(data.error || 'Failed to select league');
+          alert(data.error || 'Failed to select league');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error selecting league:', error);
         alert('Failed to select league');
+      } finally {
+        hideLoadingOverlay();
+      }
     }
-}
 
 
-
-
-async function reloadData() {
+    async function reloadData() {
       allPlayers = [];
       await fetchAllPlayers();
-      if(!bigBoardSection.classList.contains('hidden')) {
+      if (!bigBoardSection.classList.contains('hidden')) {
         loadBigBoard();
       }
-      if(!bestAvailableSection.classList.contains('hidden') && loggedInUser && currentLeagueId) {
+      if (!bestAvailableSection.classList.contains('hidden') && loggedInUser && currentLeagueId) {
         loadBestAvailable(bestHittersPosition.value, bestPitchersPosition.value);
       }
       // Always update teams container if a team is selected, regardless of view
@@ -443,7 +493,7 @@ async function reloadData() {
 
 
 
-    
+
     // let allPlayers = [];
     // let currentPlayer = null;
     // let loggedInUser = null;
@@ -487,7 +537,7 @@ async function reloadData() {
 
     clearSearchBtn.addEventListener('click', () => {
       playerSearchInput.value = '';
-      searchResultsContainer.style.display = 'none';
+      searchResultsContainer.style.display = 'none'; // Hide search results
     });
 
     teamsSelector.addEventListener('change', () => {
@@ -512,41 +562,52 @@ async function reloadData() {
 
     // Global click handlers
     // Global click handlers
-document.addEventListener('click', (e) => {
-    // Get elements inside the handler to ensure they exist
-    const userMenuContainer = document.getElementById('userMenuContainer');
-    const dropdown = document.querySelector('.dropdown');
-    const searchResultsContainer = document.getElementById('searchResults');
-    const playerSearchInput = document.getElementById('playerSearch');
+    document.addEventListener('click', (e) => {
+      // Get elements inside the handler to ensure they exist
+      const userMenuContainer = document.getElementById('userMenuContainer');
+      const dropdown = document.querySelector('.dropdown');
+      const searchResultsContainer = document.getElementById('searchResults');
+      const playerSearchInput = document.getElementById('playerSearch');
 
-    // Only proceed with dropdown logic if elements exist
-    if (userMenuContainer && dropdown) {
+      // Only proceed with dropdown logic if elements exist
+      if (userMenuContainer && dropdown) {
         if (!userMenuContainer.contains(e.target) && !e.target.classList.contains('user-menu')) {
-            dropdown.classList.remove('active');
+          dropdown.classList.remove('active');
         }
-    }
+      }
 
-    // Only proceed with search results logic if elements exist
-    if (searchResultsContainer && playerSearchInput) {
-        if (!searchResultsContainer.contains(e.target) && 
-            e.target !== playerSearchInput && 
-            !e.target.classList.contains('assign-button') && 
-            !e.target.classList.contains('player-name')
+      // Only proceed with search results logic if elements exist
+      if (searchResultsContainer && playerSearchInput) {
+        if (!searchResultsContainer.contains(e.target) &&
+          e.target !== playerSearchInput &&
+          !e.target.classList.contains('assign-button') &&
+          !e.target.classList.contains('player-name')
         ) {
-            searchResultsContainer.style.display = 'none';
+          searchResultsContainer.style.display = 'none';
         }
-    }
-});    
-    
+      }
+    });
+
     searchResultsContainer.addEventListener('click', (e) => {
       e.stopPropagation();
     });
 
+
+    document.addEventListener('click', (e) => {
+      const searchResultsContainer = document.getElementById('searchResults');
+      const playerSearchInput = document.getElementById('playerSearch');
+
+      // Hide search results if clicking outside the search container or input
+      if (!searchResultsContainer.contains(e.target) && e.target !== playerSearchInput) {
+        searchResultsContainer.style.display = 'none';
+      }
+    });
+
     // Event Listeners
     document.addEventListener('click', (e) => {
-      if (!assignMenu.contains(e.target) && 
-          !e.target.classList.contains('player-name') && 
-          !e.target.classList.contains('assign-button')) {
+      if (!assignMenu.contains(e.target) &&
+        !e.target.classList.contains('player-name') &&
+        !e.target.classList.contains('assign-button')) {
         hideAssignMenu();
       }
     });
@@ -563,7 +624,7 @@ document.addEventListener('click', (e) => {
 
     releasePlayerBtn.addEventListener('click', async () => {
       if (!currentPlayer) return;
-      
+
       try {
         const response = await fetch(`/api/players/${currentPlayer.playerid}/release`, {
           method: 'POST',
@@ -593,18 +654,18 @@ document.addEventListener('click', (e) => {
           },
           body: JSON.stringify({ teamName: teamName })
         })
-        .then(response => {
-          if (!response.ok) throw new Error('Failed to create team');
-          return response.json();
-        })
-        .then(async () => {
-          await fetchTeamNamesForLeague();
-          await updateAssignMenuTeams();
-          await loadTeamsForLeague();
-        })
-        .catch(err => {
-          console.error('Error creating team:', err);
-        });
+          .then(response => {
+            if (!response.ok) throw new Error('Failed to create team');
+            return response.json();
+          })
+          .then(async () => {
+            await fetchTeamNamesForLeague();
+            await updateAssignMenuTeams();
+            await loadTeamsForLeague();
+          })
+          .catch(err => {
+            console.error('Error creating team:', err);
+          });
       }
     });
 
@@ -612,46 +673,46 @@ document.addEventListener('click', (e) => {
 
 
     async function fetchAllPlayers() {
+      showLoadingOverlay('Loading players...');
       try {
         const [hfsRes, pfsRes] = await Promise.all([
           fetch('/api/hfs'),
-          fetch('/api/pfs')
+          fetch('/api/pfs'),
         ]);
 
         if (!hfsRes.ok || !pfsRes.ok) {
           throw new Error('Failed to fetch player data.');
         }
 
-        const [hfsData, pfsData] = await Promise.all([
-          hfsRes.json(),
-          pfsRes.json()
-        ]);
-
+        const [hfsData, pfsData] = await Promise.all([hfsRes.json(), pfsRes.json()]);
         allPlayers = [...hfsData, ...pfsData];
       } catch (error) {
         console.error('Error fetching all players:', error);
+        alert('Failed to load players');
+      } finally {
+        hideLoadingOverlay();
       }
     }
 
     // Add this to places where player names are rendered (in loadBestAvailable, loadBigBoard, etc.)
-function createPlayerNameCell(player) {
-    const tdName = document.createElement('td');
-    tdName.textContent = player.name;
-     tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
-    tdName.setAttribute('data-pid', player.playerid || '');
-    
-    // Add click handler for both assignment and profile navigation
-    tdName.addEventListener('click', (e) => {
+    function createPlayerNameCell(player) {
+      const tdName = document.createElement('td');
+      tdName.textContent = player.name;
+      tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+      tdName.setAttribute('data-pid', player.playerid || '');
+
+      // Add click handler for both assignment and profile navigation
+      tdName.addEventListener('click', (e) => {
         if (e.ctrlKey || e.metaKey) {
-            // Open profile in new tab if Ctrl/Cmd clicked
-            window.open(`player-profile.html?id=${player.playerid}&name=${encodeURIComponent(player.name)}`, '_blank');
+          // Open profile in new tab if Ctrl/Cmd clicked
+          window.open(`player-profile.html?id=${player.playerid}&name=${encodeURIComponent(player.name)}`, '_blank');
         } else {
-            assignPlayer(player);
+          assignPlayer(player);
         }
-    });
-    
-    return tdName;
-}
+      });
+
+      return tdName;
+    }
 
     function normalizeName(name) {
       if (!name || typeof name !== 'string') return '';
@@ -668,7 +729,7 @@ function createPlayerNameCell(player) {
     }
 
     async function loadBestAvailable(positionHitters = 'All', positionPitchers = 'All') {
-      if(!loggedInUser || !currentLeagueId) {
+      if (!loggedInUser || !currentLeagueId) {
         return;
       }
 
@@ -801,7 +862,7 @@ function createPlayerNameCell(player) {
 
         const filterValue = bigBoardPosition.value;
         let filteredData = [...allPlayers];
-        
+
         if (filterValue && filterValue !== 'All') {
           filteredData = allPlayers.filter(p => p.Pos && p.Pos.includes(filterValue));
         }
@@ -856,66 +917,78 @@ function createPlayerNameCell(player) {
       }
     }
 
+
+
+
     async function performSearch(query) {
-      if (allPlayers.length === 0) {
-        await fetchAllPlayers();
-      }
+  const searchResultsContainer = document.getElementById('searchResults');
+  const tbody = searchResultsContainer.querySelector('tbody');
 
-      const normalizedQuery = normalizeName(query);
-      if (normalizedQuery === '') {
-        searchResultsContainer.style.display = 'none';
-        return;
-      }
+  if (allPlayers.length === 0) {
+    await fetchAllPlayers();
+  }
 
-      const filteredPlayers = allPlayers.filter(player => {
-        const playerNameNormalized = normalizeName(player.name);
-        return playerNameNormalized.includes(normalizedQuery);
-      });
+  const normalizedQuery = normalizeName(query);
 
-      const tbody = searchResultsContainer.querySelector('tbody');
-      tbody.innerHTML = '';
+  // Hide search results if the query is empty
+  if (normalizedQuery === '') {
+    searchResultsContainer.style.display = 'none';
+    return;
+  }
 
-      if (filteredPlayers.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.setAttribute('colspan', '4');
-        td.textContent = 'No players found.';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
-      } else {
-        filteredPlayers.forEach(player => {
-          const tr = document.createElement('tr');
+  // Filter players based on the search query
+  const filteredPlayers = allPlayers.filter(player => {
+    const playerNameNormalized = normalizeName(player.name);
+    return playerNameNormalized.includes(normalizedQuery);
+  });
 
-          const tdName = document.createElement('td');
-          tdName.textContent = player.name;
-           tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
-          tdName.setAttribute('data-pid', player.playerid || '');
-          tdName.addEventListener('click', () => assignPlayer(player));
-          tr.appendChild(tdName);
+  // Clear the table body
+  tbody.innerHTML = '';
 
-          const tdPos = document.createElement('td');
-          tdPos.textContent = player.Pos || 'Unknown';
-          tr.appendChild(tdPos);
+  if (filteredPlayers.length === 0) {
+    // Show "No players found" message only in the search results container
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.setAttribute('colspan', '4');
+    td.textContent = 'No players found.';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    searchResultsContainer.style.display = 'block'; // Ensure the search results container is visible
+  } else {
+    // Populate the table with search results
+    filteredPlayers.forEach(player => {
+      const tr = document.createElement('tr');
 
-          const tdAvail = document.createElement('td');
-          tdAvail.textContent = player.Availability || 'Unknown';
-          tr.appendChild(tdAvail);
+      const tdName = document.createElement('td');
+      tdName.textContent = player.name;
+      tdName.classList.add('player-name', 'sticky-name');
+      tdName.setAttribute('data-pid', player.playerid || '');
+      tdName.addEventListener('click', () => assignPlayer(player));
+      tr.appendChild(tdName);
 
-          const tdAction = document.createElement('td');
-          const assignBtn = document.createElement('button');
-          assignBtn.textContent = 'Assign';
-          assignBtn.classList.add('assign-button');
-          assignBtn.addEventListener('click', () => assignPlayer(player));
-          tdAction.appendChild(assignBtn);
-          tr.appendChild(tdAction);
+      const tdPos = document.createElement('td');
+      tdPos.textContent = player.Pos || 'Unknown';
+      tr.appendChild(tdPos);
 
-          tbody.appendChild(tr);
-        });
-      }
+      const tdAvail = document.createElement('td');
+      tdAvail.textContent = player.Availability || 'Unknown';
+      tr.appendChild(tdAvail);
 
-      searchResultsContainer.style.display = 'block';
-    }
+      const tdAction = document.createElement('td');
+      const assignBtn = document.createElement('button');
+      assignBtn.textContent = 'Assign';
+      assignBtn.classList.add('assign-button');
+      assignBtn.addEventListener('click', () => assignPlayer(player));
+      tdAction.appendChild(assignBtn);
+      tr.appendChild(tdAction);
 
+      tbody.appendChild(tr);
+    });
+
+    // Show the search results container
+    searchResultsContainer.style.display = 'block';
+  }
+}
     function showAssignMenu(x, y) {
       assignMenu.style.top = `${y}px`;
       assignMenu.style.left = `${x}px`;
@@ -927,76 +1000,74 @@ function createPlayerNameCell(player) {
       currentPlayer = null;
     }
 
-// In the assignPlayer function in your dashboard code, update the viewProfile link
-async function assignPlayer(player) {
-    currentPlayer = player;
-    const playerElements = Array.from(document.getElementsByClassName('player-name'))
+    async function assignPlayer(player) {
+      const searchResultsContainer = document.getElementById('searchResults');
+      searchResultsContainer.style.display = 'none'; // Hide search results
+
+      currentPlayer = player;
+      const playerElements = Array.from(document.getElementsByClassName('player-name'))
         .filter(el => el.textContent.trim() === player.name &&
-            ((player.playerid && el.getAttribute('data-pid') === player.playerid) || 
-             (!player.playerid && !el.getAttribute('data-pid'))));
+          ((player.playerid && el.getAttribute('data-pid') === player.playerid) ||
+            (!player.playerid && !el.getAttribute('data-pid'))));
 
-    let playerElement = null;
-    if (playerElements.length > 0) {
+      let playerElement = null;
+      if (playerElements.length > 0) {
         playerElement = playerElements[0];
-    }
+      }
 
-    const x = playerElement ? 
-        (playerElement.getBoundingClientRect().left + window.scrollX) : 
+      const x = playerElement ?
+        (playerElement.getBoundingClientRect().left + window.scrollX) :
         (window.innerWidth / 2 - 125);
-    const y = playerElement ? 
-        (playerElement.getBoundingClientRect().bottom + window.scrollY) : 
+      const y = playerElement ?
+        (playerElement.getBoundingClientRect().bottom + window.scrollY) :
         (window.innerHeight / 2 - 100);
 
-    // Update the profile link with player ID and name
-    const viewProfile = document.getElementById('viewProfile');
-    if (viewProfile) {
+      // Update the profile link with player ID and name
+      const viewProfile = document.getElementById('viewProfile');
+      if (viewProfile) {
         viewProfile.href = `player-profile.html?id=${player.playerid}&name=${encodeURIComponent(player.name)}`;
-        viewProfile.style.display = player.playerid ? 'block' : 'none'; // Only show if we have a player ID
+        viewProfile.style.display = player.playerid ? 'block' : 'none';
+      }
+
+      // Show the assign menu
+      showAssignMenu(x, y);
+
+      // Update the teams in the assign menu
+      await updateAssignMenuTeams();
     }
-    
-    // Show the assign menu
-    showAssignMenu(x, y);
-    
-    // Update the teams in the assign menu
-    await updateAssignMenuTeams(); // Ensure teams are updated
-}
 
 
-async function updatePlayerTeam(player, teamName) {
-      if(!loggedInUser) {
-        alert('Need to be logged in.');
-        return;
-      }
-      if(!currentLeagueId) {
-        alert('Please select or create a league.');
-        return;
-      }
-
+    async function updatePlayerTeam(player, teamName) {
+      showLoadingOverlay('Assigning player...');
       try {
         const pid = player.playerid ? `id-${player.playerid}` : `name-${normalizeName(player.name)}`;
         const response = await fetch('/update-player-team', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ playerid: pid, team: teamName })
+          body: JSON.stringify({ playerid: pid, team: teamName }),
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok.');
+          throw new Error('Failed to assign player');
         }
 
-        const data = await response.json();
         await reloadData();
       } catch (err) {
         console.error('Error updating player team:', err);
+        alert('Failed to assign player');
+      } finally {
+        hideLoadingOverlay();
       }
     }
 
-   
+
+
+
     async function fetchTeamNamesForLeague() {
-      if(!currentLeagueId) return [];
+      if (!currentLeagueId) return [];
       try {
         const res = await fetch('/teams');
-        if(!res.ok) return [];
+        if (!res.ok) return [];
         const data = await res.json();
         teams = data.map(team => team.name);
         return teams;
@@ -1009,7 +1080,7 @@ async function updatePlayerTeam(player, teamName) {
     async function updateAssignMenuTeams() {
       if (needsTeamRefresh) {
         await fetchTeamNamesForLeague();
-        needsTeamRefresh = false; 
+        needsTeamRefresh = false;
       }
 
       teamListDiv.innerHTML = '<p>Select a team to assign:</p>';
@@ -1030,7 +1101,7 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     async function loadTeamsForLeague() {
-      if(!loggedInUser || !currentLeagueId) {
+      if (!loggedInUser || !currentLeagueId) {
         teamsContainer.innerHTML = '';
         teamsSelector.innerHTML = '<option value="">Select a Team</option>';
         return;
@@ -1041,7 +1112,7 @@ async function updatePlayerTeam(player, teamName) {
       const favoriteTeamName = data.favoriteTeamName;
 
       const teamNames = await fetchTeamNamesForLeague();
-      if(teamNames.length === 0) {
+      if (teamNames.length === 0) {
         teamsContainer.innerHTML = '<p>No teams available.</p>';
         teamsSelector.innerHTML = '<option value="">Select a Team</option>';
         return;
@@ -1049,7 +1120,7 @@ async function updatePlayerTeam(player, teamName) {
 
       teamsSelector.innerHTML = '<option value="">Select a Team</option>';
       let favoriteTeamFound = false;
-  
+
       teamNames.forEach(t => {
         const opt = document.createElement('option');
         opt.value = t;
@@ -1075,7 +1146,7 @@ async function updatePlayerTeam(player, teamName) {
           body: JSON.stringify({ teamId })
         });
         if (!response.ok) throw new Error('Failed to set favorite team');
-        
+
         // Auto reload teams after setting favorite
         await loadTeamsForLeague();
       } catch (err) {
@@ -1084,42 +1155,42 @@ async function updatePlayerTeam(player, teamName) {
     }
 
 
-//     async function selectLeague(leagueId) {
-//     try {
-//         const res = await fetch('/select-league', {
-//             method: 'POST',
-//             headers: {'Content-Type':'application/json'},
-//             body: JSON.stringify({leagueId})
-//         });
-//         const data = await res.json();
-        
-//         if(data.status === 'League selected') {
-//             currentLeagueId = leagueId;
-//             localStorage.setItem('currentLeagueId', leagueId);
-            
-//             // Show loading state for data refresh
-//             const loadingDiv = document.createElement('div');
-//             loadingDiv.className = 'loading-overlay';
-//             loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
-//             document.body.appendChild(loadingDiv);
-            
-//             try {
-//                 await Promise.all([
-//                     reloadData(),
-//                     loadTeamsForLeague()
-//                 ]);
-//             } finally {
-//                 loadingDiv.remove();
-//             }
-//         } else {
-//             alert(data.error || 'Failed to select league');
-//         }
-//     } catch (error) {
-//         console.error('Error selecting league:', error);
-//         alert('Failed to select league');
-//     }
-// }    
-   
+    //     async function selectLeague(leagueId) {
+    //     try {
+    //         const res = await fetch('/select-league', {
+    //             method: 'POST',
+    //             headers: {'Content-Type':'application/json'},
+    //             body: JSON.stringify({leagueId})
+    //         });
+    //         const data = await res.json();
+
+    //         if(data.status === 'League selected') {
+    //             currentLeagueId = leagueId;
+    //             localStorage.setItem('currentLeagueId', leagueId);
+
+    //             // Show loading state for data refresh
+    //             const loadingDiv = document.createElement('div');
+    //             loadingDiv.className = 'loading-overlay';
+    //             loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
+    //             document.body.appendChild(loadingDiv);
+
+    //             try {
+    //                 await Promise.all([
+    //                     reloadData(),
+    //                     loadTeamsForLeague()
+    //                 ]);
+    //             } finally {
+    //                 loadingDiv.remove();
+    //             }
+    //         } else {
+    //             alert(data.error || 'Failed to select league');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error selecting league:', error);
+    //         alert('Failed to select league');
+    //     }
+    // }    
+
 
 
     // async function createLeague(name) {
@@ -1140,9 +1211,9 @@ async function updatePlayerTeam(player, teamName) {
     // }
 
     async function logout() {
-      const res = await fetch('/logout', {method:'POST'});
+      const res = await fetch('/logout', { method: 'POST' });
       const data = await res.json();
-      if(data.status === 'Logged out') {
+      if (data.status === 'Logged out') {
         loggedInUser = null;
         currentLeagueId = null;
         leagues = [];
@@ -1155,57 +1226,57 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     async function checkLoginStatus() {
-    try {
+      try {
         const response = await fetch('/api/check-login');
         const data = await response.json();
         loggedInUser = data.loggedIn ? data.username : null;
-        
+
         if (data.loggedIn) {
-            document.getElementById('userMenuContainer').innerHTML = `
+          document.getElementById('userMenuContainer').innerHTML = `
                 <span>${data.username}</span>
                 <button class="nav-button" onclick="logout()">Logout</button>
             `;
-            
-            // Load leagues first
-            await loadUserLeagues();
-            
-            // Auto-select most recent league if no favorite league
-            if (!data.favoriteLeagueId && leagues.length > 0) {
-                // Get most recent league (assuming last in array is most recent)
-                const mostRecentLeague = leagues[leagues.length - 1];
-                await selectLeague(mostRecentLeague.id);
+
+          // Load leagues first
+          await loadUserLeagues();
+
+          // Auto-select most recent league if no favorite league
+          if (!data.favoriteLeagueId && leagues.length > 0) {
+            // Get most recent league (assuming last in array is most recent)
+            const mostRecentLeague = leagues[leagues.length - 1];
+            await selectLeague(mostRecentLeague.id);
+          }
+          // If there's a favorite league, select it
+          else if (data.favoriteLeagueId) {
+            await selectLeague(data.favoriteLeagueId);
+
+            // If there's also a favorite team, select it
+            if (data.favoriteTeamId) {
+              await selectFavoriteTeam(data.favoriteTeamId);
             }
-            // If there's a favorite league, select it
-            else if (data.favoriteLeagueId) {
-                await selectLeague(data.favoriteLeagueId);
-                
-                // If there's also a favorite team, select it
-                if (data.favoriteTeamId) {
-                    await selectFavoriteTeam(data.favoriteTeamId);
-                }
-            }
-            
-            return true;
+          }
+
+          return true;
         } else {
-            document.getElementById('userMenuContainer').innerHTML = `
+          document.getElementById('userMenuContainer').innerHTML = `
                 <button class="nav-button" onclick="showLoginOverlay()">Login</button>
                 <button class="nav-button" onclick="showRegisterOverlay()">Register</button>
             `;
-            return false;
+          return false;
         }
-    } catch (err) {
+      } catch (err) {
         console.error('Error checking login status:', err);
         return false;
+      }
     }
-}    
-    
+
     async function loadUserLeagues() {
-      if(!loggedInUser) {
+      if (!loggedInUser) {
         leagues = [];
         return;
       }
       const res = await fetch('/leagues');
-      if(!res.ok) {
+      if (!res.ok) {
         leagues = [];
         return;
       }
@@ -1213,16 +1284,16 @@ async function updatePlayerTeam(player, teamName) {
     }
 
     function updateUIState() {
-    const userMenuContainer = document.getElementById('userMenuContainer');
-    const contentWrapper = document.querySelector('.content-wrapper');
-    const loginNotice = document.querySelector('.login-notice');
-    const bestAvailableNotice = document.getElementById('bestAvailableNotice');
+      const userMenuContainer = document.getElementById('userMenuContainer');
+      const contentWrapper = document.querySelector('.content-wrapper');
+      const loginNotice = document.querySelector('.login-notice');
+      const bestAvailableNotice = document.getElementById('bestAvailableNotice');
 
-    if (!userMenuContainer) return; // Exit if container doesn't exist yet
+      if (!userMenuContainer) return; // Exit if container doesn't exist yet
 
-    userMenuContainer.style.display = 'none'; // Hide first
+      userMenuContainer.style.display = 'none'; // Hide first
 
-    if (!loggedInUser) {
+      if (!loggedInUser) {
         contentWrapper.classList.add('logged-out');
         loginNotice.classList.add('visible');
         userMenuContainer.innerHTML = `
@@ -1237,291 +1308,272 @@ async function updatePlayerTeam(player, teamName) {
         teamsSelector.innerHTML = '<option value="">Select a Team</option>';
         bestAvailableNotice.classList.add('hidden');
         return;
-    }
+      }
 
-    // Update UI for logged-in state
-    contentWrapper.classList.remove('logged-out');
-    loginNotice.classList.remove('visible');
-    userMenuContainer.innerHTML = `<div class="user-menu logged-in">Welcome, ${loggedInUser}</div>`;
-    userMenuContainer.style.display = 'block';
+      // Update UI for logged-in state
+      contentWrapper.classList.remove('logged-out');
+      loginNotice.classList.remove('visible');
+      userMenuContainer.innerHTML = `<div class="user-menu logged-in">Welcome, ${loggedInUser}</div>`;
+      userMenuContainer.style.display = 'block';
 
-    // Update notices based on league state
-    if (leagues.length === 0) {
+      // Update notices based on league state
+      if (leagues.length === 0) {
         bestAvailableNotice.classList.remove('hidden');
-    } else {
+      } else {
         bestAvailableNotice.classList.add('hidden');
+      }
     }
-}    
-    
-async function updateTeamsContainer() {
-    // Clear the teams container
-    teamsContainer.innerHTML = '';
-    const selectedTeam = teamsSelector.value;
 
-    // Check if a team is selected
-    if (!selectedTeam) {
+async function updateTeamsContainer() {
+      // Clear the teams container
+      teamsContainer.innerHTML = '';
+      const selectedTeam = teamsSelector.value;
+
+      // Check if a team is selected
+      if (!selectedTeam) {
         teamsContainer.innerHTML = '<p>Please select a team to view its roster.</p>';
         return;
-    }
+      }
 
-    // Filter players for the selected team
-    const teamPlayers = allPlayers.filter(p => p.team && p.team.toLowerCase() === selectedTeam.toLowerCase() && p.Availability.toLowerCase() === 'taken');
+      // Filter players for the selected team
+      const teamPlayers = allPlayers.filter(p => p.team && p.team.toLowerCase() === selectedTeam.toLowerCase() && p.Availability.toLowerCase() === 'taken');
 
-    // If no players are found, show the message
-    if (teamPlayers.length === 0) {
+      // If no players are found, show the message
+      if (teamPlayers.length === 0) {
         teamsContainer.innerHTML = '<p>No players found for this team.</p>';
         return;
-    }
+      }
 
-    // Sort players and separate hitters and pitchers
-    teamPlayers.sort((a, b) => a.Rank - b.Rank);
-    const hitterPriority = ['C', '1B', '2B', '3B', 'SS', 'OF', 'DH'];
-    const pitchers = teamPlayers.filter(p => p.Pos && (p.Pos.toUpperCase().includes('SP') || p.Pos.toUpperCase().includes('RP')));
-    const hitters = teamPlayers.filter(p => {
+      // Sort players and separate hitters and pitchers
+      teamPlayers.sort((a, b) => a.Rank - b.Rank);
+      const hitterPriority = ['C', '1B', '2B', '3B', 'SS', 'OF', 'DH'];
+      const pitchers = teamPlayers.filter(p => p.Pos && (p.Pos.toUpperCase().includes('SP') || p.Pos.toUpperCase().includes('RP')));
+      const hitters = teamPlayers.filter(p => {
         const pos = p.Pos ? p.Pos.toUpperCase() : '';
         return hitterPriority.some(h => pos.includes(h));
-    });
+      });
 
-    // Create team roster display
-    const teamDiv = document.createElement('div');
-    teamDiv.className = 'team-roster';
+      // Create team roster display
+      const teamDiv = document.createElement('div');
+      teamDiv.className = 'team-roster';
 
-    const teamName = document.createElement('h3');
-    teamName.textContent = selectedTeam;
-    teamDiv.appendChild(teamName);
+      const teamName = document.createElement('h3');
+      teamName.textContent = selectedTeam;
+      teamDiv.appendChild(teamName);
 
-    // Create Hitters section
-    const hittersDiv = document.createElement('div');
-    hittersDiv.className = 'roster-section';
-    const hittersTitle = document.createElement('h4');
-    hittersTitle.textContent = 'Hitters';
-    hittersDiv.appendChild(hittersTitle);
+      // Create Hitters section
+      const hittersDiv = document.createElement('div');
+      hittersDiv.className = 'roster-section';
+      const hittersTitle = document.createElement('h4');
+      hittersTitle.textContent = 'Hitters';
+      hittersDiv.appendChild(hittersTitle);
 
-    const hittersTable = document.createElement('table');
-    const hittersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'HR', 'R', 'RBI', 'SB', 'AVG', 'Action'];
-    const hittersThead = document.createElement('thead');
-    const hittersHeaderRow = document.createElement('tr');
-    hittersHeaders.forEach(h => {
+      const hittersTable = document.createElement('table');
+      const hittersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'HR', 'R', 'RBI', 'SB', 'AVG', 'Action'];
+      const hittersThead = document.createElement('thead');
+      const hittersHeaderRow = document.createElement('tr');
+      hittersHeaders.forEach(h => {
         const th = document.createElement('th');
         th.textContent = h;
         hittersHeaderRow.appendChild(th);
-    });
-    hittersThead.appendChild(hittersHeaderRow);
-    hittersTable.appendChild(hittersThead);
+      });
+      hittersThead.appendChild(hittersHeaderRow);
+      hittersTable.appendChild(hittersThead);
 
-    const hittersTbody = document.createElement('tbody');
-    if (hitters.length === 0) {
+      const hittersTbody = document.createElement('tbody');
+      if (hitters.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         td.setAttribute('colspan', '10');
         td.textContent = 'No hitters on this team.';
         tr.appendChild(td);
         hittersTbody.appendChild(tr);
-    } else {
+      } else {
         hitters.forEach(player => {
-            const tr = document.createElement('tr');
+          const tr = document.createElement('tr');
 
-            const tdName = document.createElement('td');
-            tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
-            tdName.textContent = player.name;
-             tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
-            tdName.setAttribute('data-pid', player.playerid || '');
-            tdName.addEventListener('click', () => assignPlayer(player));
-            tr.appendChild(tdName);
+          const tdName = document.createElement('td');
+          tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
 
-            const tdPos = document.createElement('td');
-            tdPos.textContent = player.Pos;
-            tr.appendChild(tdPos);
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos;
+          tr.appendChild(tdPos);
 
-            const tdRank = document.createElement('td');
-            tdRank.textContent = player.Rank || 'N/A';
-            tr.appendChild(tdRank);
+          const tdRank = document.createElement('td');
+          tdRank.textContent = player.Rank || 'N/A';
+          tr.appendChild(tdRank);
 
-            const tdPosRank = document.createElement('td');
-            tdPosRank.textContent = player.PositionRank || 'N/A';
-            tr.appendChild(tdPosRank);
+          const tdPosRank = document.createElement('td');
+          tdPosRank.textContent = player.PositionRank || 'N/A';
+          tr.appendChild(tdPosRank);
 
-            const tdHR = document.createElement('td');
-            tdHR.textContent = player.HR || 'N/A';
-            tr.appendChild(tdHR);
+          const tdHR = document.createElement('td');
+          tdHR.textContent = player.HR || 'N/A';
+          tr.appendChild(tdHR);
 
-            const tdR = document.createElement('td');
-            tdR.textContent = player.R || 'N/A';
-            tr.appendChild(tdR);
+          const tdR = document.createElement('td');
+          tdR.textContent = player.R || 'N/A';
+          tr.appendChild(tdR);
 
-            const tdRBI = document.createElement('td');
-            tdRBI.textContent = player.RBI || 'N/A';
-            tr.appendChild(tdRBI);
+          const tdRBI = document.createElement('td');
+          tdRBI.textContent = player.RBI || 'N/A';
+          tr.appendChild(tdRBI);
 
-            const tdSB = document.createElement('td');
-            tdSB.textContent = player.SB || 'N/A';
-            tr.appendChild(tdSB);
+          const tdSB = document.createElement('td');
+          tdSB.textContent = player.SB || 'N/A';
+          tr.appendChild(tdSB);
 
-            const tdAVG = document.createElement('td');
-            tdAVG.textContent = player.AVG || 'N/A';
-            tr.appendChild(tdAVG);
+          const tdAVG = document.createElement('td');
+          tdAVG.textContent = player.AVG || 'N/A';
+          tr.appendChild(tdAVG);
 
-            // Create Remove button
-            const tdAction = document.createElement('td');
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'Remove';
-            removeBtn.classList.add('remove-button');
-            removeBtn.addEventListener('click', async () => {
-                const response = await fetch('/remove-player', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ playerid: player.playerid })
-                });
+          // Create Remove button
+          const tdAction = document.createElement('td');
+          const removeBtn = document.createElement('button');
+removeBtn.textContent = 'Remove';
+removeBtn.classList.add('remove-button');
+removeBtn.addEventListener('click', async () => {
+        await removePlayerFromTeam(player.playerid); // Call the correct function here
+      });
 
-                if (response.ok) {
-                    updateTeamsContainer(); // Refresh the team roster
-                } else {
-                    const errorData = await response.json();
-                    alert(errorData.error || 'Failed to remove player');
-                }
-            });
-            tdAction.appendChild(removeBtn);
-            tr.appendChild(tdAction);
+tdAction.appendChild(removeBtn);
+          tr.appendChild(tdAction);
 
-            hittersTbody.appendChild(tr);
+          hittersTbody.appendChild(tr);
         });
-    }
-    hittersTable.appendChild(hittersTbody);
-    hittersDiv.appendChild(hittersTable);
-    teamDiv.appendChild(hittersDiv);
+      }
+      hittersTable.appendChild(hittersTbody);
+      hittersDiv.appendChild(hittersTable);
+      teamDiv.appendChild(hittersDiv);
 
-    // Create Pitchers section (similar to Hitters)
-    const pitchersDiv = document.createElement('div');
-    pitchersDiv.className = 'roster-section';
-    const pitchersTitle = document.createElement('h4');
-    pitchersTitle.textContent = 'Pitchers';
-    pitchersDiv.appendChild(pitchersTitle);
+      // Create Pitchers section (similar to Hitters)
+      const pitchersDiv = document.createElement('div');
+      pitchersDiv.className = 'roster-section';
+      const pitchersTitle = document.createElement('h4');
+      pitchersTitle.textContent = 'Pitchers';
+      pitchersDiv.appendChild(pitchersTitle);
 
-    const pitchersTable = document.createElement('table');
-    const pitchersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'W', 'SV', 'ERA', 'WHIP', 'K', 'Action'];
-    const pitchersThead = document.createElement('thead');
-    const pitchersHeaderRow = document.createElement('tr');
-    pitchersHeaders.forEach(h => {
+      const pitchersTable = document.createElement('table');
+      const pitchersHeaders = ['Name', 'Pos', 'Rank', 'P#', 'W', 'SV', 'ERA', 'WHIP', 'K', 'Action'];
+      const pitchersThead = document.createElement('thead');
+      const pitchersHeaderRow = document.createElement('tr');
+      pitchersHeaders.forEach(h => {
         const th = document.createElement('th');
         th.textContent = h;
         pitchersHeaderRow.appendChild(th);
-    });
-    pitchersThead.appendChild(pitchersHeaderRow);
-    pitchersTable.appendChild(pitchersThead);
+      });
+      pitchersThead.appendChild(pitchersHeaderRow);
+      pitchersTable.appendChild(pitchersThead);
 
-    const pitchersTbody = document.createElement('tbody');
-    if (pitchers.length === 0) {
+      const pitchersTbody = document.createElement('tbody');
+      if (pitchers.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         td.setAttribute('colspan', '10');
         td.textContent = 'No pitchers on this team.';
         tr.appendChild(td);
         pitchersTbody.appendChild(tr);
-    } else {
+      } else {
         pitchers.forEach(player => {
-            const tr = document.createElement('tr');
+          const tr = document.createElement('tr');
 
-            const tdName = document.createElement('td');
-            tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
-            tdName.textContent = player.name;
-             tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
-            tdName.setAttribute('data-pid', player.playerid || '');
-            tdName.addEventListener('click', () => assignPlayer(player));
-            tr.appendChild(tdName);
+          const tdName = document.createElement('td');
+          tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name', 'sticky-name'); // Add sticky-name class here
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
 
-            const tdPos = document.createElement('td');
-            tdPos.textContent = player.Pos;
-            tr.appendChild(tdPos);
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos;
+          tr.appendChild(tdPos);
 
-            const tdRank = document.createElement('td');
-            tdRank.textContent = player.Rank || 'N/A';
-            tr.appendChild(tdRank);
+          const tdRank = document.createElement('td');
+          tdRank.textContent = player.Rank || 'N/A';
+          tr.appendChild(tdRank);
 
-            const tdPosRank = document.createElement('td');
-            tdPosRank.textContent = player.PositionRank || 'N/A';
-            tr.appendChild(tdPosRank);
+          const tdPosRank = document.createElement('td');
+          tdPosRank.textContent = player.PositionRank || 'N/A';
+          tr.appendChild(tdPosRank);
 
-            const tdW = document.createElement('td');
-            tdW.textContent = player.W || 'N/A';
-            tr.appendChild(tdW);
+          const tdW = document.createElement('td');
+          tdW.textContent = player.W || 'N/A';
+          tr.appendChild(tdW);
 
-            const tdSV = document.createElement('td');
-            tdSV.textContent = player.SV || 'N/A';
-            tr.appendChild(tdSV);
+          const tdSV = document.createElement('td');
+          tdSV.textContent = player.SV || 'N/A';
+          tr.appendChild(tdSV);
 
-            const tdERA = document.createElement('td');
-            tdERA.textContent = player.ERA || 'N/A';
-            tr.appendChild(tdERA);
+          const tdERA = document.createElement('td');
+          tdERA.textContent = player.ERA || 'N/A';
+          tr.appendChild(tdERA);
 
-            const tdWHIP = document.createElement('td');
-            tdWHIP.textContent = player.WHIP || 'N/A';
-            tr.appendChild(tdWHIP);
+          const tdWHIP = document.createElement('td');
+          tdWHIP.textContent = player.WHIP || 'N/A';
+          tr.appendChild(tdWHIP);
 
-            const tdK = document.createElement('td');
-            tdK.textContent = player.K || 'N/A';
-            tr.appendChild(tdK);
+          const tdK = document.createElement('td');
+          tdK.textContent = player.K || 'N/A';
+          tr.appendChild(tdK);
 
-            // Create Remove button
-            const tdAction = document.createElement('td');
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'Remove';
-            removeBtn.classList.add('remove-button');
-            removeBtn.addEventListener('click', async () => {
-                const response = await fetch('/remove-player', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ playerid: player.playerid })
-                });
+          // Create Remove button
+          const tdAction = document.createElement('td');
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = 'Remove';
+removeBtn.classList.add('remove-button');
+removeBtn.addEventListener('click', async () => {
+    await removePlayerFromTeam(player.playerid); // Use the same function as hitters
+});
+tdAction.appendChild(removeBtn);
+tr.appendChild(tdAction);
 
-                if (response.ok) {
-                    updateTeamsContainer(); // Refresh the team roster
-                } else {
-                    const errorData = await response.json();
-                    alert(errorData.error || 'Failed to remove player');
-                }
-            });
-            tdAction.appendChild(removeBtn);
-            tr.appendChild(tdAction);
-
-            pitchersTbody.appendChild(tr);
+          pitchersTbody.appendChild(tr);
         });
+      }
+      pitchersTable.appendChild(pitchersTbody);
+      pitchersDiv.appendChild(pitchersTable);
+      teamDiv.appendChild(pitchersDiv);
+
+      teamsContainer.appendChild(teamDiv);
     }
-    pitchersTable.appendChild(pitchersTbody);
-    pitchersDiv.appendChild(pitchersTable);
-    teamDiv.appendChild(pitchersDiv);
 
-    teamsContainer.appendChild(teamDiv);
-}
-    
+   
     (async function initialLoad() {
-    // Show loading state
-    const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'loading-overlay';
-    loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading...</div>';
-    document.body.appendChild(loadingDiv);
-
-    try {
+      // Show loading state
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'loading-overlay';
+      loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading...</div>';
+      document.body.appendChild(loadingDiv);
+      // Hide search results on page load
+      document.getElementById('searchResults').style.display = 'none';
+      try {
         await checkLoginStatus();
         updateUIState();
-        
+
         // Load data after UI is ready
         if (loggedInUser) {
-            await Promise.all([
-                fetchAllPlayers(),
-                loadBestAvailable(),
-                loadBigBoard(),
-                loadTeamsForLeague() // Ensure teams are loaded initially
-            ]);
+          await Promise.all([
+            fetchAllPlayers(),
+            loadBestAvailable(),
+            loadBigBoard(),
+            loadTeamsForLeague() // Ensure teams are loaded initially
+          ]);
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error during initial load:', error);
-    } finally {
+      } finally {
         // Remove loading overlay
         loadingDiv.remove();
-    }
-})();   
+      }
+    })();
 
-function showLoginOverlay() {
+    function showLoginOverlay() {
       document.getElementById('overlayLogin').style.display = 'flex';
       document.querySelector('.content-wrapper').classList.add('blurred');
     }
@@ -1538,48 +1590,46 @@ function showLoginOverlay() {
     }
 
     async function performLogin() {
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
 
-    try {
+      try {
         const response = await fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
         });
-        
-        console.log(response)
+
         if (!response.ok == true) {
-            throw new Error('Login failed');
+          throw new Error('Login failed');
         }
 
         const data = await response.json();
-        
-        console.log(data)
+
         if (response.ok) {
-            loggedInUser = username;
-            closeOverlay();
-            await checkLoginStatus();
-            await loadUserLeagues();
-            updateUIState();
-            
-            // Load data after successful login
-            await Promise.all([
-                fetchAllPlayers(),
-                loadBestAvailable(),
-                loadBigBoard(),
-                loadTeamsForLeague()
-            ]);
+          loggedInUser = username;
+          closeOverlay();
+          await checkLoginStatus();
+          await loadUserLeagues();
+          updateUIState();
+
+          // Load data after successful login
+          await Promise.all([
+            fetchAllPlayers(),
+            loadBestAvailable(),
+            loadBigBoard(),
+            loadTeamsForLeague()
+          ]);
         } else {
-            throw new Error(data.message || 'Login failed');
+          throw new Error(data.message || 'Login failed');
         }
-    } catch (err) {
+      } catch (err) {
         console.error('Login error:', err);
         alert('Login failed. Please check your credentials and try again.');
+      }
     }
-}
 
     async function performRegister() {
       const username = document.getElementById('registerUsername').value;
@@ -1612,8 +1662,8 @@ function showLoginOverlay() {
         alert('Registration failed. Please try again.');
       }
     }
-  
-</script>
+
+  </script>
 
   <!-- Add login/register overlays -->
   <div id="overlayLogin" class="overlay">
@@ -1643,4 +1693,5 @@ function showLoginOverlay() {
 
   <div id="bigBoardNotice" class="notice hidden">Please select or create a league to use this feature.</div>
 </body>
+
 </html>

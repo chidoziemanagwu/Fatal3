@@ -85,8 +85,7 @@ class PlayerProfile {
         const url = 'https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=batter&year=2024&position=&team=&filterType=bip&min=50&csv=true';
         const response = await axios.get(url);
         let records = Papa.parse(response.data, { header: true, skipEmptyLines: true }).data;
-    
-        console.log('Fetched Statcast Records:', records); // Debugging: Log the entire dataset
+
     
         // Find the specific player by ID
         const playerStats = records.find(player => player.player_id === playerIdString);
@@ -158,58 +157,58 @@ class PlayerProfile {
             const urlParams = new URLSearchParams(window.location.search);
             const playerName = urlParams.get('name');
             const playerId = urlParams.get('id');
-    
+
             if (!playerName && !playerId) {
                 throw new Error('No player name or ID provided');
             }
-    
+
             // Load data from multiple sources in parallel
             const [tank01Data, hfsData, pfsData] = await Promise.all([
                 Tank01API.getPlayerInfo(playerName || playerId),
                 fetch('/api/hfs').then(r => r.json()).catch(() => null),
                 fetch('/api/pfs').then(r => r.json()).catch(() => null)
             ]);
-    
+
             if (!tank01Data || !tank01Data.body || !tank01Data.body[0]) {
                 throw new Error('No player data found');
             }
-    
+
             // Extract mlbID from tank01Data
             const mlbID = tank01Data.body[0].mlbID;
-    
+
             // Find player in HFS/PFS data
             const hfsPlayer = hfsData ? hfsData.find(p => p.playerid === playerId) : null;
             const pfsPlayer = pfsData ? pfsData.find(p => p.playerid === playerId) : null;
-    
+
             // Combine all data sources
             this.playerData = {
                 ...tank01Data.body[0],
                 hfsData: hfsPlayer,
                 pfsData: pfsPlayer
             };
-    
-            console.log('Player Data:', this.playerData); // Debug log
-    
+
+            // console.log('Player Data:', this.playerData); // Debug log
+
             // Check if the player is a hitter or pitcher and fetch Statcast data
             let statcastData;
             let isPitcher = !!this.playerData.pfsData; // Determine if the player is a pitcher
             if (this.playerData.hfsData) {
                 // Player is a hitter
                 statcastData = await this.fetchHitterStatcast(mlbID);
-                console.log('Hitter Statcast Data:', statcastData);
+                // console.log('Hitter Statcast Data:', statcastData);
             } else if (isPitcher) {
                 // Player is a pitcher
                 statcastData = await this.fetchPitcherStatcast(mlbID);
-                console.log('Pitcher Statcast Data:', statcastData);
+                // console.log('Pitcher Statcast Data:', statcastData);
             } else {
                 console.log('Player position not recognized.');
             }
-    
+
             // Update the underlying metrics section with the fetched stats
             if (statcastData) {
                 this.updateUnderlyingMetricsSection(statcastData, isPitcher);
             }
-    
+
             this.updateUI();
             this.updateProjectionsSection(); // Load projections data directly from tank01Data
         } catch (error) {
@@ -219,11 +218,11 @@ class PlayerProfile {
             this.hideLoading();
         }
     }
-    
+
     updateUnderlyingMetricsSection(stats, isPitcher = false) {
         const underlyingMetricsSection = document.getElementById('underlyingMetricsSection');
         if (!underlyingMetricsSection) return;
-    
+
         // Define the keys and display names based on whether the player is a pitcher
         const keysToDisplay = isPitcher
             ? [
@@ -239,10 +238,10 @@ class PlayerProfile {
                 { key: 'est_woba', displayName: 'xwOBA' },
                 { key: 'score', displayName: 'Score' }
             ];
-    
+
         // Initialize HTML content
         let content = `<h3 class="section-title">Underlying Metrics</h3><div class="metrics-content">`;
-    
+
         // Add only the specified stats to the content
         keysToDisplay.forEach(({ key, displayName }) => {
             const value = stats[key] || 'N/A'; // Use 'N/A' if the value is missing
@@ -253,9 +252,67 @@ class PlayerProfile {
                 </div>
             `;
         });
-    
+
         content += `</div>`;
         underlyingMetricsSection.innerHTML = content; // Update the section with the constructed content
+    }
+
+    updateProjectionsSection() {
+        const projectionsSection = document.getElementById('projectionsSection');
+        if (!projectionsSection) return;
+
+        // Access hitting and pitching stats directly from playerData
+        const hittingStats = this.playerData.stats.Hitting || {};
+        const pitchingStats = this.playerData.stats.Pitching || {};
+
+        // Initialize HTML content
+        let content = `<h3 class="section-title">Projections</h3><div class="projections-content">`;
+
+        // Check for hitting stats
+        if (Object.keys(hittingStats).length > 0) {
+            content += `<h4>Hitter Projections</h4><div class="stats-cards">`;
+            Object.entries(hittingStats).forEach(([key, value]) => {
+                content += `
+                    <div class="projection-card">
+                        <span class="stat-key">${key}</span>
+                        <span class="stat-value">${value || 'N/A'}</span>
+                    </div>
+                `;
+            });
+            content += `</div>`;
+        } else {
+            content += `<p>No hitting projection data available</p>`;
+        }
+
+        // Check for pitching stats
+        if (Object.keys(pitchingStats).length > 0) {
+            content += `<h4>Pitcher Projections</h4><div class="stats-cards">`;
+            Object.entries(pitchingStats).forEach(([key, value]) => {
+                content += `
+                    <div class="projection-card">
+                        <span class="stat-key">${key}</span>
+                        <span class="stat-value">${value || 'N/A'}</span>
+                    </div>
+                `;
+            });
+            content += `</div>`;
+        } else {
+            content += `<p>No pitching projection data available</p>`;
+        }
+
+        content += `
+            <div class="graphs-container">
+                <canvas id="projectionsChart"></canvas>
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>`;
+
+        // Update the projections section with the constructed content
+        projectionsSection.innerHTML = content;
+
+        // Render graphs
+        this.renderProjectionsGraph(hittingStats, pitchingStats);
+        this.renderTrendGraph(hittingStats, pitchingStats);
     }
 
     async loadStatcastData(playerId) {
@@ -302,7 +359,7 @@ class PlayerProfile {
             }
 
             // Log the extracted stats to the console
-            console.log('Extracted Statcast Stats:', stats);
+            // console.log('Extracted Statcast Stats:', stats);
 
             // Update the projections section with the fetched stats
             this.updateProjectionsSection(stats, isPitcher);
@@ -388,7 +445,6 @@ class PlayerProfile {
                 <canvas id="projectionsChart"></canvas>
                 <canvas id="trendChart"></canvas>
             </div>
-            <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
         </div>`;
 
         // Update the projections section with the constructed content
@@ -665,6 +721,9 @@ document.addEventListener('DOMContentLoaded', () => {
     profile.loadPlayerProfile();
 });
 
+// JavaScript for Collapsible Sections
+
+
 // Global error handling
 window.onerror = function (msg, url, lineNo, columnNo, error) {
     console.error('Global error:', { msg, url, lineNo, columnNo, error });
@@ -674,18 +733,18 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 };
 
 // Section toggle function
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (!section) return;
+// function toggleSection(sectionId) {
+//     const section = document.getElementById(sectionId);
+//     if (!section) return;
 
-    const content = section.querySelector('.projections-content') || section.querySelector('.underlying-metrics-content');
-    const button = section.querySelector('.toggle-button');
+//     const content = section.querySelector('.projections-content') || section.querySelector('.underlying-metrics-content');
+//     const button = section.querySelector('.toggle-button');
 
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        button.textContent = 'Collapse';
-    } else {
-        content.style.display = 'none';
-        button.textContent = 'Expand';
-    }
-}
+//     if (content.style.display === 'none') {
+//         content.style.display = 'block';
+//         button.textContent = 'Collapse';
+//     } else {
+//         content.style.display = 'none';
+//         button.textContent = 'Expand';
+//     }
+// }

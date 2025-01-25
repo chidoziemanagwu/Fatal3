@@ -27,7 +27,7 @@ class Tank01API {
             }
 
             const data = await response.json();
-            console.log('Tank01 API Response:', data); // Debugging log
+            // console.log('Tank01 API Response:', data); // Debugging log
             return data;
         } catch (error) {
             console.error('Error fetching player info from Tank01 API:', error);

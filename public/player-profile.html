@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
-    <link rel="shortcut icon" href="/img/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Fatals" />
-    <link rel="manifest" href="img/site.webmanifest" />
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/css/responsive.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Player Profile | Fatals</title>
-    <link rel="stylesheet" href="/playerstyles.css" />
-    <!-- Add Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+    <head>
+        <link rel="icon" type="image/png" href="/img/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+        <link rel="shortcut icon" href="/img/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="Fatals" />
+        <link rel="manifest" href="img/site.webmanifest" />
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="/css/responsive.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Player Profile | Fatals</title>
+        <link rel="stylesheet" href="/playerstyles.css" />
+        <!-- Add Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
 <body>
     <div class="navbar">
         <img src="/img/logowebsite.png" alt="Logo" id="homeLogo">
@@ -65,44 +66,37 @@
         </div>
 
 <!-- Projections Section -->
-<div id="projectionsSection" class="section">
-    <h3 class="section-title">Projections</h3>
-    <div class="projections-content">
-        <div class="stats-cards"></div>
-        <div class="graphs-container">
-            <canvas id="projectionsChart"></canvas>
-            <canvas id="trendChart"></canvas>
+<div class="collapsible-section">
+    <button class="collapsible-button">
+        <span class="section-title">Projections</span>
+        <svg class="collapsible-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+    </button>
+    <div class="collapsible-content" id="projectionsSection">
+        <div class="projections-content">
+            <div class="stats-cards"></div>
+            <div class="graphs-container">
+                <canvas id="projectionsChart"></canvas>
+                <canvas id="trendChart"></canvas>
+            </div>
         </div>
     </div>
-    <button class="toggle-button" onclick="toggleSection('projectionsSection')">Collapse</button>
 </div>
 
 <!-- Underlying Metrics Section -->
-<div id="underlyingMetricsSection" class="section">
-    <h3 class="section-title">Underlying Metrics</h3>
-    <div class="underlying-metrics-content">
-        <div class="metric-card">
-            <span class="metric-key">xBA</span>
-            <span class="metric-value">0.210</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-key">xSLG</span>
-            <span class="metric-value">0.350</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-key">xwOBA</span>
-            <span class="metric-value">0.290</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-key">xERA</span>
-            <span class="metric-value">3.50</span>
-        </div>
-        <div class="metric-card">
-            <span class="metric-key">Score</span>
-            <span class="metric-value">95.00</span>
+<div class="collapsible-section">
+    <button class="collapsible-button">
+        <span class="section-title">Underlying Metrics</span>
+        <svg class="collapsible-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+    </button>
+    <div class="collapsible-content" id="underlyingMetricsSection">
+        <div class="underlying-metrics-content">
+            <!-- Metrics will be dynamically populated here -->
         </div>
     </div>
-    <button class="toggle-button" onclick="toggleSection('underlyingMetricsSection')">Collapse</button>
 </div>
     </div>
 
@@ -110,6 +104,30 @@
         © 2024 - Fatals Fantasy Sports
     </div>
 
+    <script>
+        // JavaScript for Collapsible Sections
+        document.addEventListener("DOMContentLoaded", function () {
+            const collapsibleButtons = document.querySelectorAll(".collapsible-button");
+
+            collapsibleButtons.forEach((button) => {
+                button.addEventListener("click", function () {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector(".collapsible-icon");
+
+                    // Toggle visibility
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                        icon.style.transform = "rotate(0deg)"; // Reset icon rotation
+                    } else {
+                        content.style.display = "block";
+                        icon.style.transform = "rotate(180deg)"; // Rotate icon
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/services/tank01-api.js"></script>
     <script src="/js/player-profile.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

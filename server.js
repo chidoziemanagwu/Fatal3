@@ -126,8 +126,6 @@ app.get('/api/players/:id', async (req, res) => {
     const pitchers = await pfsResponse.json();
 
     console.log('Data fetched successfully');
-    console.log('Number of hitters:', hitters.length);
-    console.log('Number of pitchers:', pitchers.length);
 
     // Find the player in either dataset
     const player = [...hitters, ...pitchers].find(p => String(p.playerid) === String(playerId));
@@ -301,7 +299,6 @@ async function fetchHitterStatcast() {
   const response = await axios.get(url);
   let records = parse(response.data, { columns: true, skip_empty_lines: true });
 
-  console.log(records)
   records.forEach(player => {
     // Parse all required stats, defaulting to 0 if not available
     const ba = parseFloat(player.ba) || 0;           // Batting Average
@@ -331,7 +328,6 @@ async function fetchPitcherStatcast() {
   const response = await axios.get(url);
   let records = parse(response.data, { columns: true, skip_empty_lines: true });
 
-  console.log(records)
   records.forEach(player => {
     // Parse all required stats, defaulting to 0 if not available
     const est_ba = parseFloat(player.est_ba) || 0;     // Expected BA
@@ -356,6 +352,51 @@ async function fetchPitcherStatcast() {
 
   return records;
 }
+
+app.post('/remove-player', async (req, res) => {
+  if (!req.session.userId) {
+      return res.status(401).json({ error: 'Not logged in' });
+  }
+
+  let { playerid } = req.body; // Expecting playerid in the format 'xxxx'
+
+  if (!playerid) {
+      return res.status(400).json({ error: 'playerid is required' });
+  }
+
+  // Append 'id-' to the playerid
+  playerid = 'id-' + playerid;
+
+  const leagueId = await getCurrentLeagueId(req);
+
+  if (!leagueId) {
+      return res.status(400).json({ error: 'No league selected' });
+  }
+
+  try {
+      // Check if the player exists in the league
+      const result = await pool.query(
+          'SELECT * FROM taken_players WHERE league_id = \$1 AND player_id = \$2',
+          [leagueId, playerid]
+      );
+
+      if (result.rowCount === 0) {
+          return res.status(404).json({ error: 'Player not found in league' });
+      }
+
+      // Remove the player from the taken_players table
+      await pool.query(
+          'DELETE FROM taken_players WHERE league_id = \$1 AND player_id = \$2',
+          [leagueId, playerid]
+      );
+
+      res.json({ status: 'Player removed successfully' });
+  } catch (err) {
+      console.error('Error removing player:', err);
+      res.status(500).json({ error: 'Failed to remove player' });
+  }
+});
+
 
 // Assign position ranks to players
 function assignPositionRanks(players) {
@@ -438,6 +479,7 @@ async function setPlayerTeamInLeague(leagueId, playerid, team) {
     }
   }
 }
+
 
 // Delete league
 async function deleteLeague(leagueId, userId) {
@@ -1012,6 +1054,7 @@ app.post('/api/set-favorite-team', async (req, res) => {
     );
     res.json({ status: 'Favorite team updated' });
   } catch (err) {
+    console.error('Error setting favorite team:', err);
     res.status(500).json({ error: 'Failed to update favorite team' });
   }
 });
@@ -1283,36 +1326,12 @@ app.post('/api/league/import', async (req, res) => {
   }
 });
 
-// Remove player from league
-app.post('/remove-player', async (req, res) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ error: 'Not logged in' });
-  }
 
-  const { playerid } = req.body;
-  const leagueId = await getCurrentLeagueId(req);
 
-  if (!leagueId) {
-    return res.status(400).json({ error: 'No league selected' });
-  }
 
-  if (!playerid) {
-    return res.status(400).json({ error: 'playerid is required' });
-  }
 
-  try {
-    // Remove the player from the taken_players table
-    await pool.query(
-      'DELETE FROM taken_players WHERE league_id = \$1 AND player_id = \$2',
-      [leagueId, playerid]
-    );
 
-    res.json({ status: 'Player removed successfully' });
-  } catch (err) {
-    console.error('Error removing player:', err);
-    res.status(500).json({ error: 'Failed to remove player' });
-  }
-});
+
 
 // Serve the navbar component
 app.get('/components/navbar.html', (req, res) => {
