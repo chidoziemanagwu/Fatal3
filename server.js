@@ -1333,22 +1333,22 @@ app.get('/api/proxy/statcast', async (req, res) => {
   const { type, year, position, team, filterType, min } = req.query;
 
   try {
-    // Construct the MLB Statcast URL
-    const statcastUrl = `https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=${type}&year=${year}&position=${position}&team=${team}&filterType=${filterType}&min=${min}&csv=true`;
+      // Construct the MLB Statcast URL
+      const statcastUrl = `https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=${type}&year=${year}&position=${position}&team=${team}&filterType=${filterType}&min=${min}&csv=true`;
 
-    // Fetch data from MLB Statcast
-    const response = await axios.get(statcastUrl);
+      // Fetch data from MLB Statcast
+      const response = await axios.get(statcastUrl);
 
-    // Add CORS headers to the response
-    res.header('Access-Control-Allow-Origin', '*'); // Allow all origins (or specify your frontend URL)
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+      // Add CORS headers to the response
+      res.header('Access-Control-Allow-Origin', '*'); // Allow all origins (or specify your frontend URL)
+      res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Send the data back to the frontend
-    res.send(response.data);
+      // Send the data back to the frontend
+      res.send(response.data);
   } catch (error) {
-    console.error('Proxy error:', error);
-    res.status(500).json({ error: 'Failed to fetch Statcast data' });
+      console.error('Proxy error:', error);
+      res.status(500).json({ error: 'Failed to fetch Statcast data' });
   }
 });
 

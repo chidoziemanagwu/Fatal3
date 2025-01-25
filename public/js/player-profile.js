@@ -77,32 +77,31 @@ class PlayerProfile {
     hideLoading() {
         this.loadingOverlay.style.display = 'none';
     }
-
     async fetchHitterStatcast(playerId) {
         const playerIdString = String(playerId);
-        const url = 'https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=batter&year=2024&position=&team=&filterType=bip&min=50&csv=true';
-
+        const url = `/api/proxy/statcast?type=batter&year=2024&position=&team=&filterType=bip&min=50`;
+    
         try {
             const response = await axios.get(url);
             if (response.status !== 200) {
                 throw new Error(`Failed to fetch data: ${response.statusText}`);
             }
             let records = Papa.parse(response.data, { header: true, skipEmptyLines: true }).data;
-
+    
             const playerStats = records.find(player => player.player_id === playerIdString);
             if (!playerStats) {
                 console.error(`No stats found for player ID: ${playerIdString}`);
                 console.error('Available Player IDs:', records.map(player => player.player_id));
                 return null;
             }
-
+    
             // Parse all required stats, defaulting to 0 if not available
             const ba = parseFloat(playerStats.ba) || 0;
             const est_ba = parseFloat(playerStats.est_ba) || 0;
             const slg = parseFloat(playerStats.slg) || 0;
             const est_slg = parseFloat(playerStats.est_slg) || 0;
             const est_woba = parseFloat(playerStats.est_woba) || 0;
-
+    
             const StatcastScore = (
                 (ba * this.settings.HBAFactor) +
                 (est_ba * this.settings.HEstBAFactor) +
@@ -110,7 +109,7 @@ class PlayerProfile {
                 (est_slg * this.settings.HEstSLGFactor) +
                 (est_woba * this.settings.HEstWOBARactor)
             ) * this.settings.HStatcastWeight;
-
+    
             playerStats.score = StatcastScore;
             return playerStats;
         } catch (error) {
@@ -119,30 +118,30 @@ class PlayerProfile {
             return null; // Return null if an error occurs
         }
     }
-
+    
     async fetchPitcherStatcast(playerId) {
-        const url = 'https://baseballsavant.mlb.com/leaderboard/expected_statistics?type=pitcher&year=2024&position=&team=&min=1&csv=true';
-
+        const url = `/api/proxy/statcast?type=pitcher&year=2024&position=&team=&min=1`;
+    
         try {
             const response = await axios.get(url);
             if (response.status !== 200) {
                 throw new Error(`Failed to fetch data: ${response.statusText}`);
             }
             let records = Papa.parse(response.data, { header: true, skipEmptyLines: true }).data;
-
+    
             const playerStats = records.find(player => player.player_id === playerId);
             if (!playerStats) {
                 console.error(`No stats found for player ID: ${playerId}`);
                 return null;
             }
-
+    
             const est_ba = parseFloat(playerStats.est_ba) || 0;
             const slg = parseFloat(playerStats.slg) || 0;
             const est_slg = parseFloat(playerStats.est_slg) || 0;
             const woba = parseFloat(playerStats.woba) || 0;
             const est_woba = parseFloat(playerStats.est_woba) || 0;
             const xera = parseFloat(playerStats.xera) || 0;
-
+    
             const StatcastPenalty = (
                 (est_ba * this.settings.PEstBAFactor) +
                 (slg * this.settings.PSLGFactor) +
@@ -151,7 +150,7 @@ class PlayerProfile {
                 (est_woba * this.settings.PEstWOBAFactor) +
                 (xera * this.settings.PXERAFactor)
             ) * this.settings.PStatcastWeight;
-
+    
             playerStats.score = StatcastPenalty;
             return playerStats;
         } catch (error) {
