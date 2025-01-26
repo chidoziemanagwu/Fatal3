@@ -912,8 +912,8 @@ select:hover {
     min-width: 60px;
   }
 
-  table th:first-child,
-  table td:first-child {
+  table th:nth-child(2),
+  table td:nth-child(2) {
     position: sticky;
     left: 0; /* Stick to the left */
     background-color: #0000FF; /* Background color for visibility */
