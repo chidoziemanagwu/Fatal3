@@ -7,9 +7,9 @@ html, body {
 
 /* Basic resets and body styling */
 body {
-  font-family: 'Courier New', Courier, monospace;
-  background-color: #0000FF;
-  color: #FFFFFF;
+  font-family: 'Courier New', Courier, monospace; /* Client's font */
+  background-color: #000000; /* Client's background */
+  color: #00FF00; /* Client's text color */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -18,13 +18,12 @@ body {
 
 /* Navbar Styles */
 .navbar {
-  /* Let the navbar take its natural (auto) height */
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  background-color: #000000;
+  background-color: #000000; /* Client's navbar background */
   padding: 10px 20px;
-  border-bottom: 2px solid #FFFF00;
+  border-bottom: 2px solid #FFFF00; /* Client's border color */
   position: relative;
   z-index: 1001;
   flex-wrap: wrap;
@@ -37,7 +36,7 @@ body {
   cursor: pointer;
 }
 .navbar a {
-  color: #00FF00;
+  color: #00FF00; /* Client's link color */
   text-decoration: none;
   margin-right: 20px;
   font-size: 18px;
@@ -51,7 +50,7 @@ body {
   display: block;
   width: 0;
   height: 2px;
-  background: #FFFF00;
+  background: #FFFF00; /* Client's hover underline color */
   transition: width .3s;
   position: absolute;
   bottom: -5px;
@@ -234,7 +233,6 @@ h1 {
 }
 
 /* Best Available Section on the Right */
-
 .best-available-section {
   flex: 0 0 auto; /* Allow it to take its natural height */
   overflow-y: auto; 
@@ -300,13 +298,13 @@ table th, table td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #00FF00;
+  color: #00FF00; /* Client's table text color */
   background-color: transparent;
 }
 
 table th {
   font-weight: bold;
-  color: #FFFF00;
+  color: #FFFF00; /* Client's table header color */
   background-color: transparent;
 }
 
@@ -315,11 +313,11 @@ tr {
 }
 
 tr:nth-child(even) {
-  background-color: rgba(0, 255, 0, 0.05);
+  background-color: rgba(0, 255, 0, 0.05); /* Client's zebra striping */
 }
 
 tr:hover {
-  background-color: rgba(0, 255, 0, 0.1);
+  background-color: rgba(0, 255, 0, 0.1); /* Client's hover effect */
 }
 
 /* Subnav */
@@ -333,7 +331,7 @@ tr:hover {
   flex-wrap: wrap;
 }
 .subnav a {
-  color: #00FF00;
+  color: #00FF00; /* Client's subnav link color */
   text-decoration: none;
   font-size: 18px;
   position: relative;
@@ -346,7 +344,7 @@ tr:hover {
   display: block;
   width: 0;
   height: 2px;
-  background: #FFFF00;
+  background: #FFFF00; /* Client's subnav hover underline color */
   transition: width .3s;
   position: absolute;
   bottom: -5px;
@@ -382,19 +380,19 @@ tr:hover {
   width: 100%;
   padding: 8px;
   box-sizing: border-box;
-  border: 2px solid #FFFF00;
+  border: 2px solid #FFFF00; /* Client's search border color */
   border-radius: 4px;
-  background-color: #000000;
-  color: #00FF00;
+  background-color: #000000; /* Client's search background */
+  color: #00FF00; /* Client's search text color */
   font-size: 14px;
 }
 #playerSearch::placeholder {
-  color: #00AA00;
+  color: #00AA00; /* Client's placeholder color */
 }
 #clearSearch {
   background: none;
   border: none;
-  color: #FF0000;
+  color: #FF0000; /* Client's clear search button color */
   font-size: 16px;
   cursor: pointer;
   position: absolute;
@@ -407,21 +405,21 @@ tr:hover {
 .player-name {
   cursor: pointer;
   position: relative;
-  color: #00FF00;
+  color: #00FF00; /* Client's player name color */
   font-weight: bold;
   word-wrap: break-word;
 }
 .player-name:hover {
-  background-color: #005500;
-  color: #00CC00;
+  background-color: #005500; /* Client's hover background */
+  color: #00CC00; /* Client's hover text color */
 }
 
 /* Search Results Dropdown */
 #searchResults {
   max-height: 300px;
   overflow-y: auto;
-  background: #000000;
-  border: 2px solid #FFFF00;
+  background: #000000; /* Client's dropdown background */
+  border: 2px solid #FFFF00; /* Client's dropdown border */
   border-radius: 4px;
   display: none;
   position: absolute;
@@ -439,41 +437,41 @@ tr:hover {
   border: none;
   padding: 8px;
   text-align: left;
-  color: #00FF00;
+  color: #00FF00; /* Client's dropdown text color */
   font-size: 14px;
 }
 #searchResults th {
-  background: #000000;
-  border-bottom: 2px solid #FFFF00;
+  background: #000000; /* Client's dropdown header background */
+  border-bottom: 2px solid #FFFF00; /* Client's dropdown header border */
   font-weight: bold;
 }
 #searchResults tr:hover {
-  background-color: #003300;
-  color: #FFFFFF;
+  background-color: #003300; /* Client's dropdown row hover */
+  color: #FFFFFF; /* Client's dropdown row hover text color */
 }
 
 /* General Buttons */
 button {
-  background-color: #00FF00;
-  color: #000000;
-  border: 2px solid #FFFF00;
+  background-color: #00FF00; /* Client's button background */
+  color: #000000; /* Client's button text color */
+  border: 2px solid #FFFF00; /* Client's button border */
   padding: 8px 16px;
   cursor: pointer;
   border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Courier New', Courier, monospace; /* Client's button font */
   font-size: 14px;
   margin-top: 5px;
 }
 button:hover {
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's button hover background */
+  color: #000000; /* Client's button hover text color */
 }
 
 /* Smaller Assign Buttons */
 .assign-button {
-  background-color: #00FF00;
-  color: #000000;
-  border: 2px solid #FFFF00;
+  background-color: #00FF00; /* Client's assign button background */
+  color: #000000; /* Client's assign button text color */
+  border: 2px solid #FFFF00; /* Client's assign button border */
   padding: 4px 8px;
   cursor: pointer;
   border-radius: 4px;
@@ -481,18 +479,18 @@ button:hover {
   margin-left: 10px;
 }
 .assign-button:hover {
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's assign button hover background */
+  color: #000000; /* Client's assign button hover text color */
 }
 
 /* Select (Dropdown) Styling */
 select {
-  background-color: #000000;
-  color: #00FF00;
-  border: 2px solid #FFFF00;
+  background-color: #000000; /* Client's select background */
+  color: #00FF00; /* Client's select text color */
+  border: 2px solid #FFFF00; /* Client's select border */
   padding: 4px 8px;
   border-radius: 4px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Courier New', Courier, monospace; /* Client's select font */
   font-size: 14px;
   appearance: none;
   cursor: pointer;
@@ -501,7 +499,7 @@ select {
   box-sizing: border-box;
 }
 select:hover {
-  background-color: #003300;
+  background-color: #003300; /* Client's select hover background */
 }
 
 /* Assign Menu */
@@ -509,8 +507,8 @@ select:hover {
   position: absolute;
   z-index: 1002;
   width: 250px;
-  background-color: #000000;
-  border: 2px solid #FFFF00;
+  background-color: #000000; /* Client's assign menu background */
+  border: 2px solid #FFFF00; /* Client's assign menu border */
   border-radius: 4px;
   padding: 10px;
   display: none;
@@ -519,7 +517,7 @@ select:hover {
 }
 #assignMenu h4 {
   margin-top: 0;
-  color: #00FF00;
+  color: #00FF00; /* Client's assign menu header color */
   text-align: center;
   font-weight: bold;
 }
@@ -531,9 +529,9 @@ select:hover {
 }
 #assignMenu .team-button {
   width: 100%;
-  background-color: #00FF00;
-  color: #000000;
-  border: 2px solid #FFFF00;
+  background-color: #00FF00; /* Client's team button background */
+  color: #000000; /* Client's team button text color */
+  border: 2px solid #FFFF00; /* Client's team button border */
   padding: 6px 0;
   cursor: pointer;
   border-radius: 4px;
@@ -543,8 +541,8 @@ select:hover {
   font-weight: bold;
 }
 #assignMenu .team-button:hover {
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's team button hover background */
+  color: #000000; /* Client's team button hover text color */
 }
 #assignMenu .release-button, 
 #assignMenu .create-team-button, 
@@ -558,38 +556,38 @@ select:hover {
   font-weight: bold;
 }
 #assignMenu .release-button {
-  background-color: #FF0000;
-  color: #FFFFFF;
-  border: 2px solid #FFFF00;
+  background-color: #FF0000; /* Client's release button background */
+  color: #FFFFFF; /* Client's release button text color */
+  border: 2px solid #FFFF00; /* Client's release button border */
 }
 #assignMenu .release-button:hover {
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's release button hover background */
+  color: #000000; /* Client's release button hover text color */
 }
 #assignMenu .create-team-button {
-  background-color: #00FF00;
-  color: #000000;
-  border: 2px solid #FFFF00;
+  background-color: #00FF00; /* Client's create team button background */
+  color: #000000; /* Client's create team button text color */
+  border: 2px solid #FFFF00; /* Client's create team button border */
 }
 #assignMenu .create-team-button:hover {
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's create team button hover background */
+  color: #000000; /* Client's create team button hover text color */
 }
 #assignMenu .cancel-button {
-  background-color: #CCCCCC;
-  color: #000000;
-  border: 2px solid #FFFF00;
+  background-color: #CCCCCC; /* Client's cancel button background */
+  color: #000000; /* Client's cancel button text color */
+  border: 2px solid #FFFF00; /* Client's cancel button border */
 }
 #assignMenu .cancel-button:hover {
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's cancel button hover background */
+  color: #000000; /* Client's cancel button hover text color */
 }
 
 /* Footer: auto height at bottom */
 .footer {
   flex: 0 0 auto; /* sits at bottom, auto-sized or fixed if you prefer */
-  background-color: #FFFF00;
-  color: #000000;
+  background-color: #FFFF00; /* Client's footer background */
+  color: #000000; /* Client's footer text color */
   text-align: center;
   padding: 10px 0;
   width: 100%;
@@ -609,31 +607,31 @@ select:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7); /* Client's overlay background */
   z-index: 1000;
   justify-content: center;
   align-items: center;
 }
 .overlay-content {
-  background-color: #000000;
+  background-color: #000000; /* Client's overlay content background */
   padding: 20px;
   border-radius: 8px;
   width: 300px;
-  border: 2px solid #00FF00;
+  border: 2px solid #00FF00; /* Client's overlay content border */
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 .overlay-content h2 {
-  color: #00FF00;
+  color: #00FF00; /* Client's overlay content header color */
   text-align: center;
   margin: 0;
 }
 .overlay-content input {
   padding: 8px;
-  border: 1px solid #00FF00;
-  background-color: #000000;
-  color: #00FF00;
+  border: 1px solid #00FF00; /* Client's overlay input border */
+  background-color: #000000; /* Client's overlay input background */
+  color: #00FF00; /* Client's overlay input text color */
   border-radius: 4px;
 }
 .overlay-buttons {
@@ -643,30 +641,30 @@ select:hover {
 }
 .overlay-buttons button {
   padding: 8px 16px;
-  background-color: #000000;
-  color: #00FF00;
-  border: 2px solid #00FF00;
+  background-color: #000000; /* Client's overlay button background */
+  color: #00FF00; /* Client's overlay button text color */
+  border: 2px solid #00FF00; /* Client's overlay button border */
   border-radius: 4px;
   cursor: pointer;
 }
 .overlay-buttons button:hover {
-  background-color: #00FF00;
-  color: #000000;
+  background-color: #00FF00; /* Client's overlay button hover background */
+  color: #000000; /* Client's overlay button hover text color */
 }
 
 /* Login & Register Boxes */
 .login-box,
 .register-box {
-  background-color: #000000;
+  background-color: #000000; /* Client's login/register box background */
   padding: 20px;
-  border: 2px solid #FFFF00;
+  border: 2px solid #FFFF00; /* Client's login/register box border */
   border-radius: 4px;
   width: 300px;
   max-width: 90%;
 }
 .login-box h2,
 .register-box h2 {
-  color: #00FF00;
+  color: #00FF00; /* Client's login/register box header color */
   margin-top: 0;
   margin-bottom: 20px;
   text-align: center;
@@ -676,17 +674,17 @@ select:hover {
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
-  border: 1px solid #FFFF00;
-  background-color: #000000;
-  color: #FFFFFF;
+  border: 1px solid #FFFF00; /* Client's login/register input border */
+  background-color: #000000; /* Client's login/register input background */
+  color: #FFFFFF; /* Client's login/register input text color */
   box-sizing: border-box;
 }
 .login-box button,
 .register-box button {
   width: 100%;
   padding: 10px;
-  background-color: #00FF00;
-  color: #000000;
+  background-color: #00FF00; /* Client's login/register button background */
+  color: #000000; /* Client's login/register button text color */
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -699,7 +697,7 @@ select:hover {
 }
 .login-box a,
 .register-box a {
-  color: #00FF00;
+  color: #00FF00; /* Client's login/register link color */
   text-decoration: none;
 }
 .login-box a:hover,
@@ -709,9 +707,9 @@ select:hover {
 
 /* Notices */
 .notice {
-  background-color: #000000;
-  border: 2px solid #FFFF00;
-  color: #FFFF00;
+  background-color: #000000; /* Client's notice background */
+  border: 2px solid #FFFF00; /* Client's notice border */
+  color: #FFFF00; /* Client's notice text color */
   padding: 10px;
   margin-bottom: 10px;
   text-align: center;
@@ -727,23 +725,23 @@ select:hover {
 }
 .player-name {
   cursor: pointer;
-  color: #00FF00;
+  color: #00FF00; /* Client's player name color */
 }
 .player-name:hover {
-  text-decoration: underline;
+  text-decoration: underline; /* Client's player name hover effect */
 }
 
 /* Assign Button Variation */
 .assign-button {
-  background-color: #00FF00;
-  color: #000000;
+  background-color: #00FF00; /* Client's assign button background */
+  color: #000000; /* Client's assign button text color */
   border: none;
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
 }
 .assign-button:hover {
-  background-color: #00CC00;
+  background-color: #00CC00; /* Client's assign button hover background */
 }
 
 /* Best Hitters & Pitchers Tables */
@@ -789,18 +787,18 @@ select:hover {
 
 /* Team Roster Styles */
 .team-roster {
-  background-color: #1a1a1a;
+  background-color: #1a1a1a; /* Client's team roster background */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   margin-bottom: 20px;
   padding: 15px;
-  color: #00FF00;
+  color: #00FF00; /* Client's team roster text color */
 }
 .team-roster h3 {
   margin: 0 0 15px 0;
   padding-bottom: 10px;
   border-bottom: 2px solid #333;
-  color: #00FF00;
+  color: #00FF00; /* Client's team roster header color */
 }
 .roster-section {
   margin-bottom: 20px;
@@ -812,9 +810,8 @@ select:hover {
 }
 .roster-section h4 {
   margin: 0 0 10px 0;
-  color: #00FF00;
+  color: #00FF00; /* Client's roster section header color */
 }
-
 .roster-section table {
   width: 100%;
   overflow-x: auto; /* Enable horizontal scrolling */
@@ -826,10 +823,10 @@ select:hover {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #333;
-  color: #00FF00;
+  color: #00FF00; /* Client's roster table text color */
 }
 .roster-section table th {
-  background-color: #2a2a2a;
+  background-color: #2a2a2a; /* Client's roster table header background */
   font-weight: 600;
 }
 .roster-section table th:not(:first-child):not(:nth-child(2)),
@@ -846,7 +843,7 @@ select:hover {
   width: 70px;
 }
 .roster-section table tr:hover {
-  background-color: #2a2a2a;
+  background-color: #2a2a2a; /* Client's roster row hover background */
 }
 
 /* Responsive Design */
@@ -915,15 +912,14 @@ select:hover {
     min-width: 60px;
   }
 
-/* Target the second column (Name) for sticky positioning */
-table th:nth-child(2),
-table td:nth-child(2) {
+  table th:first-child,
+  table td:first-child {
     position: sticky;
     left: 0; /* Stick to the left */
     background-color: #0000FF; /* Background color for visibility */
     z-index: 1; /* Ensure it stays above other content */
+  }
 }
-
 
 @media screen and (max-width: 480px) {
   .navbar {
@@ -1060,10 +1056,10 @@ table td:nth-child(2) {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #000000;
-  color: #00FF00;
+  background-color: #000000; /* Client's login notice background */
+  color: #00FF00; /* Client's login notice text color */
   padding: 20px;
-  border: 2px solid #00FF00;
+  border: 2px solid #00FF00; /* Client's login notice border */
   border-radius: 8px;
   z-index: 999;
   font-size: 18px;
@@ -1075,32 +1071,30 @@ table td:nth-child(2) {
 /* Add to your CSS */
 .menu-link {
   display: block;
-  color: #00FF00;
+  color: #00FF00; /* Client's menu link color */
   text-decoration: none;
   padding: 8px 12px;
   margin: 5px 0;
-  border: 1px solid #00FF00;
+  border: 1px solid #00FF00; /* Client's menu link border */
   border-radius: 4px;
   text-align: center;
 }
 
 .menu-link:hover {
-  background-color: #003300;
-  color: #FFFF00;
+  background-color: #003300; /* Client's menu link hover background */
+  color: #FFFF00; /* Client's menu link hover text color */
 }
 
 /* Style for clickable player names */
 .player-name {
   cursor: pointer;
-  color: #00FF00;
+  color: #00FF00; /* Client's player name color */
 }
 
 .player-name:hover {
-  color: #FFFF00;
-  text-decoration: underline;
+  color: #FFFF00; /* Client's player name hover color */
+  text-decoration: underline; /* Client's player name hover effect */
 }
-
-
 
 /* Big Board Table Column Width Adjustments */
 #bigBoardTable th:first-child, 
@@ -1124,7 +1118,6 @@ table td:nth-child(2) {
 #bigBoardTable th:last-child, 
 #bigBoardTable td:last-child {
   width: 120px; /* Adjust "Availability" column width */
-  text-align: center;
 }
 
 @media screen and (max-width: 768px) {
@@ -1212,98 +1205,6 @@ tr:hover {
   background-color: rgba(0, 255, 0, 0.1); /* Hover effect */
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .flex {
-    flex-direction: column; /* Stack columns on small screens */
-  }
-
-  .best-available-section {
-    flex: 1; /* Allow it to grow */
-  }
-
-  table {
-    display: block; /* Make the table block-level to allow scrolling */
-    overflow-x: auto; /* Enable horizontal scrolling */
-    width: 100%;
-  }
-
-  table th, table td {
-    padding: 6px 4px;
-    font-size: 13px;
-  }
-}
-}
-
-.remove-button{
-  padding: 4px 6px;
-}
-
-/* Add this CSS to make the Name column sticky */
-.sticky-name {
-  position: sticky;
-  left: 0; /* Stick to the left */
-  background-color: blue; /* Background color to cover other content */
-  z-index: 10; /* Ensure it stays above other content */
-}
-
-.button-link {
-  display: inline-block; /* Make it behave like a block element */
-  padding: 10px 15px; /* Add padding for a button-like feel */
-  background-color: #4CAF50; /* Green background color */
-  color: white; /* White text color */
-  text-align: center; /* Center the text */
-  text-decoration: none; /* Remove underline */
-  border: none; /* Remove border */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 16px; /* Font size */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
-}
-
-.button-link:hover {
-  background-color: #45a049; /* Darker green on hover */
-}
-
-
-/* Loading Overlay Styles */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* Ensure it's on top of everything */
-}
-
-.loading-overlay.hidden {
-  display: none; /* Hide the overlay when not needed */
-}
-
-.loading-spinner {
-  border: 4px solid #f3f3f3; /* Light gray border */
-  border-top: 4px solid #3498db; /* Blue border for the spinner */
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite; /* Spin animation */
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-  margin-top: 10px;
-  color: #fff; /* White text */
-  font-size: 18px;
-}
-
 /* Responsive Design for Tables */
 @media (max-width: 768px) {
   .best-available-section {
@@ -1328,4 +1229,44 @@ tr:hover {
     padding: 6px 4px; /* Adjust padding for smaller screens */
     font-size: 13px; /* Adjust font size for smaller screens */
   }
+}
+
+/* Loading Overlay Styles */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it's on top of everything */
+  color: #00FF00; /* Client's text color */
+}
+
+.loading-overlay.hidden {
+  display: none; /* Hide the overlay when not needed */
+}
+
+.loading-spinner {
+  border: 4px solid #00FF00; /* Light gray border */
+  border-top: 4px solid #FFFF00; /* Blue border for the spinner */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite; /* Spin animation */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 10px;
+  color: #FFFF00; /* White text */
+  font-size: 18px;
 }
