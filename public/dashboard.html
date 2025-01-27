@@ -17,15 +17,16 @@
 
   <style>
     body {
-  font-family: 'Courier New', Courier, monospace; /* Client's font */
-  background-color: #000000; /* Client's background */
-  color: #00FF00; /* Client's text color */
+      font-family: 'Courier New', Courier, monospace; /* Client's font */
+      background-color: #000000; /* Client's background */
+      color: #00FF00; /* Client's text color */
     }
-    </style>
+  </style>
 </head>
 
 <body>
   <div id="navbar-container"></div>
+  <div id="userMenuContainer"></div> <!-- Added userMenuContainer here -->
 
   <div class="content-wrapper">
     <div class="left-column">
@@ -69,9 +70,8 @@
           <!-- Hitters Column -->
           <div class="w-full">
             <div class="mb-4">
-              <h4 class="text-lg  mb-2">Best Available Hitters</h4>
-              <select id="bestHittersPosition"
-                class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+              <h4 class="text-lg mb-2">Best Available Hitters</h4>
+              <select id="bestHittersPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
                 <option value="All">All Positions</option>
                 <option value="C">C</option>
                 <option value="1B">1B</option>
@@ -105,8 +105,7 @@
           <div class="w-full">
             <div class="mb-4">
               <h4 class="text-lg mb-2">Best Available Pitchers</h4>
-              <select id="bestPitchersPosition"
-                class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+              <select id="bestPitchersPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
                 <option value="All">All Positions</option>
                 <option value="SP">SP</option>
                 <option value="RP">RP</option>
@@ -136,8 +135,7 @@
       <div id="bigBoardSection" class="big-board-section">
         <div class="flex-item">
           <h4>Big Board</h4>
-          <select id="bigBoardPosition"
-            class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
+          <select id="bigBoardPosition" class="w-full bg-black text-green-400 border-2 border-yellow-300 rounded p-2 mb-2">
             <option value="All">All Positions</option>
             <option value="C">C</option>
             <option value="1B">1B</option>
@@ -155,7 +153,7 @@
               <thead>
                 <tr>
                   <th>Rank</th>
-                  <th class="sticky-name">Name</th> <!-- Add a class for sticky -->
+                  <th class="sticky-name">Name</th>
                   <th>Pos</th>
                   <th>HR/W</th>
                   <th>R/SV</th>
@@ -175,7 +173,6 @@
 
   <div id="assignMenu">
     <h4 id="assignMenuTitle">Assign Player</h4>
-    <!-- Add this line -->
     <a href="#" class="menu-link button-link" id="viewProfile">View Player Profile</a>
     <div class="team-list" id="teamList"></div>
     <button class="release-button" id="releasePlayer">Release Player</button>
@@ -197,10 +194,7 @@
 
   <div id="bigBoardNotice" class="notice hidden">Please select or create a league to use this feature.</div>
 
-
-
   <script>
-
     // Global variables
     let loggedInUser = null;
     let leagues = [];
@@ -230,40 +224,37 @@
     }
 
     async function removePlayerFromTeam(playerId) {
-  showLoadingOverlay('Removing player...'); // Show loading overlay
-  try {
-    const response = await fetch('/remove-player', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerid: playerId }),
-    });
+      showLoadingOverlay('Removing player...'); // Show loading overlay
+      try {
+        const response = await fetch('/remove-player', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ playerid: playerId }),
+        });
 
-    // Log the response status and body
-    console.log('Response Status:', response.status); // Log the response status
+        // Log the response status and body
+        console.log('Response Status:', response.status); // Log the response status
 
-    // Check if the response is in JSON format
-    const responseData = await response.json(); // Assuming the server returns JSON
-    console.log('Response Data:', responseData); // Log the response data
+        // Check if the response is in JSON format
+        const responseData = await response.json(); // Assuming the server returns JSON
+        console.log('Response Data:', responseData); // Log the response data
 
-    if (!response.ok) {
-      throw new Error(responseData.error || 'Failed to remove player');
+        if (!response.ok) {
+          throw new Error(responseData.error || 'Failed to remove player');
+        }
+
+        window.location.reload();
+        // Player removed successfully
+        showToast('Player removed successfully!', 'success'); // Show success toast
+      } catch (err) {
+        console.error('Error removing player:', err);
+        alert(err.message || 'Failed to remove player');
+      } finally {
+        hideLoadingOverlay(); // Hide loading overlay in case of error
+      }
     }
 
-    window.location.reload();
-    // Player removed successfully
-    showToast('Player removed successfully!', 'success'); // Show success toast
-    // await updateTeamsContainer(); // Refresh the team roster after successful removal
-    // Reload the current page
-  } catch (err) {
-    console.error('Error removing player:', err);
-    alert(err.message || 'Failed to remove player');
-  } finally {
-    hideLoadingOverlay(); // Hide loading overlay in case of error
-  }
-} 
-    
-
-function toggleUserDropdown() {
+    function toggleUserDropdown() {
       const dropdown = document.querySelector('.dropdown');
       dropdown.innerHTML = '';
 
@@ -308,7 +299,6 @@ function toggleUserDropdown() {
 
       dropdown.classList.toggle('active');
     }
-
 
     // First, define the showToast function
     function showToast(message, type = 'success') {
@@ -368,10 +358,9 @@ function toggleUserDropdown() {
     .toast.fade-out {
         opacity: 0;
     }
-`;
+    `;
     document.head.appendChild(toastStyles);
 
-    // Then modify your createLeague function to use showToast
     async function createLeague(name) {
       try {
         const res = await fetch('/create-league', {
@@ -433,29 +422,6 @@ function toggleUserDropdown() {
         console.error('Error loading navbar:', err);
       });
 
-
-
-    async function createLeague(name) {
-      const res = await fetch('/create-league', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
-      });
-      const data = await res.json();
-      if (data.id) {
-        leagues.push(data);
-        currentLeagueId = data.id;
-        localStorage.setItem('currentLeagueId', currentLeagueId);
-        await reloadData(); // Ensure this function is defined
-        showToast('League created successfully!', 'success'); // Optional: Show success toast
-      } else {
-        alert(data.error || 'Failed to create league.');
-      }
-    }
-
-
-
-
     async function selectLeague(leagueId) {
       showLoadingOverlay('Loading league data...');
       try {
@@ -481,7 +447,6 @@ function toggleUserDropdown() {
       }
     }
 
-
     async function reloadData() {
       allPlayers = [];
       await fetchAllPlayers();
@@ -497,19 +462,6 @@ function toggleUserDropdown() {
       }
     }
 
-
-
-
-
-
-    // let allPlayers = [];
-    // let currentPlayer = null;
-    // let loggedInUser = null;
-    // let leagues = [];
-    // let currentLeagueId = null;
-    // let teams = [];
-    // let needsTeamRefresh = true;
-
     const playerSearchInput = document.getElementById('playerSearch');
     const searchResultsContainer = document.getElementById('searchResults');
     const bigBoardPosition = document.getElementById('bigBoardPosition');
@@ -521,7 +473,6 @@ function toggleUserDropdown() {
     const releasePlayerBtn = document.getElementById('releasePlayer');
     const createNewTeamBtn = document.getElementById('createNewTeam');
     const cancelAssignBtn = document.getElementById('cancelAssign');
-    const userMenuContainer = document.getElementById('userMenuContainer');
     const dropdown = document.querySelector('.dropdown');
     const assignMenu = document.getElementById('assignMenu');
     const assignMenuTitle = document.getElementById('assignMenuTitle');
@@ -556,35 +507,19 @@ function toggleUserDropdown() {
       updateTeamsContainer();
     });
 
-    // homeLogo.addEventListener('click', () => {
-    //   window.location.href = "index.html";
-    // });
-
-    // document.getElementById('dashLink').addEventListener('click', () => {
-    //   window.location.reload();
-    // });
-
-    // document.getElementById('settingsLink').addEventListener('click', () => {
-    //   window.location.href = "settings.html";
-    // });
-
-    // Global click handlers
     // Global click handlers
     document.addEventListener('click', (e) => {
-      // Get elements inside the handler to ensure they exist
       const userMenuContainer = document.getElementById('userMenuContainer');
       const dropdown = document.querySelector('.dropdown');
       const searchResultsContainer = document.getElementById('searchResults');
       const playerSearchInput = document.getElementById('playerSearch');
 
-      // Only proceed with dropdown logic if elements exist
       if (userMenuContainer && dropdown) {
         if (!userMenuContainer.contains(e.target) && !e.target.classList.contains('user-menu')) {
           dropdown.classList.remove('active');
         }
       }
 
-      // Only proceed with search results logic if elements exist
       if (searchResultsContainer && playerSearchInput) {
         if (!searchResultsContainer.contains(e.target) &&
           e.target !== playerSearchInput &&
@@ -600,18 +535,15 @@ function toggleUserDropdown() {
       e.stopPropagation();
     });
 
-
     document.addEventListener('click', (e) => {
       const searchResultsContainer = document.getElementById('searchResults');
       const playerSearchInput = document.getElementById('playerSearch');
 
-      // Hide search results if clicking outside the search container or input
       if (!searchResultsContainer.contains(e.target) && e.target !== playerSearchInput) {
         searchResultsContainer.style.display = 'none';
       }
     });
 
-    // Event Listeners
     document.addEventListener('click', (e) => {
       if (!assignMenu.contains(e.target) &&
         !e.target.classList.contains('player-name') &&
@@ -679,7 +611,6 @@ function toggleUserDropdown() {
 
     cancelAssignBtn.addEventListener('click', hideAssignMenu);
 
-
     async function fetchAllPlayers() {
       showLoadingOverlay('Loading players...');
       try {
@@ -702,7 +633,6 @@ function toggleUserDropdown() {
       }
     }
 
-    // Add this to places where player names are rendered (in loadBestAvailable, loadBigBoard, etc.)
     function createPlayerNameCell(player) {
       const tdName = document.createElement('td');
       tdName.textContent = player.name;
@@ -925,78 +855,76 @@ function toggleUserDropdown() {
       }
     }
 
-
-
-
     async function performSearch(query) {
-  const searchResultsContainer = document.getElementById('searchResults');
-  const tbody = searchResultsContainer.querySelector('tbody');
+      const searchResultsContainer = document.getElementById('searchResults');
+      const tbody = searchResultsContainer.querySelector('tbody');
 
-  if (allPlayers.length === 0) {
-    await fetchAllPlayers();
-  }
+      if (allPlayers.length === 0) {
+        await fetchAllPlayers();
+      }
 
-  const normalizedQuery = normalizeName(query);
+      const normalizedQuery = normalizeName(query);
 
-  // Hide search results if the query is empty
-  if (normalizedQuery === '') {
-    searchResultsContainer.style.display = 'none';
-    return;
-  }
+      // Hide search results if the query is empty
+      if (normalizedQuery === '') {
+        searchResultsContainer.style.display = 'none';
+        return;
+      }
 
-  // Filter players based on the search query
-  const filteredPlayers = allPlayers.filter(player => {
-    const playerNameNormalized = normalizeName(player.name);
-    return playerNameNormalized.includes(normalizedQuery);
-  });
+      // Filter players based on the search query
+      const filteredPlayers = allPlayers.filter(player => {
+        const playerNameNormalized = normalizeName(player.name);
+        return playerNameNormalized.includes(normalizedQuery);
+      });
 
-  // Clear the table body
-  tbody.innerHTML = '';
+      // Clear the table body
+      tbody.innerHTML = '';
 
-  if (filteredPlayers.length === 0) {
-    // Show "No players found" message only in the search results container
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.setAttribute('colspan', '4');
-    td.textContent = 'No players found.';
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-    searchResultsContainer.style.display = 'block'; // Ensure the search results container is visible
-  } else {
-    // Populate the table with search results
-    filteredPlayers.forEach(player => {
-      const tr = document.createElement('tr');
+      if (filteredPlayers.length === 0) {
+        // Show "No players found" message only in the search results container
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.setAttribute('colspan', '4');
+        td.textContent = 'No players found.';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        searchResultsContainer.style.display = 'block'; // Ensure the search results container is visible
+      } else {
+        // Populate the table with search results
+        filteredPlayers.forEach(player => {
+          const tr = document.createElement('tr');
 
-      const tdName = document.createElement('td');
-      tdName.textContent = player.name;
-      tdName.classList.add('player-name', 'sticky-name');
-      tdName.setAttribute('data-pid', player.playerid || '');
-      tdName.addEventListener('click', () => assignPlayer(player));
-      tr.appendChild(tdName);
+          const tdName = document.createElement('td');
+          tdName.textContent = player.name;
+          tdName.classList.add('player-name', 'sticky-name');
+          tdName.setAttribute('data-pid', player.playerid || '');
+          tdName.addEventListener('click', () => assignPlayer(player));
+          tr.appendChild(tdName);
 
-      const tdPos = document.createElement('td');
-      tdPos.textContent = player.Pos || 'Unknown';
-      tr.appendChild(tdPos);
+          const tdPos = document.createElement('td');
+          tdPos.textContent = player.Pos || 'Unknown';
+          tr.appendChild(tdPos);
 
-      const tdAvail = document.createElement('td');
-      tdAvail.textContent = player.Availability || 'Unknown';
-      tr.appendChild(tdAvail);
+          const tdAvail = document.createElement('td');
+          tdAvail.textContent = player.Availability || 'Unknown';
+          tr.appendChild(tdAvail);
 
-      const tdAction = document.createElement('td');
-      const assignBtn = document.createElement('button');
-      assignBtn.textContent = 'Assign';
-      assignBtn.classList.add('assign-button');
-      assignBtn.addEventListener('click', () => assignPlayer(player));
-      tdAction.appendChild(assignBtn);
-      tr.appendChild(tdAction);
+          const tdAction = document.createElement('td');
+          const assignBtn = document.createElement('button');
+          assignBtn.textContent = 'Assign';
+          assignBtn.classList.add('assign-button');
+          assignBtn.addEventListener('click', () => assignPlayer(player));
+          tdAction.appendChild(assignBtn);
+          tr.appendChild(tdAction);
 
-      tbody.appendChild(tr);
-    });
+          tbody.appendChild(tr);
+        });
 
-    // Show the search results container
-    searchResultsContainer.style.display = 'block';
-  }
-}
+        // Show the search results container
+        searchResultsContainer.style.display = 'block';
+      }
+    }
+
     function showAssignMenu(x, y) {
       assignMenu.style.top = `${y}px`;
       assignMenu.style.left = `${x}px`;
@@ -1044,7 +972,6 @@ function toggleUserDropdown() {
       await updateAssignMenuTeams();
     }
 
-
     async function updatePlayerTeam(player, teamName) {
       showLoadingOverlay('Assigning player...');
       try {
@@ -1067,9 +994,6 @@ function toggleUserDropdown() {
         hideLoadingOverlay();
       }
     }
-
-
-
 
     async function fetchTeamNamesForLeague() {
       if (!currentLeagueId) return [];
@@ -1162,62 +1086,6 @@ function toggleUserDropdown() {
       }
     }
 
-
-    //     async function selectLeague(leagueId) {
-    //     try {
-    //         const res = await fetch('/select-league', {
-    //             method: 'POST',
-    //             headers: {'Content-Type':'application/json'},
-    //             body: JSON.stringify({leagueId})
-    //         });
-    //         const data = await res.json();
-
-    //         if(data.status === 'League selected') {
-    //             currentLeagueId = leagueId;
-    //             localStorage.setItem('currentLeagueId', leagueId);
-
-    //             // Show loading state for data refresh
-    //             const loadingDiv = document.createElement('div');
-    //             loadingDiv.className = 'loading-overlay';
-    //             loadingDiv.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">Loading league data...</div>';
-    //             document.body.appendChild(loadingDiv);
-
-    //             try {
-    //                 await Promise.all([
-    //                     reloadData(),
-    //                     loadTeamsForLeague()
-    //                 ]);
-    //             } finally {
-    //                 loadingDiv.remove();
-    //             }
-    //         } else {
-    //             alert(data.error || 'Failed to select league');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error selecting league:', error);
-    //         alert('Failed to select league');
-    //     }
-    // }    
-
-
-
-    // async function createLeague(name) {
-    //   const res = await fetch('/create-league', {
-    //     method: 'POST',
-    //     headers: {'Content-Type':'application/json'},
-    //     body: JSON.stringify({name})
-    //   });
-    //   const data = await res.json();
-    //   if(data.id) {
-    //     leagues.push(data);
-    //     currentLeagueId = data.id;
-    //     localStorage.setItem('currentLeagueId', currentLeagueId);
-    //     await reloadData();
-    //   } else {
-    //     alert(data.error || 'Failed to create league.');
-    //   }
-    // }
-
     async function logout() {
       const res = await fetch('/logout', { method: 'POST' });
       const data = await res.json();
@@ -1239,8 +1107,14 @@ function toggleUserDropdown() {
         const data = await response.json();
         loggedInUser = data.loggedIn ? data.username : null;
 
+        const userMenuContainer = document.getElementById('userMenuContainer');
+        if (!userMenuContainer) {
+          console.error('User menu container not found!');
+          return; // Exit if the element is not found
+        }
+
         if (data.loggedIn) {
-          document.getElementById('userMenuContainer').innerHTML = `
+          userMenuContainer.innerHTML = `
                 <span>${data.username}</span>
                 <button class="nav-button" onclick="logout()">Logout</button>
             `;
@@ -1266,7 +1140,7 @@ function toggleUserDropdown() {
 
           return true;
         } else {
-          document.getElementById('userMenuContainer').innerHTML = `
+          userMenuContainer.innerHTML = `
                 <button class="nav-button" onclick="showLoginOverlay()">Login</button>
                 <button class="nav-button" onclick="showRegisterOverlay()">Register</button>
             `;
@@ -1332,7 +1206,7 @@ function toggleUserDropdown() {
       }
     }
 
-async function updateTeamsContainer() {
+    async function updateTeamsContainer() {
       // Clear the teams container
       teamsContainer.innerHTML = '';
       const selectedTeam = teamsSelector.value;
@@ -1443,13 +1317,13 @@ async function updateTeamsContainer() {
           // Create Remove button
           const tdAction = document.createElement('td');
           const removeBtn = document.createElement('button');
-removeBtn.textContent = 'Remove';
-removeBtn.classList.add('remove-button');
-removeBtn.addEventListener('click', async () => {
-        await removePlayerFromTeam(player.playerid); // Call the correct function here
-      });
+          removeBtn.textContent = 'Remove';
+          removeBtn.classList.add('remove-button');
+          removeBtn.addEventListener('click', async () => {
+            await removePlayerFromTeam(player.playerid); // Call the correct function here
+          });
 
-tdAction.appendChild(removeBtn);
+          tdAction.appendChild(removeBtn);
           tr.appendChild(tdAction);
 
           hittersTbody.appendChild(tr);
@@ -1534,12 +1408,12 @@ tdAction.appendChild(removeBtn);
           const tdAction = document.createElement('td');
           const removeBtn = document.createElement('button');
           removeBtn.textContent = 'Remove';
-removeBtn.classList.add('remove-button');
-removeBtn.addEventListener('click', async () => {
-    await removePlayerFromTeam(player.playerid); // Use the same function as hitters
-});
-tdAction.appendChild(removeBtn);
-tr.appendChild(tdAction);
+          removeBtn.classList.add('remove-button');
+          removeBtn.addEventListener('click', async () => {
+            await removePlayerFromTeam(player.playerid); // Use the same function as hitters
+          });
+          tdAction.appendChild(removeBtn);
+          tr.appendChild(tdAction);
 
           pitchersTbody.appendChild(tr);
         });
@@ -1551,7 +1425,6 @@ tr.appendChild(tdAction);
       teamsContainer.appendChild(teamDiv);
     }
 
-   
     (async function initialLoad() {
       // Show loading state
       const loadingDiv = document.createElement('div');
@@ -1610,7 +1483,7 @@ tr.appendChild(tdAction);
           body: JSON.stringify({ username, password })
         });
 
-        if (!response.ok == true) {
+        if (!response.ok) {
           throw new Error('Login failed');
         }
 
